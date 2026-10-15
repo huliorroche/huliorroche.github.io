@@ -138,20 +138,16 @@
       border-radius: 1.35rem;
       transition: .22s transform, .22s border-color;
       background:
-        radial-gradient(
-            circle at 50% 32%,
-            #fffbe3 0 25%,
-            rgba(255, 255, 255, .45) 25%,
-            transparent 60%
-        ),
-        linear-gradient(
-            to bottom,
-            #fff0a8 0%,
-            #ffd4ec 60%,
-            #ffffff 65%,
-            #ffffff 100%
-        );
-        border: 1px solid var(--line)
+        radial-gradient(circle at 50% 32%,
+          #fffbe3 0 25%,
+          rgba(255, 255, 255, .45) 25%,
+          transparent 60%),
+        linear-gradient(to bottom,
+          #fff0a8 0%,
+          #ffd4ec 60%,
+          #ffffff 65%,
+          #ffffff 100%);
+      border: 1px solid var(--line)
     }
 
     .pokemon-card:hover {
@@ -310,7 +306,7 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     const $ = s => document.querySelector(s), state = { all: [], view: [] };
-    const els = { file: $('#fileInput'), drop: $('#dropZone'), grid: $('#grid'), count: $('#count'), search: $('#search'), variant: $('#variantFilter'), shiny: $('#shinyFilter'), sort: $('#sort') };
+    const els = { grid: $('#grid'), count: $('#count'), search: $('#search'), variant: $('#variantFilter'), shiny: $('#shinyFilter'), sort: $('#sort') };
     const toast = m => { $('#toastText').textContent = m; bootstrap.Toast.getOrCreateInstance($('#toast')).show(); };
     const esc = s => String(s ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
     const norm = s => String(s ?? '').trim();
@@ -325,26 +321,60 @@
     function labelVariant(v) { return v === 'normal' ? 'Forma normal' : v.charAt(0).toUpperCase() + v.slice(1) }
     function apply() { const q = els.search.value.trim().toLocaleLowerCase('es'); let a = state.all.filter(p => (!q || p.name.toLocaleLowerCase('es').includes(q) || String(p.dex).includes(q)) && (!els.variant.value || p.variant === els.variant.value) && (!els.shiny.value || String(p.shiny) === els.shiny.value)); const sort = els.sort.value; a.sort(sort === 'cp-desc' ? (x, y) => y.cp - x.cp : sort === 'cp-asc' ? (x, y) => x.cp - y.cp : sort === 'name' ? (x, y) => x.name.localeCompare(y.name, 'es') : (x, y) => x.dex - y.dex); state.view = a; render(a) }
     function render(a) { els.count.textContent = a.length; if (!a.length) { els.grid.innerHTML = '<div class="col-12"><div class="glass rounded-4 empty"><div><div class="display-5 mb-2">⌕</div><strong>No hay resultados</strong><div class="small mt-1">Prueba con otros filtros o carga un XML.</div></div></div></div>'; return } els.grid.innerHTML = a.map(p => `<article class="col-sm-6 col-lg-4 col-xl-3"><div class="pokemon-card"><div class="art">${p.image ? `<img loading="lazy" src="${esc(p.image)}" alt="${esc(p.name)}">` : '<span class="display-2 text-secondary">?</span>'}</div><div class="p-3"><div class="d-flex justify-content-between align-items-start gap-2"><div><div class="dex">#${String(p.dex).padStart(4, '0')}</div><h3 class="h5 poke-name mb-1">${esc(p.name)}</h3></div><div class="text-end"><small class="text-secondary">PC</small><div class="cp">${p.cp.toLocaleString('es-ES')}</div></div></div><div class="d-flex flex-wrap gap-2 mt-3">${p.shiny ? '<span class="badge rounded-pill badge-shiny">✦ Shiny</span>' : ''}${p.variant !== 'normal' ? `<span class="badge rounded-pill badge-soft">${esc(labelVariant(p.variant))}</span>` : '<span class="badge rounded-pill badge-soft">Normal</span>'}</div></div></div></article>`).join('') }
-    ['dragenter', 'dragover'].forEach(e => els.drop.addEventListener(e, x => { x.preventDefault(); els.drop.classList.add('drag') }));['dragleave', 'drop'].forEach(e => els.drop.addEventListener(e, x => { x.preventDefault(); els.drop.classList.remove('drag') })); els.drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) f.text().then(load) });[els.search, els.variant, els.shiny, els.sort].forEach(e => e.addEventListener(e === els.search ? 'input' : 'change', apply));
+    // Cargar automáticamente el XML al iniciar la página
+    async function loadDefaultXML() {
+      try {
+        const response = await fetch('./pokemon.xml');
+
+        if (!response.ok) {
+          throw new Error(
+            `No se pudo cargar pokemon.xml (${response.status})`
+          );
+        }
+
+        const xmlText = await response.text();
+        await load(xmlText);
+
+      } catch (error) {
+        console.error(error);
+        toast(error.message);
+      }
+    }
+
+    // Eventos de filtros
+    [
+      els.search,
+      els.variant,
+      els.shiny,
+      els.sort
+    ].forEach(element => {
+      element.addEventListener(
+        element === els.search ? 'input' : 'change',
+        apply
+      );
+    });
+
+    // Cargar XML automáticamente
+    loadDefaultXML();
     const sample = `<?xml version="1.0" encoding="UTF-8"?>\n<pokemons>\n  <pokemon><pokedex>25</pokedex><shiny>true</shiny><variant>normal</variant><cp>1498</cp></pokemon>\n  <pokemon pokedex="19" shiny="false" variant="alola" cp="742"/>\n  <pokemon pokedex="144" shiny="true" variant="galar" cp="1731"/>\n  <pokemon pokedex="58" shiny="false" variant="hisui" cp="1280"/>\n</pokemons>`;
     $('#sampleBtn').onclick = () => load(sample); $('#clearBtn').onclick = () => { localStorage.removeItem('poketrade-xml'); state.all = []; render([]); refreshVariants() };
-    
+
     loadDefaultXML();
 
     async function loadDefaultXML() {
       try {
-          const response = await fetch('./collection.xml');
+        const response = await fetch('./collection.xml');
 
-          if (!response.ok) {
-              throw new Error(`No se pudo cargar collection.xml (${response.status})`);
-          }
+        if (!response.ok) {
+          throw new Error(`No se pudo cargar collection.xml (${response.status})`);
+        }
 
-          const xmlText = await response.text();
-          await load(xmlText);
+        const xmlText = await response.text();
+        await load(xmlText);
       } catch (error) {
-          toast(error.message);
+        toast(error.message);
       }
-  }
+    }
 
 
   </script>
