@@ -1,0 +1,24 @@
+<collection>
+
+  <pokemon>
+    <pokedex>19</pokedex>
+    <variant>alola</variant>
+    <shiny>true</shiny>
+    <cp>500</cp>
+  </pokemon>
+
+  <pokemon>
+    <pokedex>52</pokedex>
+    <variant>galar</variant>
+    <shiny>false</shiny>
+    <cp>1200</cp>
+  </pokemon>
+
+  <pokemon>
+    <pokedex>58</pokedex>
+    <variant>hisui</variant>
+    <shiny>true</shiny>
+    <cp>2300</cp>
+  </pokemon>
+
+</collection>

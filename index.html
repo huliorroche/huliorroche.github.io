@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="es" data-bs-theme="dark">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PokéTrade GO</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --ink: black;
+      --muted: #a8b8d8;
+      --glass: rgba(15, 25, 54, .76);
+      --line: rgba(255, 255, 255, .12);
+      --cyan: #3ee6d0;
+      --violet: #8b5cf6;
+      --pink: #ff4d9d;
+      --gold: #ffd166
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at 15% 10%, #bcecff 0, transparent 28%), radial-gradient(circle at 88% 16%, #ffe8a3 0, transparent 25%), linear-gradient(135deg, #eef5ff, #f8f5ff 52%, #e8fff8);
+      background-attachment: fixed
+    }
+
+    body:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .2;
+      background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px);
+      background-size: 42px 42px
+    }
+
+    .navbar,
+    .glass {
+      background: var(--glass) !important;
+      backdrop-filter: blur(18px);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, .22)
+    }
+
+    .brand-ball {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      display: inline-block;
+      background: linear-gradient(#ff5263 0 45%, #1b2441 46% 54%, #fff 55%);
+      position: relative;
+      box-shadow: 0 0 25px rgba(255, 82, 99, .4)
+    }
+
+    .brand-ball:after {
+      content: "";
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border: 3px solid #1b2441;
+      border-radius: 50%;
+      background: white;
+      left: 12px;
+      top: 12px
+    }
+
+    .hero {
+      padding: 5rem 0 2.2rem
+    }
+
+    .hero h1 {
+      font-weight: 850;
+      letter-spacing: -.04em;
+      font-size: clamp(2.25rem, 5vw, 4.5rem)
+    }
+
+    .gradient-text {
+      background: linear-gradient(90deg, var(--cyan), #78a8ff, var(--pink));
+      -webkit-background-clip: text;
+      color: transparent
+    }
+
+    .lead {
+      color: var(--muted);
+      max-width: 720px
+    }
+
+    .drop-zone {
+      border: 1.5px dashed rgba(62, 230, 208, .5);
+      padding: 1.2rem;
+      border-radius: 1rem;
+      background: rgba(62, 230, 208, .045);
+      transition: .2s
+    }
+
+    .drop-zone.drag {
+      border-color: var(--gold);
+      transform: translateY(-2px);
+      background: rgba(255, 209, 102, .08)
+    }
+
+    .form-control,
+    .form-select {
+      background-color: rgba(4, 10, 28, .65) !important;
+      border-color: var(--line);
+      color: var(--ink) !important
+    }
+
+    .form-control::placeholder {
+      color: #789
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 .2rem rgba(62, 230, 208, .12)
+    }
+
+    .btn-primary {
+      border: 0;
+      background: linear-gradient(90deg, #276ff5, var(--violet));
+      box-shadow: 0 8px 24px rgba(92, 74, 230, .3)
+    }
+
+    .btn-outline-light {
+      border-color: var(--line)
+    }
+
+    .pokemon-card {
+      height: 100%;
+      overflow: hidden;
+      border-radius: 1.35rem;
+      transition: .22s transform, .22s border-color;
+      background:
+        radial-gradient(
+            circle at 50% 32%,
+            #fffbe3 0 25%,
+            rgba(255, 255, 255, .45) 25%,
+            transparent 60%
+        ),
+        linear-gradient(
+            to bottom,
+            #fff0a8 0%,
+            #ffd4ec 60%,
+            #ffffff 65%,
+            #ffffff 100%
+        );
+        border: 1px solid var(--line)
+    }
+
+    .pokemon-card:hover {
+      transform: translateY(-7px);
+      border-color: rgba(62, 230, 208, .48)
+    }
+
+    .art {
+      height: 220px;
+      display: grid;
+      place-items: center;
+      position: relative;
+      background: radial-gradient(circle, rgba(111, 162, 255, .2), transparent 65%)
+    }
+
+    .art:before {
+      content: "";
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      border: 20px solid rgba(255, 255, 255, .035)
+    }
+
+    .art img {
+      position: relative;
+      width: 86%;
+      height: 92%;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 16px rgba(0, 0, 0, .38));
+      transition: .25s
+    }
+
+    .pokemon-card:hover img {
+      transform: scale(1.06)
+    }
+
+    .dex {
+      color: #7791bd;
+      font-weight: 800;
+      letter-spacing: .08em
+    }
+
+    .poke-name {
+      text-transform: capitalize;
+      font-weight: 800
+    }
+
+    .cp {
+      font-size: 1.55rem;
+      font-weight: 850
+    }
+
+    .badge-soft {
+      background: #edf1fb;
+      border: 1px solid var(--line);
+      color: #415078
+    }
+
+    .badge-shiny {
+      background: linear-gradient(90deg, #f0b429, #ffdf7d);
+      color: #3a2700
+    }
+
+    .empty {
+      min-height: 250px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted)
+    }
+
+    .spinner-border {
+      color: var(--cyan)
+    }
+
+    footer {
+      color: #7285aa
+    }
+
+    code {
+      color: #73e5d4
+    }
+
+    .toast-container {
+      z-index: 1080
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand sticky-top">
+    <div class="container py-2"><a class="navbar-brand text-white fw-bold d-flex align-items-center gap-2"
+        href="#"><span class="brand-ball"></span>Pokemons de jcshia</a><span
+        class="small text-secondary d-none d-sm-inline"></span></div>
+  </nav>
+  <main class="container pb-5">
+    <!-- <section class="hero text-center"><span class="badge rounded-pill badge-soft mb-3">Colección personal · Pokémon
+        GO</span>
+      <h1>Encuentra tu próximo<br><span class="gradient-text">intercambio perfecto</span></h1>
+      <p class="lead mx-auto mt-3">Carga tu XML. La página completa automáticamente nombres e imágenes y crea un
+        escaparate moderno, filtrable y fácil de compartir.</p>
+    </section> -->
+    <section class="glass rounded-4 p-3 p-lg-4 mb-4">
+      <div id="dropZone" class="drop-zone text-center mb-3">
+        <div class="fw-bold mb-1">Arrastra aquí tu fichero XML</div>
+        <div class="small text-secondary mb-3">o selecciónalo desde el dispositivo</div><input id="fileInput"
+          type="file" accept=".xml,text/xml,application/xml" hidden><button id="chooseBtn"
+          class="btn btn-primary px-4">Seleccionar XML</button><button id="sampleBtn"
+          class="btn btn-outline-light ms-2">Ver ejemplo</button>
+      </div>
+      <div class="row g-2">
+        <div class="col-lg-5"><input id="search" class="form-control" placeholder="Buscar por nombre o número…"
+            aria-label="Buscar"></div>
+        <div class="col-6 col-lg-3"><select id="variantFilter" class="form-select">
+            <option value="">Todas las variantes</option>
+          </select></div>
+        <div class="col-6 col-lg-2"><select id="shinyFilter" class="form-select">
+            <option value="">Normal y shiny</option>
+            <option value="true">Solo shiny</option>
+            <option value="false">No shiny</option>
+          </select></div>
+        <div class="col-lg-2"><select id="sort" class="form-select">
+            <option value="dex">N.º Pokédex</option>
+            <option value="cp-desc">PC mayor</option>
+            <option value="cp-asc">PC menor</option>
+            <option value="name">Nombre</option>
+          </select></div>
+      </div>
+    </section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 m-0"><span id="count">0</span> Pokémon disponibles</h2><button id="clearBtn"
+        class="btn btn-sm btn-outline-light">Limpiar</button>
+    </div>
+    <section id="grid" class="row g-4">
+      <div class="col-12">
+        <div class="glass rounded-4 empty">
+          <div>
+            <div class="display-5 mb-2">◓</div><strong>Aún no hay Pokémon</strong>
+            <div class="small mt-1">Carga un XML o abre el ejemplo.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="container text-center small pb-4">Datos e imágenes obtenidos de PokéAPI. Sitio no afiliado a Pokémon,
+    Niantic ni Scopely.</footer>
+  <div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast" class="toast text-bg-dark border" role="alert">
+      <div class="d-flex">
+        <div id="toastText" class="toast-body"></div><button class="btn-close btn-close-white m-auto me-2"
+          data-bs-dismiss="toast"></button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const $ = s => document.querySelector(s), state = { all: [], view: [] };
+    const els = { file: $('#fileInput'), drop: $('#dropZone'), grid: $('#grid'), count: $('#count'), search: $('#search'), variant: $('#variantFilter'), shiny: $('#shinyFilter'), sort: $('#sort') };
+    const toast = m => { $('#toastText').textContent = m; bootstrap.Toast.getOrCreateInstance($('#toast')).show(); };
+    const esc = s => String(s ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
+    const norm = s => String(s ?? '').trim();
+    const bool = v => ['true', '1', 'yes', 'si', 'sí'].includes(norm(v).toLowerCase());
+    function val(node, names) { for (const n of names) { const a = node.getAttribute(n); if (a !== null) return a; const e = [...node.children].find(x => x.tagName.toLowerCase() === n.toLowerCase()); if (e) return e.textContent } return '' }
+    function parseXML(text) { const doc = new DOMParser().parseFromString(text, 'application/xml'); if (doc.querySelector('parsererror')) throw Error('El XML no es válido.'); let nodes = [...doc.querySelectorAll('pokemon')]; if (!nodes.length) throw Error('No se encontraron elementos <pokemon>.'); return nodes.map((n, i) => { const dex = Number(val(n, ['dex', 'pokedex', 'pokedexNumber', 'number', 'id'])); if (!Number.isInteger(dex) || dex < 1) throw Error(`Pokémon ${i + 1}: número de Pokédex no válido.`); return { uid: i, dex, cp: Number(val(n, ['cp', 'pc'])) || 0, shiny: bool(val(n, ['shiny'])), variant: norm(val(n, ['variant', 'variante', 'form', 'region'])).toLowerCase() || 'normal' } }) }
+    const variantAliases = { alolan: 'alola', galarian: 'galar', hisuian: 'hisui', paldean: 'paldea', 'forma alola': 'alola', 'forma galar': 'galar', 'forma hisui': 'hisui', 'forma paldea': 'paldea' };
+    async function enrich(p) { const species = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${p.dex}`).then(ok); const es = species.names.find(n => n.language.name === 'es')?.name || species.name; const v = variantAliases[p.variant] || p.variant; let data; if (v === 'normal') { data = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.dex}`).then(ok) } else { const candidates = [`${species.name}-${v}`, `${species.name}-${v.replace(/\s+/g, '-')}`]; for (const c of [...new Set(candidates)]) { try { data = await fetch(`https://pokeapi.co/api/v2/pokemon/${c}`).then(ok); break } catch { } } if (!data) data = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.dex}`).then(ok) } const art = data.sprites?.other?.['official-artwork']; return { ...p, name: es, image: (p.shiny ? art?.front_shiny : null) || art?.front_default || data.sprites?.front_default, variant: v } }
+    function ok(r) { if (!r.ok) throw Error(`API ${r.status}`); return r.json() }
+    async function load(text) { try { els.grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border"></div><div class="mt-3 text-secondary">Consultando nombres e imágenes…</div></div>'; const raw = parseXML(text), out = []; for (let i = 0; i < raw.length; i += 8) { const batch = await Promise.all(raw.slice(i, i + 8).map(async p => { try { return await enrich(p) } catch { return { ...p, name: `Pokémon #${p.dex}`, image: '', apiError: true } } })); out.push(...batch) } state.all = out; refreshVariants(); apply(); localStorage.setItem('poketrade-xml', text); const failed = out.filter(x => x.apiError).length; toast(failed ? `Cargados ${out.length}; ${failed} sin datos externos.` : `${out.length} Pokémon cargados.`) } catch (e) { state.all = []; render([]); toast(e.message) } }
+    function refreshVariants() { const current = els.variant.value; const variants = [...new Set(state.all.map(x => x.variant))].sort(); els.variant.innerHTML = '<option value="">Todas las variantes</option>' + variants.map(v => `<option value="${esc(v)}">${esc(labelVariant(v))}</option>`).join(''); els.variant.value = variants.includes(current) ? current : '' }
+    function labelVariant(v) { return v === 'normal' ? 'Forma normal' : v.charAt(0).toUpperCase() + v.slice(1) }
+    function apply() { const q = els.search.value.trim().toLocaleLowerCase('es'); let a = state.all.filter(p => (!q || p.name.toLocaleLowerCase('es').includes(q) || String(p.dex).includes(q)) && (!els.variant.value || p.variant === els.variant.value) && (!els.shiny.value || String(p.shiny) === els.shiny.value)); const sort = els.sort.value; a.sort(sort === 'cp-desc' ? (x, y) => y.cp - x.cp : sort === 'cp-asc' ? (x, y) => x.cp - y.cp : sort === 'name' ? (x, y) => x.name.localeCompare(y.name, 'es') : (x, y) => x.dex - y.dex); state.view = a; render(a) }
+    function render(a) { els.count.textContent = a.length; if (!a.length) { els.grid.innerHTML = '<div class="col-12"><div class="glass rounded-4 empty"><div><div class="display-5 mb-2">⌕</div><strong>No hay resultados</strong><div class="small mt-1">Prueba con otros filtros o carga un XML.</div></div></div></div>'; return } els.grid.innerHTML = a.map(p => `<article class="col-sm-6 col-lg-4 col-xl-3"><div class="pokemon-card"><div class="art">${p.image ? `<img loading="lazy" src="${esc(p.image)}" alt="${esc(p.name)}">` : '<span class="display-2 text-secondary">?</span>'}</div><div class="p-3"><div class="d-flex justify-content-between align-items-start gap-2"><div><div class="dex">#${String(p.dex).padStart(4, '0')}</div><h3 class="h5 poke-name mb-1">${esc(p.name)}</h3></div><div class="text-end"><small class="text-secondary">PC</small><div class="cp">${p.cp.toLocaleString('es-ES')}</div></div></div><div class="d-flex flex-wrap gap-2 mt-3">${p.shiny ? '<span class="badge rounded-pill badge-shiny">✦ Shiny</span>' : ''}${p.variant !== 'normal' ? `<span class="badge rounded-pill badge-soft">${esc(labelVariant(p.variant))}</span>` : '<span class="badge rounded-pill badge-soft">Normal</span>'}</div></div></div></article>`).join('') }
+    $('#chooseBtn').onclick = () => els.file.click(); els.file.onchange = () => els.file.files[0] && els.file.files[0].text().then(load);['dragenter', 'dragover'].forEach(e => els.drop.addEventListener(e, x => { x.preventDefault(); els.drop.classList.add('drag') }));['dragleave', 'drop'].forEach(e => els.drop.addEventListener(e, x => { x.preventDefault(); els.drop.classList.remove('drag') })); els.drop.addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) f.text().then(load) });[els.search, els.variant, els.shiny, els.sort].forEach(e => e.addEventListener(e === els.search ? 'input' : 'change', apply));
+    const sample = `<?xml version="1.0" encoding="UTF-8"?>\n<pokemons>\n  <pokemon><pokedex>25</pokedex><shiny>true</shiny><variant>normal</variant><cp>1498</cp></pokemon>\n  <pokemon pokedex="19" shiny="false" variant="alola" cp="742"/>\n  <pokemon pokedex="144" shiny="true" variant="galar" cp="1731"/>\n  <pokemon pokedex="58" shiny="false" variant="hisui" cp="1280"/>\n</pokemons>`;
+    $('#sampleBtn').onclick = () => load(sample); $('#clearBtn').onclick = () => { localStorage.removeItem('poketrade-xml'); state.all = []; render([]); refreshVariants() };
+    
+    loadDefaultXML();
+
+    async function loadDefaultXML() {
+      try {
+          const response = await fetch('./guia2.xml');
+
+          if (!response.ok) {
+              throw new Error(`No se pudo cargar pokemons.xml (${response.status})`);
+          }
+
+          const xmlText = await response.text();
+          await load(xmlText);
+      } catch (error) {
+          toast(error.message);
+      }
+  }
+
+
+  </script>
+</body>
+
+</html>
