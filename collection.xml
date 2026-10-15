@@ -1,7 +1,6 @@
 <collection>
   <pokemon>
-    <name>bulbasur</name>
-    <shiny>false</shiny>
+    <name>bulbasaur</name>
     <cp>938</cp>
   </pokemon>
 
