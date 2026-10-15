@@ -333,7 +333,7 @@
 
     async function loadDefaultXML() {
       try {
-          const response = await fetch('./guia2.xml');
+          const response = await fetch('./collection.xml');
 
           if (!response.ok) {
               throw new Error(`No se pudo cargar pokemons.xml (${response.status})`);
