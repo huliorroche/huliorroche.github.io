@@ -255,7 +255,7 @@
       <p class="lead mx-auto mt-3">Carga tu XML. La página completa automáticamente nombres e imágenes y crea un
         escaparate moderno, filtrable y fácil de compartir.</p>
     </section> -->
-    <section class="glass rounded-4 p-3 p-lg-4 mb-4">
+    <!-- <section class="glass rounded-4 p-3 p-lg-4 mb-4">
       <div id="dropZone" class="drop-zone text-center mb-3">
         <div class="fw-bold mb-1">Arrastra aquí tu fichero XML</div>
         <div class="small text-secondary mb-3">o selecciónalo desde el dispositivo</div><input id="fileInput"
@@ -281,8 +281,8 @@
             <option value="name">Nombre</option>
           </select></div>
       </div>
-    </section>
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    </section> -->
+    <div class="d-flex justify-content-between align-items-center mb-3" style="margin-top: 50px">
       <h2 class="h5 m-0"><span id="count">0</span> Pokémon disponibles</h2><button id="clearBtn"
         class="btn btn-sm btn-outline-light">Limpiar</button>
     </div>
@@ -297,8 +297,8 @@
       </div>
     </section>
   </main>
-  <footer class="container text-center small pb-4">Datos e imágenes obtenidos de PokéAPI. Sitio no afiliado a Pokémon,
-    Niantic ni Scopely.</footer>
+  <!-- <footer class="container text-center small pb-4">Datos e imágenes obtenidos de PokéAPI. Sitio no afiliado a Pokémon,
+    Niantic ni Scopely.</footer> -->
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="toast" class="toast text-bg-dark border" role="alert">
       <div class="d-flex">
@@ -336,7 +336,7 @@
           const response = await fetch('./collection.xml');
 
           if (!response.ok) {
-              throw new Error(`No se pudo cargar pokemons.xml (${response.status})`);
+              throw new Error(`No se pudo cargar collection.xml (${response.status})`);
           }
 
           const xmlText = await response.text();
