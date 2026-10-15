@@ -1,43 +1,45 @@
 <!doctype html>
 <html lang="es" data-bs-theme="dark">
-
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PokéTrade GO</title>
+  <title>Pokémon de jcshia</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     :root {
-      --ink: black;
-      --muted: #a8b8d8;
-      --glass: rgba(15, 25, 54, .76);
-      --line: rgba(255, 255, 255, .12);
+      --ink: #172033;
+      --muted: #71809f;
+      --glass: rgba(255, 255, 255, .78);
+      --line: rgba(25, 42, 76, .12);
       --cyan: #3ee6d0;
       --violet: #8b5cf6;
       --pink: #ff4d9d;
-      --gold: #ffd166
+      --gold: #ffd166;
     }
 
-    * {
-      box-sizing: border-box
-    }
+    * { box-sizing: border-box; }
 
     body {
       min-height: 100vh;
       color: var(--ink);
       font-family: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
-      background: radial-gradient(circle at 15% 10%, #bcecff 0, transparent 28%), radial-gradient(circle at 88% 16%, #ffe8a3 0, transparent 25%), linear-gradient(135deg, #eef5ff, #f8f5ff 52%, #e8fff8);
-      background-attachment: fixed
+      background:
+        radial-gradient(circle at 15% 10%, #bcecff 0, transparent 28%),
+        radial-gradient(circle at 88% 16%, #ffe8a3 0, transparent 25%),
+        linear-gradient(135deg, #eef5ff, #f8f5ff 52%, #e8fff8);
+      background-attachment: fixed;
     }
 
-    body:before {
+    body::before {
       content: "";
       position: fixed;
       inset: 0;
       pointer-events: none;
-      opacity: .2;
-      background-image: linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .035) 1px, transparent 1px);
-      background-size: 42px 42px
+      opacity: .25;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .5) 1px, transparent 1px);
+      background-size: 42px 42px;
     }
 
     .navbar,
@@ -45,7 +47,7 @@
       background: var(--glass) !important;
       backdrop-filter: blur(18px);
       border: 1px solid var(--line);
-      box-shadow: 0 18px 50px rgba(0, 0, 0, .22)
+      box-shadow: 0 18px 50px rgba(35, 52, 89, .14);
     }
 
     .brand-ball {
@@ -55,10 +57,10 @@
       display: inline-block;
       background: linear-gradient(#ff5263 0 45%, #1b2441 46% 54%, #fff 55%);
       position: relative;
-      box-shadow: 0 0 25px rgba(255, 82, 99, .4)
+      box-shadow: 0 0 25px rgba(255, 82, 99, .4);
     }
 
-    .brand-ball:after {
+    .brand-ball::after {
       content: "";
       position: absolute;
       width: 10px;
@@ -67,333 +69,598 @@
       border-radius: 50%;
       background: white;
       left: 12px;
-      top: 12px
-    }
-
-    .hero {
-      padding: 5rem 0 2.2rem
-    }
-
-    .hero h1 {
-      font-weight: 850;
-      letter-spacing: -.04em;
-      font-size: clamp(2.25rem, 5vw, 4.5rem)
-    }
-
-    .gradient-text {
-      background: linear-gradient(90deg, var(--cyan), #78a8ff, var(--pink));
-      -webkit-background-clip: text;
-      color: transparent
-    }
-
-    .lead {
-      color: var(--muted);
-      max-width: 720px
-    }
-
-    .drop-zone {
-      border: 1.5px dashed rgba(62, 230, 208, .5);
-      padding: 1.2rem;
-      border-radius: 1rem;
-      background: rgba(62, 230, 208, .045);
-      transition: .2s
-    }
-
-    .drop-zone.drag {
-      border-color: var(--gold);
-      transform: translateY(-2px);
-      background: rgba(255, 209, 102, .08)
+      top: 12px;
     }
 
     .form-control,
     .form-select {
-      background-color: rgba(4, 10, 28, .65) !important;
+      background-color: rgba(255, 255, 255, .82) !important;
       border-color: var(--line);
-      /* color: var(--ink) !important */
+      color: var(--ink) !important;
     }
 
-    .form-control::placeholder {
-      color: #789
-    }
+    .form-control::placeholder { color: #8290aa; }
 
     .form-control:focus,
     .form-select:focus {
-      border-color: var(--cyan);
-      box-shadow: 0 0 0 .2rem rgba(62, 230, 208, .12)
+      border-color: #5dc8bf;
+      box-shadow: 0 0 0 .2rem rgba(62, 230, 208, .15);
     }
 
-    .btn-primary {
-      border: 0;
-      background: linear-gradient(90deg, #276ff5, var(--violet));
-      box-shadow: 0 8px 24px rgba(92, 74, 230, .3)
-    }
-
-    .btn-outline-light {
-      border-color: var(--line)
+    .btn-outline-secondary {
+      border-color: rgba(60, 76, 109, .2);
+      color: #526080;
     }
 
     .pokemon-card {
       height: 100%;
       overflow: hidden;
       border-radius: 1.35rem;
-      transition: .22s transform, .22s border-color;
-      background:
-        radial-gradient(circle at 50% 32%,
-          #fffbe3 0 25%,
-          rgba(255, 255, 255, .45) 25%,
-          transparent 60%),
-        linear-gradient(to bottom,
-          #fff0a8 0%,
-          #ffd4ec 60%,
-          #ffffff 65%,
-          #ffffff 100%);
-      border: 1px solid var(--line)
+      transition: .22s transform, .22s box-shadow;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 12px 30px rgba(52, 67, 101, .12);
     }
 
     .pokemon-card:hover {
       transform: translateY(-7px);
-      border-color: rgba(62, 230, 208, .48)
+      box-shadow: 0 20px 44px rgba(52, 67, 101, .2);
     }
 
     .art {
-      height: 220px;
+      --sky-top: #a8d8ff;
+      --sky-bottom: #eaf7ff;
+      --ground-top: #82c36b;
+      --ground-bottom: #4c8d41;
+      height: 245px;
       display: grid;
       place-items: center;
       position: relative;
-      background: radial-gradient(circle, rgba(111, 162, 255, .2), transparent 65%)
+      isolation: isolate;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 76% 20%, rgba(255,255,255,.92) 0 7%, rgba(255,255,255,.30) 8% 13%, transparent 14%),
+        linear-gradient(to bottom, var(--sky-top) 0 64%, var(--sky-bottom) 64% 67%, var(--ground-top) 68%, var(--ground-bottom) 100%);
     }
 
-    .art:before {
+    /* Lejanas formas del escenario, sin imágenes externas. */
+    .art::before {
       content: "";
       position: absolute;
-      width: 150px;
-      height: 150px;
+      z-index: -2;
+      left: -12%;
+      right: -12%;
+      bottom: 22%;
+      height: 42%;
+      opacity: .7;
+      background:
+        radial-gradient(ellipse at 12% 100%, rgba(255,255,255,.42) 0 30%, transparent 31%),
+        radial-gradient(ellipse at 43% 100%, rgba(255,255,255,.32) 0 38%, transparent 39%),
+        radial-gradient(ellipse at 82% 100%, rgba(255,255,255,.40) 0 34%, transparent 35%);
+      filter: blur(1px);
+    }
+
+    .art::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      width: 74%;
+      height: 25px;
+      left: 13%;
+      bottom: 16px;
       border-radius: 50%;
-      border: 20px solid rgba(255, 255, 255, .035)
+      background: rgba(22, 38, 55, .18);
+      filter: blur(8px);
     }
 
     .art img {
       position: absolute;
-      /* width: 86%; */
-      height: 85%;
+      z-index: 2;
+      height: 80%;
       object-fit: contain;
-      filter: drop-shadow(0 18px 16px rgba(0, 0, 0, .38));
-      transition: .25s
+      filter: drop-shadow(0 18px 14px rgba(0, 0, 0, .30));
+      transition: transform .25s;
     }
 
-    .pokemon-card:hover img {
-      transform: scale(1.06)
+    .pokemon-card:hover .art img { transform: scale(1.06); }
+
+    /* Fondos inspirados en los escenarios por tipo del juego. */
+    .type-normal   { --sky-top:#b9dcf1; --sky-bottom:#edf8fb; --ground-top:#9dbb80; --ground-bottom:#66885c; }
+    .type-fire     { --sky-top:#ff9b62; --sky-bottom:#ffd6a4; --ground-top:#72534a; --ground-bottom:#342e35; }
+    .type-water    { --sky-top:#71ccef; --sky-bottom:#d9f6ff; --ground-top:#3caec5; --ground-bottom:#176b91; }
+    .type-electric { --sky-top:#8ebeea; --sky-bottom:#f7e88b; --ground-top:#9e9852; --ground-bottom:#666431; }
+    .type-grass    { --sky-top:#9fe0b4; --sky-bottom:#e5f8c8; --ground-top:#5ebf61; --ground-bottom:#286c43; }
+    .type-ice      { --sky-top:#a8e7f7; --sky-bottom:#f4fdff; --ground-top:#c5edf6; --ground-bottom:#75b9cf; }
+    .type-fighting { --sky-top:#e7a16f; --sky-bottom:#f4cf9c; --ground-top:#b1714c; --ground-bottom:#623f32; }
+    .type-poison   { --sky-top:#b69add; --sky-bottom:#d8c2ed; --ground-top:#84679a; --ground-bottom:#473651; }
+    .type-ground   { --sky-top:#e2b86e; --sky-bottom:#f6dfae; --ground-top:#b9894c; --ground-bottom:#71502e; }
+    .type-flying   { --sky-top:#77c9f4; --sky-bottom:#effbff; --ground-top:#a8c88d; --ground-bottom:#6c9662; }
+    .type-psychic  { --sky-top:#df8fca; --sky-bottom:#f4c9e6; --ground-top:#8b6aa0; --ground-bottom:#4f446f; }
+    .type-bug      { --sky-top:#b9d685; --sky-bottom:#e9f2b8; --ground-top:#789841; --ground-bottom:#3e5e28; }
+    .type-rock     { --sky-top:#d2bc91; --sky-bottom:#eee2c5; --ground-top:#9c805f; --ground-bottom:#57483b; }
+    .type-ghost    { --sky-top:#514f85; --sky-bottom:#8a78a8; --ground-top:#514760; --ground-bottom:#242439; }
+    .type-dragon   { --sky-top:#6977bc; --sky-bottom:#c09bd2; --ground-top:#725b75; --ground-bottom:#3a3349; }
+    .type-dark     { --sky-top:#45495c; --sky-bottom:#807986; --ground-top:#4b4749; --ground-bottom:#222227; }
+    .type-steel    { --sky-top:#aebdca; --sky-bottom:#e4edf1; --ground-top:#8797a0; --ground-bottom:#4d5a61; }
+    .type-fairy    { --sky-top:#f3a9d0; --sky-bottom:#ffe0ef; --ground-top:#c58fbc; --ground-bottom:#815f91; }
+
+    .type-water::before,
+    .type-ice::before {
+      background:
+        radial-gradient(ellipse at 18% 100%, rgba(255,255,255,.64) 0 25%, transparent 26%),
+        radial-gradient(ellipse at 60% 100%, rgba(255,255,255,.40) 0 31%, transparent 32%),
+        repeating-radial-gradient(ellipse at 50% 100%, transparent 0 18px, rgba(255,255,255,.25) 19px 21px);
     }
 
-    .dex {
-      color: #7791bd;
-      font-weight: 800;
-      letter-spacing: .08em
+    .type-fire::before,
+    .type-ground::before,
+    .type-rock::before {
+      background:
+        linear-gradient(145deg, transparent 0 28%, rgba(62,40,31,.36) 29% 57%, transparent 58%) 0 100%/48% 100% no-repeat,
+        linear-gradient(215deg, transparent 0 28%, rgba(62,40,31,.28) 29% 57%, transparent 58%) 100% 100%/54% 92% no-repeat;
     }
 
-    .poke-name {
-      text-transform: capitalize;
-      font-weight: 800
+    .type-ghost::before,
+    .type-dark::before,
+    .type-psychic::before {
+      background:
+        radial-gradient(circle at 20% 45%, rgba(255,255,255,.16) 0 4%, transparent 5%),
+        radial-gradient(circle at 72% 28%, rgba(255,255,255,.2) 0 3%, transparent 4%),
+        radial-gradient(ellipse at 50% 100%, rgba(20,17,35,.5) 0 48%, transparent 49%);
     }
 
-    .cp {
-      font-size: 1.55rem;
-      font-weight: 850
-    }
-
-    .badge-soft {
-      background: #edf1fb;
-      border: 1px solid var(--line);
-      color: #415078
-    }
-
-    .badge-shiny {
-      background: linear-gradient(90deg, #f0b429, #ffdf7d);
-      color: #3a2700
-    }
-
-    .empty {
-      min-height: 250px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      color: var(--muted)
-    }
-
-    .spinner-border {
-      color: var(--cyan)
-    }
-
-    footer {
-      color: #7285aa
-    }
-
-    code {
-      color: #73e5d4
-    }
-
-    .toast-container {
-      z-index: 1080
-    }
+    .card-info { background: rgba(255, 255, 255, .97); }
+    .dex { color: #7791bd; font-weight: 800; letter-spacing: .08em; }
+    .poke-name { text-transform: capitalize; font-weight: 800; }
+    .cp { font-size: 1.55rem; font-weight: 850; }
+    .badge-soft { background: #edf1fb; border: 1px solid var(--line); color: #415078; }
+    .badge-shiny { background: linear-gradient(90deg, #f0b429, #ffdf7d); color: #3a2700; }
+    .badge-type { color: white; border: 1px solid rgba(255,255,255,.3); text-shadow: 0 1px 2px rgba(0,0,0,.25); }
+    .empty { min-height: 250px; display: grid; place-items: center; text-align: center; color: var(--muted); }
+    .spinner-border { color: #35b9ad; }
+    .toast-container { z-index: 1080; }
   </style>
 </head>
-
 <body>
   <nav class="navbar navbar-expand sticky-top">
-    <div class="container py-2"><a class="navbar-brand text-white fw-bold d-flex align-items-center gap-2"
-        href="#"><span class="brand-ball"></span>Pokemons de jcshia</a><span
-        class="small text-secondary d-none d-sm-inline"></span></div>
+    <div class="container py-2">
+      <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#">
+        <span class="brand-ball"></span>Pokémon de jcshia
+      </a>
+    </div>
   </nav>
+
   <main class="container pb-5">
-    <!-- <section class="hero text-center"><span class="badge rounded-pill badge-soft mb-3">Colección personal · Pokémon
-        GO</span>
-      <h1>Encuentra tu próximo<br><span class="gradient-text">intercambio perfecto</span></h1>
-      <p class="lead mx-auto mt-3">Carga tu XML. La página completa automáticamente nombres e imágenes y crea un
-        escaparate moderno, filtrable y fácil de compartir.</p>
-    </section> -->
     <section class="glass rounded-4 p-3 p-lg-4 mb-4" style="margin-top: 50px">
-      <!-- <div id="dropZone" class="drop-zone text-center mb-3">
-        <div class="fw-bold mb-1">Arrastra aquí tu fichero XML</div>
-        <div class="small text-secondary mb-3">o selecciónalo desde el dispositivo</div><input id="fileInput"
-          type="file" accept=".xml,text/xml,application/xml" hidden><button id="chooseBtn"
-          class="btn btn-primary px-4">Seleccionar XML</button><button id="sampleBtn"
-          class="btn btn-outline-light ms-2">Ver ejemplo</button>
-      </div> -->
       <div class="row g-2">
-        <div class="col-lg-5"><input id="search" class="form-control" placeholder="Buscar por nombre o número…"
-            aria-label="Buscar"></div>
-        <div class="col-6 col-lg-3"><select id="variantFilter" class="form-select">
+        <div class="col-lg-5">
+          <input id="search" class="form-control" placeholder="Buscar por nombre o número…" aria-label="Buscar">
+        </div>
+        <div class="col-6 col-lg-3">
+          <select id="variantFilter" class="form-select">
             <option value="">Todas las variantes</option>
-          </select></div>
-        <div class="col-6 col-lg-2"><select id="shinyFilter" class="form-select">
+          </select>
+        </div>
+        <div class="col-6 col-lg-2">
+          <select id="shinyFilter" class="form-select">
             <option value="">Normal y shiny</option>
             <option value="true">Solo shiny</option>
             <option value="false">No shiny</option>
-          </select></div>
-        <div class="col-lg-2"><select id="sort" class="form-select">
+          </select>
+        </div>
+        <div class="col-lg-2">
+          <select id="sort" class="form-select">
             <option value="dex">N.º Pokédex</option>
             <option value="cp-desc">PC mayor</option>
             <option value="cp-asc">PC menor</option>
             <option value="name">Nombre</option>
-          </select></div>
+          </select>
+        </div>
       </div>
     </section>
-    <div class="d-flex justify-content-between align-items-center mb-3" >
-      <h2 class="h5 m-0"><span id="count">0</span> Pokémon disponibles</h2><button id="clearBtn"
-        class="btn btn-sm btn-outline-light">Limpiar</button>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h2 class="h5 m-0"><span id="count">0</span> Pokémon disponibles</h2>
+      <button id="clearBtn" class="btn btn-sm btn-outline-secondary">Limpiar filtros</button>
     </div>
+
     <section id="grid" class="row g-4">
       <div class="col-12">
         <div class="glass rounded-4 empty">
           <div>
-            <div class="display-5 mb-2">◓</div><strong>Aún no hay Pokémon</strong>
-            <div class="small mt-1">Carga un XML o abre el ejemplo.</div>
+            <div class="display-5 mb-2">◓</div>
+            <strong>Cargando Pokémon…</strong>
           </div>
         </div>
       </div>
     </section>
   </main>
-  <!-- <footer class="container text-center small pb-4">Datos e imágenes obtenidos de PokéAPI. Sitio no afiliado a Pokémon,
-    Niantic ni Scopely.</footer> -->
+
   <div class="toast-container position-fixed bottom-0 end-0 p-3">
     <div id="toast" class="toast text-bg-dark border" role="alert">
       <div class="d-flex">
-        <div id="toastText" class="toast-body"></div><button class="btn-close btn-close-white m-auto me-2"
-          data-bs-dismiss="toast"></button>
+        <div id="toastText" class="toast-body"></div>
+        <button class="btn-close btn-close-white m-auto me-2" data-bs-dismiss="toast"></button>
       </div>
     </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const $ = s => document.querySelector(s), state = { all: [], view: [] };
-    const els = { grid: $('#grid'), count: $('#count'), search: $('#search'), variant: $('#variantFilter'), shiny: $('#shinyFilter'), sort: $('#sort') };
-    const toast = m => { $('#toastText').textContent = m; bootstrap.Toast.getOrCreateInstance($('#toast')).show(); };
-    const esc = s => String(s ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c]));
-    const norm = s => String(s ?? '').trim();
-    const bool = v => ['true', '1', 'yes', 'si', 'sí'].includes(norm(v).toLowerCase());
-    function val(node, names) { for (const n of names) { const a = node.getAttribute(n); if (a !== null) return a; const e = [...node.children].find(x => x.tagName.toLowerCase() === n.toLowerCase()); if (e) return e.textContent } return '' }
-    function parseXML(text) { const doc = new DOMParser().parseFromString(text, 'application/xml'); if (doc.querySelector('parsererror')) throw Error('El XML no es válido.'); let nodes = [...doc.querySelectorAll('pokemon')]; if (!nodes.length) throw Error('No se encontraron elementos <pokemon>.'); return nodes.map((n, i) => { const dex = Number(val(n, ['dex', 'pokedex', 'pokedexNumber', 'number', 'id'])); if (!Number.isInteger(dex) || dex < 1) throw Error(`Pokémon ${i + 1}: número de Pokédex no válido.`); return { uid: i, dex, cp: Number(val(n, ['cp', 'pc'])) || 0, shiny: bool(val(n, ['shiny'])), variant: norm(val(n, ['variant', 'variante', 'form', 'region'])).toLowerCase() || 'normal' } }) }
-    const variantAliases = { alolan: 'alola', galarian: 'galar', hisuian: 'hisui', paldean: 'paldea', 'forma alola': 'alola', 'forma galar': 'galar', 'forma hisui': 'hisui', 'forma paldea': 'paldea' };
-    async function enrich(p) { const species = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${p.dex}`).then(ok); const es = species.names.find(n => n.language.name === 'es')?.name || species.name; const v = variantAliases[p.variant] || p.variant; let data; if (v === 'normal') { data = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.dex}`).then(ok) } else { const candidates = [`${species.name}-${v}`, `${species.name}-${v.replace(/\s+/g, '-')}`]; for (const c of [...new Set(candidates)]) { try { data = await fetch(`https://pokeapi.co/api/v2/pokemon/${c}`).then(ok); break } catch { } } if (!data) data = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.dex}`).then(ok) }
-    
-    const home = data.sprites?.other?.home;
-    const artwork = data.sprites?.other?.['official-artwork'];
+    const $ = selector => document.querySelector(selector);
 
-    image =
-        (p.shiny ? home?.front_shiny : null)
-        || home?.front_default
-        || (p.shiny ? artwork?.front_shiny : null)
-        || artwork?.front_default
-        || data.sprites?.front_default;
-    
-    return { ...p, name: es, image: image, variant: v }
-  
-  }
+    const state = {
+      all: [],
+      view: []
+    };
 
+    const els = {
+      grid: $('#grid'),
+      count: $('#count'),
+      search: $('#search'),
+      variant: $('#variantFilter'),
+      shiny: $('#shinyFilter'),
+      sort: $('#sort'),
+      clear: $('#clearBtn')
+    };
 
-    function ok(r) { if (!r.ok) throw Error(`API ${r.status}`); return r.json() }
-    async function load(text) { try { els.grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border"></div><div class="mt-3 text-secondary">Consultando nombres e imágenes…</div></div>'; const raw = parseXML(text), out = []; for (let i = 0; i < raw.length; i += 8) { const batch = await Promise.all(raw.slice(i, i + 8).map(async p => { try { return await enrich(p) } catch { return { ...p, name: `Pokémon #${p.dex}`, image: '', apiError: true } } })); out.push(...batch) } state.all = out; refreshVariants(); apply(); localStorage.setItem('poketrade-xml', text); const failed = out.filter(x => x.apiError).length; toast(failed ? `Cargados ${out.length}; ${failed} sin datos externos.` : `${out.length} Pokémon cargados.`) } catch (e) { state.all = []; render([]); toast(e.message) } }
-    function refreshVariants() { const current = els.variant.value; const variants = [...new Set(state.all.map(x => x.variant))].sort(); els.variant.innerHTML = '<option value="">Todas las variantes</option>' + variants.map(v => `<option value="${esc(v)}">${esc(labelVariant(v))}</option>`).join(''); els.variant.value = variants.includes(current) ? current : '' }
-    function labelVariant(v) { return v === 'normal' ? 'Forma normal' : v.charAt(0).toUpperCase() + v.slice(1) }
-    function apply() { const q = els.search.value.trim().toLocaleLowerCase('es'); let a = state.all.filter(p => (!q || p.name.toLocaleLowerCase('es').includes(q) || String(p.dex).includes(q)) && (!els.variant.value || p.variant === els.variant.value) && (!els.shiny.value || String(p.shiny) === els.shiny.value)); const sort = els.sort.value; a.sort(sort === 'cp-desc' ? (x, y) => y.cp - x.cp : sort === 'cp-asc' ? (x, y) => x.cp - y.cp : sort === 'name' ? (x, y) => x.name.localeCompare(y.name, 'es') : (x, y) => x.dex - y.dex); state.view = a; render(a) }
-    function render(a) { els.count.textContent = a.length; if (!a.length) { els.grid.innerHTML = '<div class="col-12"><div class="glass rounded-4 empty"><div><div class="display-5 mb-2">⌕</div><strong>No hay resultados</strong><div class="small mt-1">Prueba con otros filtros o carga un XML.</div></div></div></div>'; return } els.grid.innerHTML = a.map(p => `<article class="col-sm-6 col-lg-4 col-xl-3"><div class="pokemon-card"><div class="art">${p.image ? `<img loading="lazy" src="${esc(p.image)}" alt="${esc(p.name)}">` : '<span class="display-2 text-secondary">?</span>'}</div><div class="p-3"><div class="d-flex justify-content-between align-items-start gap-2"><div><div class="dex">#${String(p.dex).padStart(4, '0')}</div><h3 class="h5 poke-name mb-1">${esc(p.name)}</h3></div><div class="text-end"><small class="text-secondary">PC</small><div class="cp">${p.cp.toLocaleString('es-ES')}</div></div></div><div class="d-flex flex-wrap gap-2 mt-3">${p.shiny ? '<span class="badge rounded-pill badge-shiny">✦ Shiny</span>' : ''}${p.variant !== 'normal' ? `<span class="badge rounded-pill badge-soft">${esc(labelVariant(p.variant))}</span>` : '<span class="badge rounded-pill badge-soft">Normal</span>'}</div></div></div></article>`).join('') }
-    // Cargar automáticamente el XML al iniciar la página
-    async function loadDefaultXML() {
+    const TYPE_NAMES = {
+      normal: 'Normal', fire: 'Fuego', water: 'Agua', electric: 'Eléctrico',
+      grass: 'Planta', ice: 'Hielo', fighting: 'Lucha', poison: 'Veneno',
+      ground: 'Tierra', flying: 'Volador', psychic: 'Psíquico', bug: 'Bicho',
+      rock: 'Roca', ghost: 'Fantasma', dragon: 'Dragón', dark: 'Siniestro',
+      steel: 'Acero', fairy: 'Hada'
+    };
+
+    const TYPE_COLORS = {
+      normal: '#8f9aa3', fire: '#ef653b', water: '#3393dd', electric: '#d7ad18',
+      grass: '#55a94c', ice: '#56bfc8', fighting: '#c34b45', poison: '#9c5bb4',
+      ground: '#be8143', flying: '#7d9edb', psychic: '#e45a87', bug: '#91a91c',
+      rock: '#a58e57', ghost: '#675b91', dragon: '#5d62ba', dark: '#514b4a',
+      steel: '#718b98', fairy: '#d878aa'
+    };
+
+    const variantAliases = {
+      alolan: 'alola',
+      galarian: 'galar',
+      hisuian: 'hisui',
+      paldean: 'paldea',
+      'forma alola': 'alola',
+      'forma galar': 'galar',
+      'forma hisui': 'hisui',
+      'forma paldea': 'paldea'
+    };
+
+    function toast(message) {
+      $('#toastText').textContent = message;
+      bootstrap.Toast.getOrCreateInstance($('#toast')).show();
+    }
+
+    function esc(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      })[char]);
+    }
+
+    function norm(value) {
+      return String(value ?? '').trim();
+    }
+
+    function bool(value) {
+      return ['true', '1', 'yes', 'si', 'sí'].includes(norm(value).toLowerCase());
+    }
+
+    function val(node, names) {
+      for (const name of names) {
+        const attribute = node.getAttribute(name);
+        if (attribute !== null) return attribute;
+
+        const element = [...node.children].find(
+          child => child.tagName.toLowerCase() === name.toLowerCase()
+        );
+        if (element) return element.textContent;
+      }
+      return '';
+    }
+
+    function parseXML(text) {
+      const doc = new DOMParser().parseFromString(text, 'application/xml');
+
+      if (doc.querySelector('parsererror')) {
+        throw new Error('El XML no es válido.');
+      }
+
+      const nodes = [...doc.querySelectorAll('pokemon')];
+      if (!nodes.length) {
+        throw new Error('No se encontraron elementos <pokemon>.');
+      }
+
+      return nodes.map((node, index) => {
+        const identifier =
+    val(node, [
+        'dex',
+        'pokedex',
+        'pokedexNumber',
+        'number',
+        'id',
+        'name'
+    ]);
+
+if (!identifier) {
+    throw new Error(
+        `Pokémon ${index + 1}: falta pokedex o name`
+    );
+}
+
+return {
+    uid: index,
+    identifier: identifier.toLowerCase(),
+    cp: Number(val(node, ['cp', 'pc'])) || 0,
+    shiny: bool(val(node, ['shiny'])),
+    variant:
+        norm(
+            val(node, [
+                'variant',
+                'variante',
+                'form',
+                'region'
+            ])
+        ).toLowerCase() || 'normal'
+};
+      });
+    }
+
+    async function ok(response) {
+      if (!response.ok) throw new Error(`API ${response.status}`);
+      return response.json();
+    }
+
+    async function getPokemonData(speciesName, dex, variant) {
+      if (variant === 'normal') {
+        return fetch(`https://pokeapi.co/api/v2/pokemon/${dex}`).then(ok);
+      }
+
+      const candidates = [
+        `${speciesName}-${variant}`,
+        `${speciesName}-${variant.replace(/\s+/g, '-')}`
+      ];
+
+      for (const candidate of [...new Set(candidates)]) {
+        try {
+          return await fetch(`https://pokeapi.co/api/v2/pokemon/${candidate}`).then(ok);
+        } catch (error) {
+          // Se prueba el siguiente nombre posible de la forma regional.
+        }
+      }
+
+      return fetch(`https://pokeapi.co/api/v2/pokemon/${dex}`).then(ok);
+    }
+
+    async function enrich(pokemon) {
+      const species = await fetch(
+          `https://pokeapi.co/api/v2/pokemon-species/${pokemon.identifier}`
+      ).then(ok);
+
+      const name = species.names.find(item => item.language.name === 'es')?.name || species.name;
+      const dex = species.id;
+      const variant = variantAliases[pokemon.variant] || pokemon.variant;
+      const data = await getPokemonData(species.name, pokemon.dex, variant);
+      const home = data.sprites?.other?.home;
+      const artwork = data.sprites?.other?.['official-artwork'];
+
+      const image =
+        (pokemon.shiny ? home?.front_shiny : null) ||
+        home?.front_default ||
+        (pokemon.shiny ? artwork?.front_shiny : null) ||
+        artwork?.front_default ||
+        data.sprites?.front_default ||
+        '';
+
+      const types = (data.types || [])
+        .sort((a, b) => a.slot - b.slot)
+        .map(item => item.type.name);
+
+      return {
+        ...pokemon,
+        dex,
+        name,
+        image,
+        variant,
+        types,
+        primaryType: types[0] || 'normal'
+      };
+    }
+
+    async function load(text) {
       try {
-        const response = await fetch('./pokemon.xml');
+        els.grid.innerHTML = `
+          <div class="col-12 text-center py-5">
+            <div class="spinner-border"></div>
+            <div class="mt-3 text-secondary">Consultando nombres, tipos e imágenes…</div>
+          </div>`;
 
-        if (!response.ok) {
-          throw new Error(
-            `No se pudo cargar pokemon.xml (${response.status})`
+        const raw = parseXML(text);
+        const out = [];
+
+        for (let index = 0; index < raw.length; index += 8) {
+          const batch = await Promise.all(
+            raw.slice(index, index + 8).map(async pokemon => {
+              try {
+                return await enrich(pokemon);
+              } catch (error) {
+                return {
+                  ...pokemon,
+                  name: `Pokémon #${pokemon.dex}`,
+                  image: '',
+                  types: ['normal'],
+                  primaryType: 'normal',
+                  apiError: true
+                };
+              }
+            })
           );
+          out.push(...batch);
         }
 
-        const xmlText = await response.text();
-        await load(xmlText);
+        state.all = out;
+        refreshVariants();
+        apply();
 
+        const failed = out.filter(item => item.apiError).length;
+        toast(
+          failed
+            ? `Cargados ${out.length}; ${failed} sin datos externos.`
+            : `${out.length} Pokémon cargados.`
+        );
       } catch (error) {
-        console.error(error);
+        state.all = [];
+        render([]);
         toast(error.message);
       }
     }
 
-    // Eventos de filtros
-    [
-      els.search,
-      els.variant,
-      els.shiny,
-      els.sort
-    ].forEach(element => {
+    function refreshVariants() {
+      const current = els.variant.value;
+      const variants = [...new Set(state.all.map(item => item.variant))].sort();
+
+      els.variant.innerHTML =
+        '<option value="">Todas las variantes</option>' +
+        variants.map(variant =>
+          `<option value="${esc(variant)}">${esc(labelVariant(variant))}</option>`
+        ).join('');
+
+      els.variant.value = variants.includes(current) ? current : '';
+    }
+
+    function labelVariant(variant) {
+      return variant === 'normal'
+        ? 'Forma normal'
+        : variant.charAt(0).toUpperCase() + variant.slice(1);
+    }
+
+    function apply() {
+      const query = els.search.value.trim().toLocaleLowerCase('es');
+
+      const filtered = state.all.filter(pokemon =>
+        (!query ||
+          pokemon.name.toLocaleLowerCase('es').includes(query) ||
+          String(pokemon.dex).includes(query)) &&
+        (!els.variant.value || pokemon.variant === els.variant.value) &&
+        (!els.shiny.value || String(pokemon.shiny) === els.shiny.value)
+      );
+
+      const sort = els.sort.value;
+      filtered.sort(
+        sort === 'cp-desc' ? (a, b) => b.cp - a.cp :
+        sort === 'cp-asc' ? (a, b) => a.cp - b.cp :
+        sort === 'name' ? (a, b) => a.name.localeCompare(b.name, 'es') :
+        (a, b) => a.dex - b.dex
+      );
+
+      state.view = filtered;
+      render(filtered);
+    }
+
+    function renderTypeBadges(types) {
+      return types.map(type => `
+        <span class="badge rounded-pill badge-type"
+              style="background:${TYPE_COLORS[type] || TYPE_COLORS.normal}">
+          ${esc(TYPE_NAMES[type] || type)}
+        </span>`
+      ).join('');
+    }
+
+    function render(pokemonList) {
+      els.count.textContent = pokemonList.length;
+
+      if (!pokemonList.length) {
+        els.grid.innerHTML = `
+          <div class="col-12">
+            <div class="glass rounded-4 empty">
+              <div>
+                <div class="display-5 mb-2">⌕</div>
+                <strong>No hay resultados</strong>
+                <div class="small mt-1">Prueba con otros filtros.</div>
+              </div>
+            </div>
+          </div>`;
+        return;
+      }
+
+      els.grid.innerHTML = pokemonList.map(pokemon => `
+        <article class="col-sm-6 col-lg-4 col-xl-3">
+          <div class="pokemon-card">
+            <div class="art type-${esc(pokemon.primaryType)}">
+              ${pokemon.image
+                ? `<img loading="lazy" src="${esc(pokemon.image)}" alt="${esc(pokemon.name)}">`
+                : '<span class="display-2 text-secondary">?</span>'}
+            </div>
+            <div class="card-info p-3">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                  <div class="dex">#${String(pokemon.dex).padStart(4, '0')}</div>
+                  <h3 class="h5 poke-name mb-1">${esc(pokemon.name)}</h3>
+                </div>
+                <div class="text-end">
+                  <small class="text-secondary">PC</small>
+                  <div class="cp">${pokemon.cp.toLocaleString('es-ES')}</div>
+                </div>
+              </div>
+              <div class="d-flex flex-wrap gap-2 mt-3">
+                ${pokemon.shiny
+                  ? '<span class="badge rounded-pill badge-shiny">✦ Shiny</span>'
+                  : ''}
+                ${pokemon.variant !== 'normal'
+                  ? `<span class="badge rounded-pill badge-soft">${esc(labelVariant(pokemon.variant))}</span>`
+                  : '<span class="badge rounded-pill badge-soft">Normal</span>'}
+                ${renderTypeBadges(pokemon.types)}
+              </div>
+            </div>
+          </div>
+        </article>`
+      ).join('');
+    }
+
+    async function loadDefaultXML() {
+      try {
+        const response = await fetch('https://huliorroche.github.io/collection.xml');
+
+        if (!response.ok) {
+          throw new Error(`No se pudo cargar collection.xml (${response.status})`);
+        }
+
+        await load(await response.text());
+      } catch (error) {
+        console.error(error);
+        toast(error.message);
+        els.grid.innerHTML = `
+          <div class="col-12">
+            <div class="glass rounded-4 empty">
+              <div>
+                <strong>No se pudo cargar la colección</strong>
+                <div class="small mt-1">${esc(error.message)}</div>
+              </div>
+            </div>
+          </div>`;
+      }
+    }
+
+    [els.search, els.variant, els.shiny, els.sort].forEach(element => {
       element.addEventListener(
         element === els.search ? 'input' : 'change',
         apply
       );
     });
 
-    // Cargar XML automáticamente
-    loadDefaultXML();
-    const sample = `<?xml version="1.0" encoding="UTF-8"?>\n<pokemons>\n  <pokemon><pokedex>25</pokedex><shiny>true</shiny><variant>normal</variant><cp>1498</cp></pokemon>\n  <pokemon pokedex="19" shiny="false" variant="alola" cp="742"/>\n  <pokemon pokedex="144" shiny="true" variant="galar" cp="1731"/>\n  <pokemon pokedex="58" shiny="false" variant="hisui" cp="1280"/>\n</pokemons>`;
-    $('#sampleBtn').onclick = () => load(sample); $('#clearBtn').onclick = () => { localStorage.removeItem('poketrade-xml'); state.all = []; render([]); refreshVariants() };
+    els.clear.addEventListener('click', () => {
+      els.search.value = '';
+      els.variant.value = '';
+      els.shiny.value = '';
+      els.sort.value = 'dex';
+      apply();
+    });
 
     loadDefaultXML();
-
-    async function loadDefaultXML() {
-      try {
-        const response = await fetch('./collection.xml');
-
-        if (!response.ok) {
-          throw new Error(`No se pudo cargar collection.xml (${response.status})`);
-        }
-
-        const xmlText = await response.text();
-        await load(xmlText);
-      } catch (error) {
-        toast(error.message);
-      }
-    }
-
-
   </script>
 </body>
-
 </html>

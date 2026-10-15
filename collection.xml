@@ -1,24 +1,233 @@
 <collection>
-
   <pokemon>
-    <pokedex>19</pokedex>
-    <variant>alola</variant>
-    <shiny>true</shiny>
-    <cp>500</cp>
-  </pokemon>
-
-  <pokemon>
-    <pokedex>52</pokedex>
-    <variant>galar</variant>
+    <name>bulbasur</name>
     <shiny>false</shiny>
-    <cp>1200</cp>
+    <cp>938</cp>
   </pokemon>
 
   <pokemon>
-    <pokedex>58</pokedex>
-    <variant>hisui</variant>
-    <shiny>true</shiny>
-    <cp>2300</cp>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
+  </pokemon>
+
+  <pokemon>
+    <name></name>
+    <variant></variant>
+    <shiny></shiny>
+    <cp></cp>
   </pokemon>
 
 </collection>
