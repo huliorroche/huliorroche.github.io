@@ -5,7 +5,7 @@
   </pokemon>
 
   <pokemon>
-    <name>venasur</name>
+    <name>venasaur</name>
     <cp>1887</cp>
   </pokemon>
 
@@ -91,25 +91,25 @@
   </pokemon>
 
   <pokemon>
-    <name>grimmer</name>
+    <name>grimer</name>
     <cp>760</cp>
     <variant>alola</variant>
   </pokemon>
 
   <pokemon>
-    <name>grimmer</name>
+    <name>grimer</name>
     <cp>749</cp>
     <variant>alola</variant>
   </pokemon>
 
   <pokemon>
-    <name>grimmer</name>
+    <name>grimer</name>
     <cp>740</cp>
     <variant>alola</variant>
   </pokemon>
 
   <pokemon>
-    <name>grimmer</name>
+    <name>grimer</name>
     <cp>733</cp>
     <variant>alola</variant>
   </pokemon>
@@ -121,7 +121,7 @@
   </pokemon>
 
   <pokemon>
-    <name>kringler</name>
+    <name>kingler</name>
     <cp>2181</cp>
   </pokemon>
 
