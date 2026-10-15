@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="es" data-bs-theme="dark">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -17,7 +18,9 @@
       --gold: #ffd166;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       min-height: 100vh;
@@ -79,7 +82,9 @@
       color: var(--ink) !important;
     }
 
-    .form-control::placeholder { color: #8290aa; }
+    .form-control::placeholder {
+      color: #8290aa;
+    }
 
     .form-control:focus,
     .form-select:focus {
@@ -119,7 +124,7 @@
       isolation: isolate;
       overflow: hidden;
       background:
-        radial-gradient(circle at 76% 20%, rgba(255,255,255,.92) 0 7%, rgba(255,255,255,.30) 8% 13%, transparent 14%),
+        radial-gradient(circle at 76% 20%, rgba(255, 255, 255, .92) 0 7%, rgba(255, 255, 255, .30) 8% 13%, transparent 14%),
         linear-gradient(to bottom, var(--sky-top) 0 64%, var(--sky-bottom) 64% 67%, var(--ground-top) 68%, var(--ground-bottom) 100%);
     }
 
@@ -133,9 +138,9 @@
       height: 42%;
       opacity: .7;
       background:
-        radial-gradient(ellipse at 12% 100%, rgba(255,255,255,.42) 0 30%, transparent 31%),
-        radial-gradient(ellipse at 43% 100%, rgba(255,255,255,.32) 0 38%, transparent 39%),
-        radial-gradient(ellipse at 82% 100%, rgba(255,255,255,.40) 0 34%, transparent 35%);
+        radial-gradient(ellipse at 12% 100%, rgba(255, 255, 255, .42) 0 30%, transparent 31%),
+        radial-gradient(ellipse at 43% 100%, rgba(255, 255, 255, .32) 0 38%, transparent 39%),
+        radial-gradient(ellipse at 82% 100%, rgba(255, 255, 255, .40) 0 34%, transparent 35%);
       filter: blur(1px);
     }
 
@@ -162,79 +167,226 @@
       transition: transform .25s;
     }
 
-    .pokemon-card:hover .art img { transform: scale(1.06); }
+    .pokemon-card:hover .art img {
+      transform: scale(1.06);
+    }
 
-    .type-normal   { --sky-top:#b9dcf1; --sky-bottom:#edf8fb; --ground-top:#9dbb80; --ground-bottom:#66885c; }
-    .type-fire     { --sky-top:#ff9b62; --sky-bottom:#ffd6a4; --ground-top:#72534a; --ground-bottom:#342e35; }
-    .type-water    { --sky-top:#71ccef; --sky-bottom:#d9f6ff; --ground-top:#3caec5; --ground-bottom:#176b91; }
-    .type-electric { --sky-top:#8ebeea; --sky-bottom:#f7e88b; --ground-top:#9e9852; --ground-bottom:#666431; }
-    .type-grass    { --sky-top:#9fe0b4; --sky-bottom:#e5f8c8; --ground-top:#5ebf61; --ground-bottom:#286c43; }
-    .type-ice      { --sky-top:#a8e7f7; --sky-bottom:#f4fdff; --ground-top:#c5edf6; --ground-bottom:#75b9cf; }
-    .type-fighting { --sky-top:#e7a16f; --sky-bottom:#f4cf9c; --ground-top:#b1714c; --ground-bottom:#623f32; }
-    .type-poison   { --sky-top:#b69add; --sky-bottom:#d8c2ed; --ground-top:#84679a; --ground-bottom:#473651; }
-    .type-ground   { --sky-top:#e2b86e; --sky-bottom:#f6dfae; --ground-top:#b9894c; --ground-bottom:#71502e; }
-    .type-flying   { --sky-top:#77c9f4; --sky-bottom:#effbff; --ground-top:#a8c88d; --ground-bottom:#6c9662; }
-    .type-psychic  { --sky-top:#df8fca; --sky-bottom:#f4c9e6; --ground-top:#8b6aa0; --ground-bottom:#4f446f; }
-    .type-bug      { --sky-top:#b9d685; --sky-bottom:#e9f2b8; --ground-top:#789841; --ground-bottom:#3e5e28; }
-    .type-rock     { --sky-top:#d2bc91; --sky-bottom:#eee2c5; --ground-top:#9c805f; --ground-bottom:#57483b; }
-    .type-ghost    { --sky-top:#514f85; --sky-bottom:#8a78a8; --ground-top:#514760; --ground-bottom:#242439; }
-    .type-dragon   { --sky-top:#6977bc; --sky-bottom:#c09bd2; --ground-top:#725b75; --ground-bottom:#3a3349; }
-    .type-dark     { --sky-top:#45495c; --sky-bottom:#807986; --ground-top:#4b4749; --ground-bottom:#222227; }
-    .type-steel    { --sky-top:#aebdca; --sky-bottom:#e4edf1; --ground-top:#8797a0; --ground-bottom:#4d5a61; }
-    .type-fairy    { --sky-top:#f3a9d0; --sky-bottom:#ffe0ef; --ground-top:#c58fbc; --ground-bottom:#815f91; }
+    .type-normal {
+      --sky-top: #b9dcf1;
+      --sky-bottom: #edf8fb;
+      --ground-top: #9dbb80;
+      --ground-bottom: #66885c;
+    }
+
+    .type-fire {
+      --sky-top: #ff9b62;
+      --sky-bottom: #ffd6a4;
+      --ground-top: #72534a;
+      --ground-bottom: #342e35;
+    }
+
+    .type-water {
+      --sky-top: #71ccef;
+      --sky-bottom: #d9f6ff;
+      --ground-top: #3caec5;
+      --ground-bottom: #176b91;
+    }
+
+    .type-electric {
+      --sky-top: #8ebeea;
+      --sky-bottom: #f7e88b;
+      --ground-top: #9e9852;
+      --ground-bottom: #666431;
+    }
+
+    .type-grass {
+      --sky-top: #9fe0b4;
+      --sky-bottom: #e5f8c8;
+      --ground-top: #5ebf61;
+      --ground-bottom: #286c43;
+    }
+
+    .type-ice {
+      --sky-top: #a8e7f7;
+      --sky-bottom: #f4fdff;
+      --ground-top: #c5edf6;
+      --ground-bottom: #75b9cf;
+    }
+
+    .type-fighting {
+      --sky-top: #e7a16f;
+      --sky-bottom: #f4cf9c;
+      --ground-top: #b1714c;
+      --ground-bottom: #623f32;
+    }
+
+    .type-poison {
+      --sky-top: #b69add;
+      --sky-bottom: #d8c2ed;
+      --ground-top: #84679a;
+      --ground-bottom: #473651;
+    }
+
+    .type-ground {
+      --sky-top: #e2b86e;
+      --sky-bottom: #f6dfae;
+      --ground-top: #b9894c;
+      --ground-bottom: #71502e;
+    }
+
+    .type-flying {
+      --sky-top: #77c9f4;
+      --sky-bottom: #effbff;
+      --ground-top: #a8c88d;
+      --ground-bottom: #6c9662;
+    }
+
+    .type-psychic {
+      --sky-top: #df8fca;
+      --sky-bottom: #f4c9e6;
+      --ground-top: #8b6aa0;
+      --ground-bottom: #4f446f;
+    }
+
+    .type-bug {
+      --sky-top: #b9d685;
+      --sky-bottom: #e9f2b8;
+      --ground-top: #789841;
+      --ground-bottom: #3e5e28;
+    }
+
+    .type-rock {
+      --sky-top: #d2bc91;
+      --sky-bottom: #eee2c5;
+      --ground-top: #9c805f;
+      --ground-bottom: #57483b;
+    }
+
+    .type-ghost {
+      --sky-top: #514f85;
+      --sky-bottom: #8a78a8;
+      --ground-top: #514760;
+      --ground-bottom: #242439;
+    }
+
+    .type-dragon {
+      --sky-top: #6977bc;
+      --sky-bottom: #c09bd2;
+      --ground-top: #725b75;
+      --ground-bottom: #3a3349;
+    }
+
+    .type-dark {
+      --sky-top: #45495c;
+      --sky-bottom: #807986;
+      --ground-top: #4b4749;
+      --ground-bottom: #222227;
+    }
+
+    .type-steel {
+      --sky-top: #aebdca;
+      --sky-bottom: #e4edf1;
+      --ground-top: #8797a0;
+      --ground-bottom: #4d5a61;
+    }
+
+    .type-fairy {
+      --sky-top: #f3a9d0;
+      --sky-bottom: #ffe0ef;
+      --ground-top: #c58fbc;
+      --ground-bottom: #815f91;
+    }
 
     .type-water::before,
     .type-ice::before {
       background:
-        radial-gradient(ellipse at 18% 100%, rgba(255,255,255,.64) 0 25%, transparent 26%),
-        radial-gradient(ellipse at 60% 100%, rgba(255,255,255,.40) 0 31%, transparent 32%),
-        repeating-radial-gradient(ellipse at 50% 100%, transparent 0 18px, rgba(255,255,255,.25) 19px 21px);
+        radial-gradient(ellipse at 18% 100%, rgba(255, 255, 255, .64) 0 25%, transparent 26%),
+        radial-gradient(ellipse at 60% 100%, rgba(255, 255, 255, .40) 0 31%, transparent 32%),
+        repeating-radial-gradient(ellipse at 50% 100%, transparent 0 18px, rgba(255, 255, 255, .25) 19px 21px);
     }
 
     .type-fire::before,
     .type-ground::before,
     .type-rock::before {
       background:
-        linear-gradient(145deg, transparent 0 28%, rgba(62,40,31,.36) 29% 57%, transparent 58%) 0 100%/48% 100% no-repeat,
-        linear-gradient(215deg, transparent 0 28%, rgba(62,40,31,.28) 29% 57%, transparent 58%) 100% 100%/54% 92% no-repeat;
+        linear-gradient(145deg, transparent 0 28%, rgba(62, 40, 31, .36) 29% 57%, transparent 58%) 0 100%/48% 100% no-repeat,
+        linear-gradient(215deg, transparent 0 28%, rgba(62, 40, 31, .28) 29% 57%, transparent 58%) 100% 100%/54% 92% no-repeat;
     }
 
     .type-ghost::before,
     .type-dark::before,
     .type-psychic::before {
       background:
-        radial-gradient(circle at 20% 45%, rgba(255,255,255,.16) 0 4%, transparent 5%),
-        radial-gradient(circle at 72% 28%, rgba(255,255,255,.2) 0 3%, transparent 4%),
-        radial-gradient(ellipse at 50% 100%, rgba(20,17,35,.5) 0 48%, transparent 49%);
+        radial-gradient(circle at 20% 45%, rgba(255, 255, 255, .16) 0 4%, transparent 5%),
+        radial-gradient(circle at 72% 28%, rgba(255, 255, 255, .2) 0 3%, transparent 4%),
+        radial-gradient(ellipse at 50% 100%, rgba(20, 17, 35, .5) 0 48%, transparent 49%);
     }
 
-    .card-info { background: rgba(255, 255, 255, .97); }
-    .dex { color: #7791bd; font-weight: 800; letter-spacing: .08em; }
-    .poke-name { text-transform: capitalize; font-weight: 800; }
-    .cp { font-size: 1.55rem; font-weight: 850; }
-    .badge-soft { background: #edf1fb; border: 1px solid var(--line); color: #415078; }
-    .badge-shiny { background: linear-gradient(90deg, #f0b429, #ffdf7d); color: #3a2700; }
-    .badge-type { color: white; border: 1px solid rgba(255,255,255,.3); text-shadow: 0 1px 2px rgba(0,0,0,.25); }
-    .empty { min-height: 250px; display: grid; place-items: center; text-align: center; color: var(--muted); }
-    .spinner-border { color: #35b9ad; }
-    .toast-container { z-index: 1080; }
+    .card-info {
+      background: rgba(255, 255, 255, .97);
+    }
+
+    .dex {
+      color: #7791bd;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    .poke-name {
+      text-transform: capitalize;
+      font-weight: 800;
+    }
+
+    .cp {
+      font-size: 1.55rem;
+      font-weight: 850;
+    }
+
+    .badge-soft {
+      background: #edf1fb;
+      border: 1px solid var(--line);
+      color: #415078;
+    }
+
+    .badge-shiny {
+      background: linear-gradient(90deg, #f0b429, #ffdf7d);
+      color: #3a2700;
+    }
+
+    .badge-type {
+      color: white;
+      border: 1px solid rgba(255, 255, 255, .3);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+    }
+
+    .empty {
+      min-height: 250px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .spinner-border {
+      color: #35b9ad;
+    }
+
+    .toast-container {
+      z-index: 1080;
+    }
 
     .shadow-pokemon img {
-        filter:
-            brightness(.8)
-            contrast(1.15)
-            drop-shadow(0 0 20px #7c2cff)
-            drop-shadow(0 0 40px #7c2cff);
+      filter:
+        brightness(.8) contrast(1.15) drop-shadow(0 0 20px #7c2cff) drop-shadow(0 0 40px #7c2cff);
     }
 
     .purified-pokemon img {
-        filter:
-            brightness(1.05)
-            drop-shadow(0 0 15px white)
-            drop-shadow(0 0 30px #6feeff);
+      filter:
+        brightness(1.05) drop-shadow(0 0 15px white) drop-shadow(0 0 30px #6feeff);
     }
   </style>
 </head>
+
 <body>
   <nav class="navbar navbar-expand sticky-top">
     <div class="container py-2">
@@ -247,29 +399,73 @@
   <main class="container pb-5">
     <section class="glass rounded-4 p-3 p-lg-4 mb-4" style="margin-top: 50px">
       <div class="row g-2">
-        <div class="col-lg-5">
+
+        <!-- Búsqueda -->
+        <div class="col-lg-10">
           <input id="search" class="form-control" placeholder="Buscar por nombre o número…" aria-label="Buscar">
         </div>
-        <div class="col-6 col-lg-3">
-          <select id="variantFilter" class="form-select">
-            <option value="">Todas las variantes</option>
+
+        <!-- Ordenación -->
+        <div class="col-12 col-lg-2">
+            <select id="sort" class="form-select">
+                <option value="dex">Número de Pokédex</option>
+                <option value="cp-desc">PC mayor</option>
+                <option value="cp-asc">PC menor</option>
+                <option value="name">Nombre</option>
+            </select>
+        </div>
+
+        <!-- Rareza -->
+        <div class="col-6 col-lg-2">
+          <select id="rarityFilter" class="form-select">
+            <option value="">Todas las rarezas</option>
+            <option value="normal">Normal</option>
+            <option value="legendary">Legendario</option>
+            <option value="mythical">Singular</option>
           </select>
         </div>
+
+        <!-- Shiny -->
         <div class="col-6 col-lg-2">
           <select id="shinyFilter" class="form-select">
-            <option value="">Normal y shiny</option>
+            <option value="">Todos los pokemons</option>
             <option value="true">Solo shiny</option>
-            <option value="false">No shiny</option>
+            <option value="false">Solo no shiny</option>
           </select>
         </div>
-        <div class="col-lg-2">
-          <select id="sort" class="form-select">
-            <option value="dex">N.º Pokédex</option>
-            <option value="cp-desc">PC mayor</option>
-            <option value="cp-asc">PC menor</option>
-            <option value="name">Nombre</option>
+
+        <!-- Estado -->
+        <div class="col-6 col-lg-2">
+          <select id="statusFilter" class="form-select">
+            <option value="">Todos los estados</option>
+            <option value="shadow">Oscuros</option>
+            <option value="purified">Purificados</option>
           </select>
         </div>
+
+        <!-- Tipo -->
+        <div class="col-6 col-lg-2">
+          <select id="typeFilter" class="form-select">
+            <option value="">Todos los tipos</option>
+          </select>
+        </div>
+
+        <!-- Región -->
+        <div class="col-6 col-lg-2">
+          <select id="regionFilter" class="form-select">
+            <option value="">Todas las regiones</option>
+          </select>
+        </div>
+
+        <!-- Forma -->
+        <div class="col-6 col-lg-2">
+          <select id="formFilter" class="form-select">
+            <option value="">Todas las formas</option>
+            <option value="normal">Forma normal</option>
+            <option value="variant">Variante</option>
+          </select>
+        </div>
+
       </div>
     </section>
 
@@ -312,11 +508,24 @@
       grid: $('#grid'),
       count: $('#count'),
       search: $('#search'),
-      variant: $('#variantFilter'),
+
+      rarity: $('#rarityFilter'),
       shiny: $('#shinyFilter'),
+      status: $('#statusFilter'),
+      type: $('#typeFilter'),
+      region: $('#regionFilter'),
+      form: $('#formFilter'),
+
       sort: $('#sort'),
       clear: $('#clearBtn')
     };
+
+    const REGIONS = [
+      'alola',
+      'galar',
+      'hisui',
+      'paldea'
+    ];
 
     const TYPE_NAMES = {
       normal: 'Normal', fire: 'Fuego', water: 'Agua', electric: 'Eléctrico',
@@ -497,7 +706,10 @@
         image,
         variant,
         types,
-        primaryType: types[0] || 'normal'
+        primaryType: types[0] || 'normal',
+
+        legendary: species.is_legendary === true,
+        mythical: species.is_mythical === true
       };
     }
 
@@ -535,7 +747,7 @@
         }
 
         state.all = out;
-        refreshVariants();
+        refreshFilters();
         apply();
 
         const failed = out.filter(item => item.apiError).length;
@@ -551,17 +763,36 @@
       }
     }
 
-    function refreshVariants() {
-      const current = els.variant.value;
-      const variants = [...new Set(state.all.map(item => item.variant))].sort();
+    function refreshFilters() {
 
-      els.variant.innerHTML =
-        '<option value="">Todas las variantes</option>' +
-        variants.map(variant =>
-          `<option value="${esc(variant)}">${esc(labelVariant(variant))}</option>`
+      // Tipos
+      const types = [...new Set(
+        state.all.flatMap(pokemon => pokemon.types)
+      )].sort();
+
+      els.type.innerHTML =
+        '<option value="">Todos los tipos</option>' +
+        types.map(type =>
+          `<option value="${type}">
+                ${TYPE_NAMES[type] || type}
+            </option>`
         ).join('');
 
-      els.variant.value = variants.includes(current) ? current : '';
+      // Regiones
+      const regions = [...new Set(
+        state.all
+          .filter(pokemon => REGIONS.includes(pokemon.variant))
+          .map(pokemon => pokemon.variant)
+      )].sort();
+
+      els.region.innerHTML =
+        '<option value="">Todas las regiones</option>' +
+        '<option value="__regional__">Cualquier región</option>' +
+        regions.map(region =>
+            `<option value="${region}">
+                ${region.charAt(0).toUpperCase() + region.slice(1)}
+            </option>`
+        ).join('');
     }
 
     function labelVariant(variant) {
@@ -571,28 +802,115 @@
     }
 
     function apply() {
-      const query = els.search.value.trim().toLocaleLowerCase('es');
 
-      const filtered = state.all.filter(pokemon =>
-        (!query ||
+      const query = els.search.value
+        .trim()
+        .toLocaleLowerCase('es');
+
+      const filtered = state.all.filter(pokemon => {
+
+        // Búsqueda por nombre o pokédex
+        const matchesQuery =
+          !query ||
           pokemon.name.toLocaleLowerCase('es').includes(query) ||
-          String(pokemon.dex).includes(query)) &&
-        (!els.variant.value || pokemon.variant === els.variant.value) &&
-        (!els.shiny.value || String(pokemon.shiny) === els.shiny.value)
-      );
+          String(pokemon.dex).includes(query);
+
+        // Rareza
+        const matchesRarity =
+          !els.rarity.value ||
+
+          (
+            els.rarity.value === 'normal' &&
+            !pokemon.legendary &&
+            !pokemon.mythical
+          ) ||
+
+          (
+            els.rarity.value === 'legendary' &&
+            pokemon.legendary
+          ) ||
+
+          (
+            els.rarity.value === 'mythical' &&
+            pokemon.mythical
+          );
+
+        // Shiny
+        const matchesShiny =
+          !els.shiny.value ||
+          String(pokemon.shiny) === els.shiny.value;
+
+        // Oscuro / Purificado
+        const matchesStatus =
+          !els.status.value ||
+          pokemon.status === els.status.value;
+
+        // Tipo
+        const matchesType =
+          !els.type.value ||
+          pokemon.types.includes(els.type.value);
+
+        // Región
+        const matchesRegion =
+
+    !els.region.value ||
+
+    (
+        els.region.value === '__regional__' &&
+        REGIONS.includes(pokemon.variant)
+    )
+
+    ||
+
+    (
+        els.region.value !== '__regional__' &&
+        pokemon.variant === els.region.value
+    );
+
+        // Variantes
+        const matchesForm =
+          !els.form.value ||
+
+          (
+            els.form.value === 'normal' &&
+            (
+              pokemon.variant === 'normal' ||
+              REGIONS.includes(pokemon.variant)
+            )
+          ) ||
+
+          (
+            els.form.value === 'variant' &&
+            pokemon.variant !== 'normal' &&
+            !REGIONS.includes(pokemon.variant)
+          );
+
+        return (
+          matchesQuery &&
+          matchesRarity &&
+          matchesShiny &&
+          matchesStatus &&
+          matchesType &&
+          matchesRegion &&
+          matchesForm
+        );
+      });
 
       const sort = els.sort.value;
+
       filtered.sort(
-        sort === 'cp-desc' ? (a, b) => b.cp - a.cp :
-        sort === 'cp-asc' ? (a, b) => a.cp - b.cp :
-        sort === 'name' ? (a, b) => a.name.localeCompare(b.name, 'es') :
-        (a, b) => a.dex - b.dex
+        sort === 'cp-desc'
+          ? (a, b) => b.cp - a.cp
+          : sort === 'cp-asc'
+            ? (a, b) => a.cp - b.cp
+            : sort === 'name'
+              ? (a, b) => a.name.localeCompare(b.name, 'es')
+              : (a, b) => a.dex - b.dex
       );
 
       state.view = filtered;
       render(filtered);
     }
-
     function renderTypeBadges(types) {
       return types.map(type => `
         <span class="badge rounded-pill badge-type"
@@ -626,8 +944,8 @@
               ${pokemon.status === 'shadow' ? 'shadow-pokemon' : ''}
               ${pokemon.status === 'purified' ? 'purified-pokemon' : ''}">
               ${pokemon.image
-                ? `<img loading="lazy" src="${esc(pokemon.image)}" alt="${esc(pokemon.name)}">`
-                : '<span class="display-2 text-secondary">?</span>'}
+          ? `<img loading="lazy" src="${esc(pokemon.image)}" alt="${esc(pokemon.name)}">`
+          : '<span class="display-2 text-secondary">?</span>'}
             </div>
             <div class="card-info p-3">
               <div class="d-flex justify-content-between align-items-start gap-2">
@@ -642,21 +960,32 @@
               </div>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 ${pokemon.shiny
-                  ? '<span class="badge rounded-pill badge-shiny">✦ Shiny</span>'
-                  : ''}
-                
-                  ${pokemon.variant !== 'normal'
-                  ? `<span class="badge rounded-pill badge-soft">${esc(labelVariant(pokemon.variant))}</span>`
-                  : ''}
-                ${renderTypeBadges(pokemon.types)}
-                
-                ${pokemon.status === 'shadow'
-                    ? '<span class="badge rounded-pill bg-dark">🌑 Oscuro</span>'
-                    : ''}
+          ? '<span class="badge rounded-pill badge-shiny">✦ Shiny</span>'
+          : ''}
+
+                  ${pokemon.status === 'shadow'
+          ? '<span class="badge rounded-pill bg-dark">🌑 Oscuro</span>'
+          : ''}
 
                 ${pokemon.status === 'purified'
-                    ? '<span class="badge rounded-pill bg-light text-dark">✨ Purificado</span>'
-                    : ''}
+          ? '<span class="badge rounded-pill bg-light text-dark">✨ Purificado</span>'
+          : ''}
+
+                ${pokemon.legendary
+          ? '<span class="badge rounded-pill bg-warning text-dark">★ Legendario</span>'
+          : ''}
+
+                ${pokemon.mythical
+          ? '<span class="badge rounded-pill bg-danger">✦ Singular</span>'
+          : ''}
+
+                
+                  ${pokemon.variant !== 'normal'
+          ? `<span class="badge rounded-pill badge-soft">${esc(labelVariant(pokemon.variant))}</span>`
+          : ''}
+
+                ${renderTypeBadges(pokemon.types)}
+                
               </div>
             </div>
           </div>
@@ -688,7 +1017,16 @@
       }
     }
 
-    [els.search, els.variant, els.shiny, els.sort].forEach(element => {
+    [
+      els.search,
+      els.rarity,
+      els.shiny,
+      els.status,
+      els.type,
+      els.region,
+      els.form,
+      els.sort
+    ].forEach(element => {
       element.addEventListener(
         element === els.search ? 'input' : 'change',
         apply
@@ -696,14 +1034,23 @@
     });
 
     els.clear.addEventListener('click', () => {
+
       els.search.value = '';
-      els.variant.value = '';
+
+      els.rarity.value = '';
       els.shiny.value = '';
+      els.status.value = '';
+      els.type.value = '';
+      els.region.value = '';
+      els.form.value = '';
+
       els.sort.value = 'dex';
+
       apply();
     });
 
     loadDefaultXML();
   </script>
 </body>
+
 </html>

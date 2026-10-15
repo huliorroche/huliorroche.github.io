@@ -7,6 +7,7 @@
   <pokemon>
     <name>venusaur</name>
     <cp>1887</cp>
+    <status>purified</status>
   </pokemon>
 
   <pokemon>
@@ -309,6 +310,156 @@
     <name>castform</name>
     <cp>1399</cp>
     <variant>rainy</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>kecleon</name>
+    <cp>1546</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>absol</name>
+    <cp>1736</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>turtwig</name>
+    <cp>987</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>turtwig</name>
+    <cp>393</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>grotle</name>
+    <cp>1077</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>cherubi</name>
+    <cp>173</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>lucario</name>
+    <cp>2100</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>gallade</name>
+    <cp>2495</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>regigas</name>
+    <cp>928</cp>
+    <status>shadow</status>
+  </pokemon>
+
+  <pokemon>
+    <name>roggenrola</name>
+    <cp>403</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>seismitoad</name>
+    <cp>2062</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>zorua</name>
+    <cp>532</cp>
+    <background>Día de la Comunidad</background>
+  </pokemon>
+
+  <pokemon>
+    <name>zorua</name>
+    <cp>489</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>zorua</name>
+    <cp>315</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>zorua</name>
+    <cp>14</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>mienfoo</name>
+    <cp>1009</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>rufflet</name>
+    <cp>1194</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>heatmor</name>
+    <cp>1707</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>litleo</name>
+    <cp>1108</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>flabébé</name>
+    <cp>868</cp>
+    <variant>red</variant>
+  </pokemon>
+
+   <pokemon>
+    <name>flabébé</name>
+    <cp>617</cp>
+    <variant>orange</variant>
+  </pokemon>
+
+   <pokemon>
+    <name>flabébé</name>
+    <cp>191</cp>
+    <variant>white</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>furfrou</name>
+    <cp>611</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>dedenne</name>
+    <cp>1532</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>oricorio</name>
+    <cp>2024</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>impidimp</name>
+    <cp>673</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>sprigatito</name>
+    <cp>838</cp>
   </pokemon>
 
 </collection>
