@@ -377,14 +377,14 @@
 
       return nodes.map((node, index) => {
         const identifier =
-    val(node, [
-        'dex',
-        'pokedex',
-        'pokedexNumber',
-        'number',
-        'id',
-        'name'
-    ]);
+        val(node, [
+            'dex',
+            'pokedex',
+            'pokedexNumber',
+            'number',
+            'id',
+            'name'
+        ]);
 
 if (!identifier) {
     throw new Error(
@@ -437,12 +437,17 @@ return {
     }
 
     async function enrich(pokemon) {
+      const pokemonData = await fetch(
+          `https://pokeapi.co/api/v2/pokemon/${pokemon.identifier}`
+      ).then(ok);
+
+      const dex = pokemonData.id;
+
       const species = await fetch(
-          `https://pokeapi.co/api/v2/pokemon-species/${pokemon.identifier}`
+          `https://pokeapi.co/api/v2/pokemon-species/${dex}`
       ).then(ok);
 
       const name = species.names.find(item => item.language.name === 'es')?.name || species.name;
-      const dex = species.id;
       const variant = variantAliases[pokemon.variant] || pokemon.variant;
       const data = await getPokemonData(species.name, pokemon.dex, variant);
       const home = data.sprites?.other?.home;
