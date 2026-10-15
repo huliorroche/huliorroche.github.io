@@ -528,21 +528,23 @@
     ];
 
     const VARIANT_NAMES = {
-      // Clima
+      // Castform
       rainy: 'Lluvia',
-      sunny: 'Soleado',
+      sunny: 'Sol',
       snowy: 'Nieve',
 
-      // Colores
-      red: 'Rojo',
-      blue: 'Azul',
-      yellow: 'Amarillo',
-      green: 'Verde',
-      orange: 'Naranja',
-      purple: 'Morado',
-      pink: 'Rosa',
-      white: 'Blanco',
-      black: 'Negro',
+      // Cherrim
+      sunshine: 'Soleado',
+      overcast: 'Encapotado',
+
+      // Shellos, Gastrodon
+      east: 'Mar Este',
+      west: 'Mar Oeste',
+
+      // Basculin
+      'red-striped': 'Raya roja',
+      'blue-striped': 'Raya azul',
+      'white-striped': 'Raya blanca',
 
       // Oricorio
       baile: 'Apasionado',
@@ -550,30 +552,58 @@
       pau: 'Plácido',
       sensu: 'Refinado',
 
-      // Franjas
-      'red-striped': 'Franjas rojas',
-      'blue-striped': 'Franjas azules',
-      'white-striped': 'Franjas blancas',
+      // Flabébé, Floette, Florges
+      red: 'Roja',
+      blue: 'Azul',
+      yellow: 'Amarilla',
+      green: 'Verde',
+      orange: 'Naranja',
+      purple: 'Morado',
+      pink: 'Rosa',
+      white: 'Blanco',
+      eternal: 'Negro',
 
-      // Zonas y orientación
-      east: 'Este',
-      west: 'Oeste',
-      north: 'Norte',
-      south: 'Sur',
-      'east-sea': 'Mar Este',
-      'west-sea': 'Mar Oeste',
-
-      // Estaciones
+      // Deerling, Sawsbuck
       spring: 'Primavera',
       summer: 'Verano',
       autumn: 'Otoño',
       winter: 'Invierno',
+      
+      // Furfrou
+      natural: 'Forma Salvaje',
+      heart: 'Corte Corazón',
+      star: '	Corte Estrella',
+      diamond: '	Corte Rombo',
+      debutante: '	Corte Señorita',
+      matron: '	Corte Dama',
+      dandy: '	Corte Caballero',
+      'la-reine': '	Corte Aristocrático',
+      kabuki: '	Corte Kabuki',
+      pharaoh: '	Corte Faraónico',
 
-      // Tamaños
+
+      // Pumpkaboo, Gourgeist
       small: 'Pequeño',
       average: 'Mediano',
       large: 'Grande',
       super: 'Enorme',
+
+      // Burmy, Wormadam
+      plant: 'Planta',
+      sandy: 'Arena',
+      trash: 'Basura',
+
+      // Shaymin
+      land: 'Tierra',
+      sky: 'Cielo',
+
+      // Giratina
+      altered: 'Forma Modificada',
+      origin: 'Forma Origen',
+
+      // Darmanitan
+      standard: 'Forma Estándar',
+      zen: 'Modo Daruma',
 
       // Género
       male: 'Macho',
@@ -711,20 +741,130 @@
       return fetchJSON(`${API_BASE}/pokemon-species/${dex}`);
     }
 
-    async function getVariantData(baseData, variant) {
-      if (variant === 'normal') {
-        return baseData;
-      }
+    function normalizeFormName(value) {
+      return String(value ?? '')
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[_\s]+/g, '-')
+        .replace(/-+/g, '-');
+    }
 
-      const speciesName = baseData.species.name;
-      const candidate = `${speciesName}-${variant.replace(/\s+/g, '-')}`;
+    function formMatches(formName, speciesName, variant) {
+      const normalizedForm = normalizeFormName(formName);
+      const normalizedSpecies = normalizeFormName(speciesName);
+      const normalizedVariant = normalizeFormName(variant);
 
+      const expectedNames = new Set([
+        normalizedVariant,
+        `${normalizedSpecies}-${normalizedVariant}`,
+        `${normalizedVariant}-${normalizedSpecies}`
+      ]);
+
+      return (
+        expectedNames.has(normalizedForm) ||
+        normalizedForm.endsWith(`-${normalizedVariant}`)
+      );
+    }
+
+    function mergeVariantData(baseData, formData) {
+      return {
+        ...baseData,
+        types: formData.types?.length > 0 ? formData.types : baseData.types,
+        variantSprites: formData.sprites || null,
+        resolvedForm: {
+          id: formData.id,
+          name: formData.name,
+          formName: formData.form_name || '',
+          isDefault: formData.is_default ?? false
+        }
+      };
+    }
+
+    async function tryGetPokemon(identifier) {
       try {
-        return await getPokemon(candidate);
+        return await getPokemon(identifier);
       } catch (error) {
-        console.warn(`No se encontró la forma ${candidate}; se usará la forma normal.`, error);
+        return null;
+      }
+    }
+
+    async function tryGetPokemonForm(identifier) {
+      try {
+        return await fetchJSON(
+          `${API_BASE}/pokemon-form/${encodeURIComponent(identifier)}`
+        );
+      } catch (error) {
+        return null;
+      }
+    }
+
+    async function getVariantData(baseData, variant) {
+      const normalizedVariant = normalizeFormName(variant);
+
+      if (!normalizedVariant || normalizedVariant === 'normal') {
         return baseData;
       }
+
+      const speciesName = normalizeFormName(baseData.species.name);
+      const candidate = `${speciesName}-${normalizedVariant}`;
+
+      const referencedForm = (baseData.forms || []).find(form =>
+        formMatches(form.name, speciesName, normalizedVariant)
+      );
+
+      if (referencedForm?.url) {
+        try {
+          const formData = await fetchJSON(referencedForm.url);
+          return mergeVariantData(baseData, formData);
+        } catch (error) {
+          console.warn(
+            `No se pudo cargar la forma referenciada ${referencedForm.name}.`,
+            error
+          );
+        }
+      }
+
+      const pokemonData = await tryGetPokemon(candidate);
+
+      if (pokemonData) {
+        return {
+          ...pokemonData,
+          resolvedForm: {
+            id: pokemonData.id,
+            name: pokemonData.name,
+            formName: normalizedVariant,
+            isDefault: pokemonData.is_default ?? false
+          }
+        };
+      }
+
+      const formData = await tryGetPokemonForm(candidate);
+
+      if (formData) {
+        return mergeVariantData(baseData, formData);
+      }
+
+      const shortFormData = await tryGetPokemonForm(normalizedVariant);
+
+      if (
+        shortFormData &&
+        formMatches(
+          shortFormData.name || shortFormData.form_name,
+          speciesName,
+          normalizedVariant
+        )
+      ) {
+        return mergeVariantData(baseData, shortFormData);
+      }
+
+      console.warn(
+        `No se encontró la forma "${variant}" para ${speciesName}; ` +
+        'se utilizará la forma normal.'
+      );
+
+      return baseData;
     }
 
     async function enrich(pokemon) {
@@ -745,12 +885,23 @@
         species.names.find(item => item.language.name === 'es')?.name ||
         species.name;
 
+      const variantSprites = data.variantSprites;
+      const variantHome = variantSprites?.other?.home;
+      const variantArtwork = variantSprites?.other?.['official-artwork'];
       const home = data.sprites?.other?.home;
       const artwork = data.sprites?.other?.['official-artwork'];
+
       const image =
-        (pokemon.shiny ? home?.front_shiny : null) ||
+        (pokemon.shiny ? variantHome?.front_shiny : variantHome?.front_default) ||
+        (pokemon.shiny ? variantArtwork?.front_shiny : variantArtwork?.front_default) ||
+        (pokemon.shiny ? variantSprites?.front_shiny : variantSprites?.front_default) ||
+        (pokemon.shiny ? home?.front_shiny : home?.front_default) ||
+        (pokemon.shiny ? artwork?.front_shiny : artwork?.front_default) ||
+        (pokemon.shiny ? data.sprites?.front_shiny : data.sprites?.front_default) ||
+        variantHome?.front_default ||
+        variantArtwork?.front_default ||
+        variantSprites?.front_default ||
         home?.front_default ||
-        (pokemon.shiny ? artwork?.front_shiny : null) ||
         artwork?.front_default ||
         data.sprites?.front_default ||
         '';

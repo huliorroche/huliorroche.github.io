@@ -347,6 +347,12 @@
   </pokemon>
 
   <pokemon>
+    <name>cherrim</name>
+    <cp>1597</cp>
+    <shiny>sunny</shiny>
+  </pokemon>
+
+  <pokemon>
     <name>lucario</name>
     <cp>2100</cp>
   </pokemon>
@@ -454,6 +460,12 @@
   </pokemon>
 
   <pokemon>
+    <name>oricorio-baile</name>
+    <cp>1962</cp>
+    <variant>baile</variant>
+  </pokemon>
+
+  <pokemon>
     <name>impidimp</name>
     <cp>673</cp>
   </pokemon>
@@ -461,6 +473,17 @@
   <pokemon>
     <name>sprigatito</name>
     <cp>838</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>galvantula</name>
+    <cp>1320</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>rhyhorn</name>
+    <cp>603</cp>
+    <shiny>yes</shiny>
   </pokemon>
 
 </collection>
