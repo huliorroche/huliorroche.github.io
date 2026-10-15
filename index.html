@@ -314,7 +314,23 @@
     function val(node, names) { for (const n of names) { const a = node.getAttribute(n); if (a !== null) return a; const e = [...node.children].find(x => x.tagName.toLowerCase() === n.toLowerCase()); if (e) return e.textContent } return '' }
     function parseXML(text) { const doc = new DOMParser().parseFromString(text, 'application/xml'); if (doc.querySelector('parsererror')) throw Error('El XML no es válido.'); let nodes = [...doc.querySelectorAll('pokemon')]; if (!nodes.length) throw Error('No se encontraron elementos <pokemon>.'); return nodes.map((n, i) => { const dex = Number(val(n, ['dex', 'pokedex', 'pokedexNumber', 'number', 'id'])); if (!Number.isInteger(dex) || dex < 1) throw Error(`Pokémon ${i + 1}: número de Pokédex no válido.`); return { uid: i, dex, cp: Number(val(n, ['cp', 'pc'])) || 0, shiny: bool(val(n, ['shiny'])), variant: norm(val(n, ['variant', 'variante', 'form', 'region'])).toLowerCase() || 'normal' } }) }
     const variantAliases = { alolan: 'alola', galarian: 'galar', hisuian: 'hisui', paldean: 'paldea', 'forma alola': 'alola', 'forma galar': 'galar', 'forma hisui': 'hisui', 'forma paldea': 'paldea' };
-    async function enrich(p) { const species = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${p.dex}`).then(ok); const es = species.names.find(n => n.language.name === 'es')?.name || species.name; const v = variantAliases[p.variant] || p.variant; let data; if (v === 'normal') { data = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.dex}`).then(ok) } else { const candidates = [`${species.name}-${v}`, `${species.name}-${v.replace(/\s+/g, '-')}`]; for (const c of [...new Set(candidates)]) { try { data = await fetch(`https://pokeapi.co/api/v2/pokemon/${c}`).then(ok); break } catch { } } if (!data) data = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.dex}`).then(ok) } const art = data.sprites?.other?.['official-artwork']; return { ...p, name: es, image: (p.shiny ? art?.front_shiny : null) || art?.front_default || data.sprites?.front_default, variant: v } }
+    async function enrich(p) { const species = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${p.dex}`).then(ok); const es = species.names.find(n => n.language.name === 'es')?.name || species.name; const v = variantAliases[p.variant] || p.variant; let data; if (v === 'normal') { data = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.dex}`).then(ok) } else { const candidates = [`${species.name}-${v}`, `${species.name}-${v.replace(/\s+/g, '-')}`]; for (const c of [...new Set(candidates)]) { try { data = await fetch(`https://pokeapi.co/api/v2/pokemon/${c}`).then(ok); break } catch { } } if (!data) data = await fetch(`https://pokeapi.co/api/v2/pokemon/${p.dex}`).then(ok) }
+    
+    const home = data.sprites?.other?.home;
+    const artwork = data.sprites?.other?.['official-artwork'];
+
+    image =
+        (p.shiny ? home?.front_shiny : null)
+        || home?.front_default
+        || (p.shiny ? artwork?.front_shiny : null)
+        || artwork?.front_default
+        || data.sprites?.front_default;
+    
+    return { ...p, name: es, image: image, variant: v }
+  
+  }
+
+
     function ok(r) { if (!r.ok) throw Error(`API ${r.status}`); return r.json() }
     async function load(text) { try { els.grid.innerHTML = '<div class="col-12 text-center py-5"><div class="spinner-border"></div><div class="mt-3 text-secondary">Consultando nombres e imágenes…</div></div>'; const raw = parseXML(text), out = []; for (let i = 0; i < raw.length; i += 8) { const batch = await Promise.all(raw.slice(i, i + 8).map(async p => { try { return await enrich(p) } catch { return { ...p, name: `Pokémon #${p.dex}`, image: '', apiError: true } } })); out.push(...batch) } state.all = out; refreshVariants(); apply(); localStorage.setItem('poketrade-xml', text); const failed = out.filter(x => x.apiError).length; toast(failed ? `Cargados ${out.length}; ${failed} sin datos externos.` : `${out.length} Pokémon cargados.`) } catch (e) { state.all = []; render([]); toast(e.message) } }
     function refreshVariants() { const current = els.variant.value; const variants = [...new Set(state.all.map(x => x.variant))].sort(); els.variant.innerHTML = '<option value="">Todas las variantes</option>' + variants.map(v => `<option value="${esc(v)}">${esc(labelVariant(v))}</option>`).join(''); els.variant.value = variants.includes(current) ? current : '' }
