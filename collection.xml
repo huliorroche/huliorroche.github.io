@@ -358,7 +358,7 @@
   </pokemon>
 
   <pokemon>
-    <name>regigas</name>
+    <name>regigigas</name>
     <cp>928</cp>
     <status>shadow</status>
   </pokemon>
@@ -419,19 +419,19 @@
   </pokemon>
 
   <pokemon>
-    <name>flabébé</name>
+    <name>flabebe</name>
     <cp>868</cp>
     <variant>red</variant>
   </pokemon>
 
    <pokemon>
-    <name>flabébé</name>
+    <name>flabebe</name>
     <cp>617</cp>
     <variant>orange</variant>
   </pokemon>
 
    <pokemon>
-    <name>flabébé</name>
+    <name>flabebe</name>
     <cp>191</cp>
     <variant>white</variant>
   </pokemon>
@@ -450,6 +450,7 @@
   <pokemon>
     <name>oricorio</name>
     <cp>2024</cp>
+    <variant>baile</variant>
   </pokemon>
 
   <pokemon>

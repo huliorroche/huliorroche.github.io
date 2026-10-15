@@ -527,6 +527,60 @@
       'paldea'
     ];
 
+    const VARIANT_NAMES = {
+      // Clima
+      rainy: 'Lluvia',
+      sunny: 'Soleado',
+      snowy: 'Nieve',
+
+      // Colores
+      red: 'Rojo',
+      blue: 'Azul',
+      yellow: 'Amarillo',
+      green: 'Verde',
+      orange: 'Naranja',
+      purple: 'Morado',
+      pink: 'Rosa',
+      white: 'Blanco',
+      black: 'Negro',
+
+      // Oricorio
+      baile: 'Apasionado',
+      'pom-pom': 'Animado',
+      pau: 'Plácido',
+      sensu: 'Refinado',
+
+      // Franjas
+      'red-striped': 'Franjas rojas',
+      'blue-striped': 'Franjas azules',
+      'white-striped': 'Franjas blancas',
+
+      // Zonas y orientación
+      east: 'Este',
+      west: 'Oeste',
+      north: 'Norte',
+      south: 'Sur',
+      'east-sea': 'Mar Este',
+      'west-sea': 'Mar Oeste',
+
+      // Estaciones
+      spring: 'Primavera',
+      summer: 'Verano',
+      autumn: 'Otoño',
+      winter: 'Invierno',
+
+      // Tamaños
+      small: 'Pequeño',
+      average: 'Mediano',
+      large: 'Grande',
+      super: 'Enorme',
+
+      // Género
+      male: 'Macho',
+      female: 'Hembra',
+
+    };
+
     const TYPE_NAMES = {
       normal: 'Normal', fire: 'Fuego', water: 'Agua', electric: 'Eléctrico',
       grass: 'Planta', ice: 'Hielo', fighting: 'Lucha', poison: 'Veneno',
@@ -796,9 +850,24 @@
     }
 
     function labelVariant(variant) {
-      return variant === 'normal'
-        ? 'Forma normal'
-        : variant.charAt(0).toUpperCase() + variant.slice(1);
+        const normalizedVariant = norm(variant).toLowerCase();
+
+        if (!normalizedVariant) {
+            return 'Forma normal';
+        }
+
+        if (VARIANT_NAMES[normalizedVariant]) {
+            return VARIANT_NAMES[normalizedVariant];
+        }
+
+        return normalizedVariant
+            .split('-')
+            .map(word => VARIANT_NAMES[word] || capitalize(word))
+            .join(' ');
+    }
+
+    function capitalize(value) {
+        return value.charAt(0).toUpperCase() + value.slice(1);
     }
 
     function apply() {
