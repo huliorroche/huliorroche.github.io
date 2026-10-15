@@ -407,12 +407,12 @@
 
         <!-- Ordenación -->
         <div class="col-12 col-lg-2">
-            <select id="sort" class="form-select">
-                <option value="dex">Número de Pokédex</option>
-                <option value="cp-desc">PC mayor</option>
-                <option value="cp-asc">PC menor</option>
-                <option value="name">Nombre</option>
-            </select>
+          <select id="sort" class="form-select">
+            <option value="dex">Número de Pokédex</option>
+            <option value="cp-desc">PC mayor</option>
+            <option value="cp-asc">PC menor</option>
+            <option value="name">Nombre</option>
+          </select>
         </div>
 
         <!-- Rareza -->
@@ -666,12 +666,18 @@
           identifier,
           cp: Number(val(node, ['cp', 'pc'])) || 0,
           shiny: bool(val(node, ['shiny'])),
+
           variant: norm(
             val(node, ['variant', 'variante', 'form', 'region'])
           ).toLowerCase() || 'normal',
+
           status: norm(
             val(node, ['status'])
-          ).toLowerCase() || 'normal'
+          ).toLowerCase() || 'normal',
+
+          background: norm(
+            val(node, ['background'])
+          )
         };
       });
     }
@@ -763,7 +769,9 @@
         primaryType: types[0] || 'normal',
 
         legendary: species.is_legendary === true,
-        mythical: species.is_mythical === true
+        mythical: species.is_mythical === true,
+
+        background: pokemon.background
       };
     }
 
@@ -843,31 +851,31 @@
         '<option value="">Todas las regiones</option>' +
         '<option value="__regional__">Cualquier región</option>' +
         regions.map(region =>
-            `<option value="${region}">
+          `<option value="${region}">
                 ${region.charAt(0).toUpperCase() + region.slice(1)}
             </option>`
         ).join('');
     }
 
     function labelVariant(variant) {
-        const normalizedVariant = norm(variant).toLowerCase();
+      const normalizedVariant = norm(variant).toLowerCase();
 
-        if (!normalizedVariant) {
-            return 'Forma normal';
-        }
+      if (!normalizedVariant) {
+        return 'Forma normal';
+      }
 
-        if (VARIANT_NAMES[normalizedVariant]) {
-            return VARIANT_NAMES[normalizedVariant];
-        }
+      if (VARIANT_NAMES[normalizedVariant]) {
+        return VARIANT_NAMES[normalizedVariant];
+      }
 
-        return normalizedVariant
-            .split('-')
-            .map(word => VARIANT_NAMES[word] || capitalize(word))
-            .join(' ');
+      return normalizedVariant
+        .split('-')
+        .map(word => VARIANT_NAMES[word] || capitalize(word))
+        .join(' ');
     }
 
     function capitalize(value) {
-        return value.charAt(0).toUpperCase() + value.slice(1);
+      return value.charAt(0).toUpperCase() + value.slice(1);
     }
 
     function apply() {
@@ -922,19 +930,19 @@
         // Región
         const matchesRegion =
 
-    !els.region.value ||
+          !els.region.value ||
 
-    (
-        els.region.value === '__regional__' &&
-        REGIONS.includes(pokemon.variant)
-    )
+          (
+            els.region.value === '__regional__' &&
+            REGIONS.includes(pokemon.variant)
+          )
 
-    ||
+          ||
 
-    (
-        els.region.value !== '__regional__' &&
-        pokemon.variant === els.region.value
-    );
+          (
+            els.region.value !== '__regional__' &&
+            pokemon.variant === els.region.value
+          );
 
         // Variantes
         const matchesForm =
@@ -1009,9 +1017,18 @@
       els.grid.innerHTML = pokemonList.map(pokemon => `
         <article class="col-sm-6 col-lg-4 col-xl-3">
           <div class="pokemon-card">
-            <div class="art type-${esc(pokemon.primaryType)}
-              ${pokemon.status === 'shadow' ? 'shadow-pokemon' : ''}
-              ${pokemon.status === 'purified' ? 'purified-pokemon' : ''}">
+            <div
+  class="art ${pokemon.background ? 'custom-background' : 'type-' + esc(pokemon.primaryType)}
+  ${pokemon.status === 'shadow' ? 'shadow-pokemon' : ''}
+  ${pokemon.status === 'purified' ? 'purified-pokemon' : ''}"
+
+  ${pokemon.background
+          ? `style="
+        background-image: url('/backgrounds/${encodeURIComponent(pokemon.background)}.png');
+        background-size: cover;
+        background-position: center;
+      "`
+          : ''}>
               ${pokemon.image
           ? `<img loading="lazy" src="${esc(pokemon.image)}" alt="${esc(pokemon.name)}">`
           : '<span class="display-2 text-secondary">?</span>'}
