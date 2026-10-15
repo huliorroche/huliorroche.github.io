@@ -1,8 +1,314 @@
 <collection>
   <pokemon>
-    <name>pikachu</name>
+    <name>bulbasaur</name>
     <cp>938</cp>
   </pokemon>
 
+  <pokemon>
+    <name>venasur</name>
+    <cp>1887</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>charmander</name>
+    <cp>827</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>raticate</name>
+    <cp>1360</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>clefable</name>
+    <cp>1346</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>vulpix</name>
+    <cp>477</cp>
+    <variant>alola</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>vulpix</name>
+    <cp>477</cp>
+    <variant>alola</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>vulpix</name>
+    <cp>472</cp>
+    <variant>alola</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>oddish</name>
+    <cp>1033</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>oddish</name>
+    <cp>309</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>growlithe</name>
+    <cp>504</cp>
+    <variant>hisui</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>abra</name>
+    <cp>784</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>ponyta</name>
+    <cp>1463</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>ponyta</name>
+    <cp>555</cp>
+    <variant>galar</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>ponyta</name>
+    <cp>386</cp>
+    <variant>galar</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>slowpoke</name>
+    <cp>602</cp>
+    <variant>galar</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>grimmer</name>
+    <cp>760</cp>
+    <variant>alola</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>grimmer</name>
+    <cp>749</cp>
+    <variant>alola</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>grimmer</name>
+    <cp>740</cp>
+    <variant>alola</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>grimmer</name>
+    <cp>733</cp>
+    <variant>alola</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>drowzee</name>
+    <cp>641</cp>
+    <status>purified</status>
+  </pokemon>
+
+  <pokemon>
+    <name>kringler</name>
+    <cp>2181</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>exeggcute</name>
+    <cp>957</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>electabuzz</name>
+    <cp>1423</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>electabuzz</name>
+    <cp>607</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>electabuzz</name>
+    <cp>488</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>porygon</name>
+    <cp>1471</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>porygon</name>
+    <cp>1416</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>porygon</name>
+    <cp>755</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>porygon</name>
+    <cp>443</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>porygon</name>
+    <cp>363</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>omastar</name>
+    <cp>2488</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>mew</name>
+    <cp>1342</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>feraligatr</name>
+    <cp>1310</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>aipom</name>
+    <cp>441</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>sunflora</name>
+    <cp>1800</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>wooper</name>
+    <cp>436</cp>
+    <variant>paldea</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>wooper</name>
+    <cp>328</cp>
+    <variant>paldea</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>sneasel</name>
+    <cp>707</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>sneasel</name>
+    <cp>300</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>sneasel</name>
+    <cp>1114</cp>
+    <variant>hisui</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>sneasel</name>
+    <cp>26</cp>
+    <variant>hisui</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>skarmory</name>
+    <cp>1273</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>treecko</name>
+    <cp>886</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>torchic</name>
+    <cp>327</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>torchic</name>
+    <cp>237</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>zigzagoon</name>
+    <cp>421</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>ralts</name>
+    <cp>390</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>gardevoir</name>
+    <cp>2243</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+  
+  <pokemon>
+    <name>slakoth</name>
+    <cp>649</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>electrike</name>
+    <cp>234</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>solrock</name>
+    <cp>2095</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>solrock</name>
+    <cp>1951</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>castform</name>
+    <cp>1399</cp>
+    <variant>rain</variant>
+  </pokemon>
 
 </collection>
