@@ -218,6 +218,21 @@
     .empty { min-height: 250px; display: grid; place-items: center; text-align: center; color: var(--muted); }
     .spinner-border { color: #35b9ad; }
     .toast-container { z-index: 1080; }
+
+    .shadow-pokemon img {
+        filter:
+            brightness(.8)
+            contrast(1.15)
+            drop-shadow(0 0 20px #7c2cff)
+            drop-shadow(0 0 40px #7c2cff);
+    }
+
+    .purified-pokemon img {
+        filter:
+            brightness(1.05)
+            drop-shadow(0 0 15px white)
+            drop-shadow(0 0 30px #6feeff);
+    }
   </style>
 </head>
 <body>
@@ -390,6 +405,9 @@
           shiny: bool(val(node, ['shiny'])),
           variant: norm(
             val(node, ['variant', 'variante', 'form', 'region'])
+          ).toLowerCase() || 'normal',
+          status: norm(
+            val(node, ['status'])
           ).toLowerCase() || 'normal'
         };
       });
@@ -604,7 +622,9 @@
       els.grid.innerHTML = pokemonList.map(pokemon => `
         <article class="col-sm-6 col-lg-4 col-xl-3">
           <div class="pokemon-card">
-            <div class="art type-${esc(pokemon.primaryType)}">
+            <div class="art type-${esc(pokemon.primaryType)}
+              ${pokemon.status === 'shadow' ? 'shadow-pokemon' : ''}
+              ${pokemon.status === 'purified' ? 'purified-pokemon' : ''}">
               ${pokemon.image
                 ? `<img loading="lazy" src="${esc(pokemon.image)}" alt="${esc(pokemon.name)}">`
                 : '<span class="display-2 text-secondary">?</span>'}
@@ -624,10 +644,19 @@
                 ${pokemon.shiny
                   ? '<span class="badge rounded-pill badge-shiny">✦ Shiny</span>'
                   : ''}
-                ${pokemon.variant !== 'normal'
+                
+                  ${pokemon.variant !== 'normal'
                   ? `<span class="badge rounded-pill badge-soft">${esc(labelVariant(pokemon.variant))}</span>`
-                  : '<span class="badge rounded-pill badge-soft">Normal</span>'}
+                  : ''}
                 ${renderTypeBadges(pokemon.types)}
+                
+                ${pokemon.status === 'shadow'
+                    ? '<span class="badge rounded-pill bg-dark">🌑 Oscuro</span>'
+                    : ''}
+
+                ${pokemon.status === 'purified'
+                    ? '<span class="badge rounded-pill bg-light text-dark">✨ Purificado</span>'
+                    : ''}
               </div>
             </div>
           </div>
