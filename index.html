@@ -793,24 +793,119 @@
       });
     }
 
+    const CACHE_PREFIX = 'pokeapi:';
+    const CACHE_VERSION = '1';
+    const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 días
+
     async function fetchJSON(url) {
-      if (!requestCache.has(url)) {
-        const request = fetch(url).then(async response => {
-          if (!response.ok) {
-            throw new Error(`API ${response.status}: ${url}`);
+
+      /*
+       * 1. Caché en memoria.
+       *
+       * Evita peticiones repetidas durante la ejecución actual
+       * e incluso comparte una misma Promise si dos Pokémon
+       * solicitan simultáneamente el mismo recurso.
+       */
+      if (requestCache.has(url)) {
+        return requestCache.get(url);
+      }
+
+      /*
+       * 2. Caché persistente.
+       *
+       * Se conserva incluso después de recargar la página.
+       */
+      const cacheKey = `${CACHE_PREFIX}${CACHE_VERSION}:${url}`;
+
+      try {
+        const cached = localStorage.getItem(cacheKey);
+
+        if (cached) {
+          const entry = JSON.parse(cached);
+
+          if (
+            entry.timestamp &&
+            Date.now() - entry.timestamp < CACHE_TTL &&
+            entry.data
+          ) {
+            const promise = Promise.resolve(entry.data);
+
+            requestCache.set(url, promise);
+
+            return promise;
           }
-          return response.json();
-        }).catch(error => {
+
+          /*
+           * Entrada demasiado antigua.
+           */
+          localStorage.removeItem(cacheKey);
+        }
+      } catch (error) {
+        console.warn(
+          `No se pudo leer la caché de ${url}.`,
+          error
+        );
+      }
+
+      /*
+       * 3. Solo si no existe en ninguna caché se consulta PokéAPI.
+       */
+      const request = fetch(url)
+        .then(async response => {
+
+          if (!response.ok) {
+            throw new Error(
+              `API ${response.status}: ${url}`
+            );
+          }
+
+          const data = await response.json();
+
+          /*
+           * Guardar respuesta persistente.
+           */
+          try {
+            localStorage.setItem(
+              cacheKey,
+              JSON.stringify({
+                timestamp: Date.now(),
+                data
+              })
+            );
+          } catch (error) {
+            /*
+             * localStorage puede quedarse sin espacio.
+             * No debe impedir que funcione la aplicación.
+             */
+            console.warn(
+              `No se pudo guardar ${url} en caché.`,
+              error
+            );
+          }
+
+          return data;
+        })
+        .catch(error => {
+
+          /*
+           * Si la petición falla, eliminamos únicamente la
+           * Promise de memoria para permitir otro intento.
+           */
           requestCache.delete(url);
+
           throw error;
         });
 
-        requestCache.set(url, request);
-      }
+      /*
+       * Se almacena la Promise inmediatamente.
+       *
+       * Esto es importante porque si tres Pokémon solicitan
+       * simultáneamente la misma URL solo se realiza un fetch.
+       */
+      requestCache.set(url, request);
 
-      return requestCache.get(url);
+      return request;
     }
-
     function getPokemon(identifier) {
       return fetchJSON(`${API_BASE}/pokemon/${encodeURIComponent(identifier)}`);
     }
@@ -1467,7 +1562,7 @@
 
           ${pokemon.megaEvolves
           ? `<span class="badge rounded-pill badge-mega">
-                  <img src="/badgets/megaevolution.svg" class="badge-icon" alt="">
+                  <img src="/badgets/megaevolution.png" class="badge-icon" alt="">
                   Megaevoluciona
                 </span>`
           : ''}
