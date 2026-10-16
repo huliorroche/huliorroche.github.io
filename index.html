@@ -604,7 +604,7 @@
     </section>
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h2 class="h5 m-0"><span id="count">0</span> Pokémon disponibles</h2>
+      <h2 class="h5 m-0"><span id="count">0</span> <span id="availableLabel">Pokémon disponibles</span></h2>
       <button id="clearBtn" class="btn btn-sm btn-outline-secondary">Limpiar filtros</button>
     </div>
 
@@ -613,7 +613,7 @@
         <div class="glass rounded-4 empty">
           <div>
             <div class="display-5 mb-2">◓</div>
-            <strong>Cargando Pokémon…</strong>
+            <strong id="initialLoading">Cargando Pokémon…</strong>
           </div>
         </div>
       </div>
@@ -633,6 +633,99 @@
   <script>
     const API_BASE = 'https://pokeapi.co/api/v2';
     const COLLECTION_URL = 'https://huliorroche.github.io/collection.xml';
+    const COUNTRY_LANGUAGE_URL = './countries.json';
+    const I18N_BASE_URL = './i18n';
+    let currentLanguage = 'es';
+    let currentLocale = 'es-ES';
+    let currentPokeApiLanguage = 'es';
+    let translations = null;
+
+    function t(key, fallback = key) {
+      const value = key.split('.').reduce((current, part) => current?.[part], translations);
+      return value ?? fallback;
+    }
+
+    function detectCountryCode() {
+      const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
+
+      for (const locale of locales) {
+        const match = String(locale || '').match(/[-_]([A-Za-z]{2})(?:$|[-_])/);
+        if (match) {
+          return match[1].toUpperCase();
+        }
+      }
+
+      return null;
+    }
+
+    async function loadLocalization() {
+      let language = 'es';
+
+      try {
+        const configResponse = await fetch(COUNTRY_LANGUAGE_URL, { cache: 'no-store' });
+        if (configResponse.ok) {
+          const config = await configResponse.json();
+          const country = detectCountryCode();
+          language = (country && config.countries?.[country]) || config.default || 'es';
+        }
+      } catch (error) {
+        language = 'es';
+      }
+
+      try {
+        let response = await fetch(`${I18N_BASE_URL}/${language}.json`, { cache: 'no-store' });
+        if (!response.ok) {
+          language = 'es';
+          response = await fetch(`${I18N_BASE_URL}/es.json`, { cache: 'no-store' });
+        }
+        translations = await response.json();
+      } catch (error) {
+        language = 'es';
+        translations = { meta: { locale: 'es-ES', pokeApiLanguage: 'es' }, ui: {}, types: {}, variants: {} };
+      }
+
+      currentLanguage = language;
+      currentLocale = translations.meta?.locale || 'es-ES';
+      currentPokeApiLanguage = translations.meta?.pokeApiLanguage || 'es';
+      document.documentElement.lang = currentLanguage;
+      Object.assign(TYPE_NAMES, translations.types || {});
+      Object.assign(VARIANT_NAMES, translations.variants || {});
+      applyStaticTranslations();
+    }
+
+    function setOptionText(select, value, text) {
+      const option = [...select.options].find(item => item.value === value);
+      if (option) option.textContent = text;
+    }
+
+    function applyStaticTranslations() {
+      els.search.placeholder = t('ui.search', els.search.placeholder);
+      setOptionText(els.sort, 'dex', t('ui.sortDex', 'Número de Pokédex'));
+      setOptionText(els.sort, 'cp-desc', t('ui.sortCpDesc', 'PC mayor'));
+      setOptionText(els.sort, 'cp-asc', t('ui.sortCpAsc', 'PC menor'));
+      setOptionText(els.sort, 'name', t('ui.sortName', 'Nombre'));
+      setOptionText(els.rarity, '', t('ui.allRarities', 'Todas las rarezas'));
+      setOptionText(els.rarity, 'normal', t('ui.normal', 'Normal'));
+      setOptionText(els.rarity, 'legendary', t('ui.legendary', 'Legendario'));
+      setOptionText(els.rarity, 'mythical', t('ui.mythical', 'Singular'));
+      setOptionText(els.shiny, '', t('ui.allPokemon', 'Todos los Pokémon'));
+      setOptionText(els.shiny, 'true', t('ui.onlyShiny', 'Solo shiny'));
+      setOptionText(els.shiny, 'false', t('ui.onlyNotShiny', 'Solo no shiny'));
+      setOptionText(els.dinamax, '', t('ui.allPokemon', 'Todos los Pokémon'));
+      setOptionText(els.dinamax, 'true', t('ui.onlyDynamax', 'Solo Dinamax'));
+      setOptionText(els.dinamax, 'false', t('ui.onlyNotDynamax', 'Solo no Dinamax'));
+      setOptionText(els.mega, '', t('ui.allPokemon', 'Todos los Pokémon'));
+      setOptionText(els.mega, 'true', t('ui.mega', 'Megaevoluciona'));
+      setOptionText(els.mega, 'false', t('ui.notMega', 'No megaevoluciona'));
+      setOptionText(els.status, '', t('ui.allStates', 'Todos los estados'));
+      setOptionText(els.status, 'purified', t('ui.purified', 'Purificados'));
+      setOptionText(els.form, '', t('ui.allForms', 'Todas las formas'));
+      setOptionText(els.form, 'normal', t('ui.normalForm', 'Forma normal'));
+      setOptionText(els.form, 'variant', t('ui.variant', 'Variante'));
+      els.clear.textContent = t('ui.clear', 'Limpiar filtros');
+      els.availableLabel.textContent = t('ui.available', 'Pokémon disponibles');
+      if (els.initialLoading) els.initialLoading.textContent = t('ui.loading', 'Cargando Pokémon…');
+    }
     const $ = selector => document.querySelector(selector);
 
     const state = { all: [], view: [] };
@@ -641,6 +734,8 @@
     const els = {
       grid: $('#grid'),
       count: $('#count'),
+      availableLabel: $('#availableLabel'),
+      initialLoading: $('#initialLoading'),
       search: $('#search'),
 
       rarity: $('#rarityFilter'),
@@ -883,7 +978,7 @@
     }
 
     const CACHE_PREFIX = 'pokeapi:';
-    const CACHE_VERSION = '2';
+    const CACHE_VERSION = '3';
     const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 días
 
     function removeOldPersistentCache() {
@@ -958,7 +1053,7 @@
         id: data.id,
         name: data.name,
         names: (data.names || [])
-          .filter(item => item.language?.name === 'es')
+          .filter(item => ['es', 'en', 'fr'].includes(item.language?.name))
           .map(item => ({
             name: item.name,
             language: { name: item.language.name }
@@ -1424,6 +1519,7 @@
       ]);
 
       const name =
+        species.names.find(item => item.language.name === currentPokeApiLanguage)?.name ||
         species.names.find(item => item.language.name === 'es')?.name ||
         species.name;
 
@@ -1481,7 +1577,7 @@
         els.grid.innerHTML = `
           <div class="col-12 text-center py-5">
             <div class="spinner-border"></div>
-            <div class="mt-3 text-secondary">Consultando nombres, tipos e imágenes…</div>
+            <div class="mt-3 text-secondary">${esc(t('ui.loadingData', 'Consultando nombres, tipos e imágenes…'))}</div>
           </div>`;
 
         const raw = parseXML(text);
@@ -1534,7 +1630,7 @@
       )].sort();
 
       els.type.innerHTML =
-        '<option value="">Todos los tipos</option>' +
+        `<option value="">${esc(t('ui.allTypes', 'Todos los tipos'))}</option>` +
         types.map(type =>
           `<option value="${type}">
                 ${TYPE_NAMES[type] || type}
@@ -1549,8 +1645,8 @@
       )].sort();
 
       els.region.innerHTML =
-        '<option value="">Todas las regiones</option>' +
-        '<option value="__regional__">Cualquier región</option>' +
+        `<option value="">${esc(t('ui.allRegions', 'Todas las regiones'))}</option>` +
+        `<option value="__regional__">${esc(t('ui.anyRegion', 'Cualquier región'))}</option>` +
         regions.map(region =>
           `<option value="${region}">
                 ${region.charAt(0).toUpperCase() + region.slice(1)}
@@ -1562,7 +1658,7 @@
       const normalizedVariant = norm(variant).toLowerCase();
 
       if (!normalizedVariant) {
-        return 'Forma normal';
+        return t('ui.normalForm', 'Forma normal');
       }
 
       if (VARIANT_NAMES[normalizedVariant]) {
@@ -1694,7 +1790,7 @@
           : sort === 'cp-asc'
             ? (a, b) => a.cp - b.cp
             : sort === 'name'
-              ? (a, b) => a.name.localeCompare(b.name, 'es')
+              ? (a, b) => a.name.localeCompare(b.name, currentLocale)
               : (a, b) => a.dex - b.dex
       );
 
@@ -1705,7 +1801,7 @@
       return types.map(type => `
         <span class="badge rounded-pill badge-type"
               style="background:${TYPE_COLORS[type] || TYPE_COLORS.normal}">
-          ${esc(TYPE_NAMES[type] || type)}
+          ${esc((translations?.types || {})[type] || TYPE_NAMES[type] || type)}
         </span>`
       ).join('');
     }
@@ -1719,8 +1815,8 @@
             <div class="glass rounded-4 empty">
               <div>
                 <div class="display-5 mb-2">⌕</div>
-                <strong>No hay resultados</strong>
-                <div class="small mt-1">Prueba con otros filtros.</div>
+                <strong>${esc(t('ui.noResults', 'No hay resultados'))}</strong>
+                <div class="small mt-1">${esc(t('ui.tryFilters', 'Prueba con otros filtros.'))}</div>
               </div>
             </div>
           </div>`;
@@ -1784,14 +1880,14 @@ ${pokemon.background?.name
 </div>
                 <div class="text-end">
                   <small class="text-secondary">PC</small>
-                  <div class="cp">${pokemon.cp.toLocaleString('es-ES')}</div>
+                  <div class="cp">${pokemon.cp.toLocaleString(currentLocale)}</div>
                 </div>
               </div>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 ${pokemon.shiny
           ? `<span class="badge rounded-pill badge-shiny">
             <img src="https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Filters/ic_shiny_white.png" class="badge-icon" alt="">
-            Shiny</span>`
+            ${esc(t('ui.shiny', 'Shiny'))}</span>`
           : ''}
 
           
@@ -1799,36 +1895,36 @@ ${pokemon.background?.name
                 ${pokemon.dinamax
           ? `<span class="badge rounded-pill badge-dinamax">
               <img src="/badgets/dinamax.svg" class="badge-icon" alt="">
-              Dinamax
+              ${esc(t('ui.dynamax', 'Dinamax'))}
             </span>`
           : ''}
 
           ${pokemon.megaEvolves
           ? `<span class="badge rounded-pill badge-mega">
                   <img src="/badgets/megaevolution.png" class="badge-icon" alt="">
-                  Megaevoluciona
+                  ${esc(t('ui.mega', 'Megaevoluciona'))}
                 </span>`
           : ''}
 
                   ${pokemon.status === 'shadow'
-          ? '<span class="badge rounded-pill bg-dark">🌑 Oscuro</span>'
+          ? `<span class="badge rounded-pill bg-dark">🌑 ${esc(t('ui.shadow', 'Oscuro'))}</span>`
           : ''}
 
                 ${pokemon.status === 'purified'
-          ? '<span class="badge rounded-pill bg-light text-dark">✨ Purificado</span>'
+          ? `<span class="badge rounded-pill bg-light text-dark">✨ ${esc(t('ui.purifiedBadge', 'Purificado'))}</span>`
           : ''}
 
                 ${pokemon.legendary
           ? `<span class="badge rounded-pill badge-legendary">
                   <img src="/badgets/legendary.png" class="badge-icon" alt="">
-                  Legendario
+                  ${esc(t('ui.legendary', 'Legendario'))}
                 </span>`
           : ''}
 
           ${pokemon.mythical
           ? `<span class="badge rounded-pill badge-mythical">
                   <img src="/badgets/mythical.png" class="badge-icon" alt="">
-                  Singular
+                  ${esc(t('ui.mythical', 'Singular'))}
                 </span>`
           : ''}
 
@@ -1859,7 +1955,7 @@ ${pokemon.background?.name
           <div class="col-12">
             <div class="glass rounded-4 empty">
               <div>
-                <strong>No se pudo cargar la colección</strong>
+                <strong>${esc(t('ui.loadError', 'No se pudo cargar la colección'))}</strong>
                 <div class="small mt-1">${esc(error.message)}</div>
               </div>
             </div>
@@ -1902,7 +1998,12 @@ ${pokemon.background?.name
       apply();
     });
 
-    loadDefaultXML();
+    async function initializeApp() {
+      await loadLocalization();
+      await loadDefaultXML();
+    }
+
+    initializeApp();
   </script>
 </body>
 
