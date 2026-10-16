@@ -171,19 +171,9 @@
       filter: blur(8px);
     }
 
-    .art .pokemon-image {
-  position: absolute;
-  z-index: 2;
-  height: 80%;
-  max-width: 92%;
-  object-fit: contain;
-  filter: drop-shadow(0 18px 14px rgba(0, 0, 0, .30));
-  transition: transform .25s;
-}
-
-.pokemon-card:hover .art .pokemon-image {
-  transform: scale(1.06);
-}
+    .pokemon-card:hover .art .pokemon-image {
+      transform: scale(1.06);
+    }
 
     .type-normal {
       --sky-top: #b9dcf1;
@@ -493,29 +483,23 @@
     }
 
     .vivillon-pattern-badge {
-  position: absolute;
-  z-index: 5;
+      position: absolute;
+      z-index: 5;
 
-  top: 12px;
-  right: 12px;
+      top: 12px;
+      right: 12px;
 
-  width: 48px;
-  height: 48px;
+      width: 48px;
+      height: 48px;
 
-  object-fit: contain;
+      object-fit: contain;
 
-  opacity: 1;
-  visibility: visible;
-  transform: none;
+      opacity: 1;
+      visibility: visible;
+      transform: none;
 
-  filter: drop-shadow(
-    0 2px 4px rgba(0, 0, 0, .35)
-  );
-}
-
-.pokemon-card:hover .vivillon-pattern-badge {
-  transform: none;
-}
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .35));
+    }
   </style>
 </head>
 
@@ -1757,20 +1741,29 @@
       "`
           : ''}>
               ${pokemon.image
-  ? `<img
+          ? `<img
        class="pokemon-image"
        loading="lazy"
        src="${esc(pokemon.image)}"
        alt="${esc(pokemon.name)}">`
-  : '<span class="display-2 text-secondary">?</span>'}
+          : '<span class="display-2 text-secondary">?</span>'}
 
-          ${pokemon.background?.name
+${pokemon.isVivillonFamily &&
+          pokemon.variant !== 'normal' &&
+          (pokemon.dex === 664 || pokemon.dex === 665)
+          ? `<img
+         class="vivillon-pattern-badge"
+         src="https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Badges/Vivillon/${encodeURIComponent(pokemon.variant)}.png"
+         alt="${esc(labelVariant(pokemon.variant))}">`
+          : ''}
+
+${pokemon.background?.name
           ? `<div class="background-name">
        ${esc(pokemon.background.name)}
      </div>`
           : ''}
 
-            </div>
+</div>
             <div class="card-info p-3">
               <div class="d-flex justify-content-between align-items-start gap-2">
                 <div>
@@ -1837,15 +1830,6 @@
                   <img src="/badgets/mythical.png" class="badge-icon" alt="">
                   Singular
                 </span>`
-          : ''}
-
-          ${pokemon.isVivillonFamily &&
-          pokemon.variant !== 'normal' &&
-          (pokemon.dex === 664 || pokemon.dex === 665)
-          ? `<img
-         class="vivillon-pattern-badge"
-         src="https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Badges/Vivillon/${encodeURIComponent(pokemon.variant)}.png"
-         alt="${esc(labelVariant(pokemon.variant))}">`
           : ''}
 
                 ${renderTypeBadges(pokemon.types)}

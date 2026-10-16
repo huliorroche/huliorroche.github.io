@@ -554,10 +554,60 @@
     <status>purified</status>
   </pokemon>
 
+  <!-- VIVILLON -->
+
   <pokemon>
     <name>scatterbug</name>
-    <cp>324</cp>
-    <variant>marine</variant>
+    <cp>200</cp>
+    <variant>icy-snow</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>197</cp>
+    <variant>meadow</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>195</cp>
+    <variant>polar</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>193</cp>
+    <variant>garden</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>192</cp>
+    <variant>elegant</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>192</cp>
+    <variant>high-plains</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>192</cp>
+    <variant>continental</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>191</cp>
+    <variant>high-plains</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>188</cp>
+    <variant>elegant</variant>
   </pokemon>
 
 </collection>
