@@ -1749,13 +1749,13 @@
           : '<span class="display-2 text-secondary">?</span>'}
 
 ${pokemon.isVivillonFamily &&
-  pokemon.variant !== 'normal' &&
-  (pokemon.dex === 664 || pokemon.dex === 665)
-    ? `<img
+          pokemon.variant !== 'normal' &&
+          (pokemon.dex === 664 || pokemon.dex === 665)
+          ? `<img
          class="vivillon-pattern-badge"
-         src="https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Badges/Vivillon/${encodeURIComponent(labelVariant(pokemon.variant))}.png"
+         src="https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Badges/Vivillon/${encodeURIComponent(pokemon.variant)}.png"
          alt="${esc(labelVariant(pokemon.variant))}">`
-    : ''}
+          : ''}
 
 ${pokemon.background?.name
           ? `<div class="background-name">
