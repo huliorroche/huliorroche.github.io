@@ -871,23 +871,151 @@
       }
     }
 
-    async function canMegaEvolve(baseData) {
-  if (!baseData.forms?.length) {
-    return false;
-  }
-
-  const forms = await Promise.all(
-    baseData.forms.map(async form => {
-      try {
-        return await fetchJSON(form.url);
-      } catch (error) {
+    function findEvolutionNode(node, speciesName) {
+      if (!node) {
         return null;
       }
-    })
-  );
 
-  return forms.some(form => form?.is_mega === true);
-}
+      if (node.species?.name === speciesName) {
+        return node;
+      }
+
+      for (const nextNode of node.evolves_to || []) {
+        const found = findEvolutionNode(nextNode, speciesName);
+
+        if (found) {
+          return found;
+        }
+      }
+
+      return null;
+    }
+
+    function collectEvolutionSpecies(node, result = []) {
+      if (!node) {
+        return result;
+      }
+
+      if (node.species?.url) {
+        result.push(node.species);
+      }
+
+      for (const nextNode of node.evolves_to || []) {
+        collectEvolutionSpecies(nextNode, result);
+      }
+
+      return result;
+    }
+
+    async function pokemonVarietyHasMegaForm(variety) {
+      if (!variety?.pokemon?.url) {
+        return false;
+      }
+
+      try {
+        const pokemonData = await fetchJSON(variety.pokemon.url);
+
+        if (!pokemonData.forms?.length) {
+          return false;
+        }
+
+        const forms = await Promise.all(
+          pokemonData.forms.map(async form => {
+            try {
+              return await fetchJSON(form.url);
+            } catch (error) {
+              console.warn(
+                `No se pudo consultar la forma ${form.name}.`,
+                error
+              );
+
+              return null;
+            }
+          })
+        );
+
+        return forms.some(form => form?.is_mega === true);
+      } catch (error) {
+        console.warn(
+          `No se pudo consultar la variedad ${variety.pokemon.name}.`,
+          error
+        );
+
+        return false;
+      }
+    }
+
+    async function speciesHasMegaForm(species) {
+      if (!species?.varieties?.length) {
+        return false;
+      }
+
+      const results = await Promise.all(
+        species.varieties.map(pokemonVarietyHasMegaForm)
+      );
+
+      return results.some(Boolean);
+    }
+
+    async function canMegaEvolve(species) {
+      if (!species?.evolution_chain?.url) {
+        return speciesHasMegaForm(species);
+      }
+
+      try {
+        const evolutionChain = await fetchJSON(
+          species.evolution_chain.url
+        );
+
+        /*
+         * Localizamos la especie actual dentro de la cadena.
+         *
+         * Si estamos procesando a Ivysaur, empezamos en Ivysaur,
+         * no en Bulbasaur. Así se comprueban únicamente la especie
+         * actual y sus evoluciones posteriores.
+         */
+        const currentNode = findEvolutionNode(
+          evolutionChain.chain,
+          species.name
+        );
+
+        if (!currentNode) {
+          return speciesHasMegaForm(species);
+        }
+
+        /*
+         * Incluye la especie actual y todas sus evoluciones futuras.
+         *
+         * Bulbasaur  -> Bulbasaur, Ivysaur y Venusaur
+         * Ivysaur    -> Ivysaur y Venusaur
+         * Venusaur   -> Venusaur
+         */
+        const evolutionSpecies = collectEvolutionSpecies(currentNode);
+
+        const speciesData = await Promise.all(
+          evolutionSpecies.map(speciesReference =>
+            fetchJSON(speciesReference.url)
+          )
+        );
+
+        const megaResults = await Promise.all(
+          speciesData.map(speciesHasMegaForm)
+        );
+
+        return megaResults.some(Boolean);
+      } catch (error) {
+        console.warn(
+          `No se pudo comprobar la megaevolución de ${species.name}.`,
+          error
+        );
+
+        /*
+         * Si falla la cadena evolutiva, al menos se comprueba
+         * directamente la especie actual.
+         */
+        return speciesHasMegaForm(species);
+      }
+    }
 
     async function tryGetPokemonForm(identifier) {
       try {
@@ -975,11 +1103,15 @@
       const dex = Number(baseData.id);
       const variant = variantAliases[pokemon.variant] || pokemon.variant;
 
-      const [species, data, megaEvolves] = await Promise.all([
-  getSpeciesByDex(dex),
-  getVariantData(baseData, variant),
-  canMegaEvolve(baseData)
-]);
+      const speciesPromise = getSpeciesByDex(dex);
+      const dataPromise = getVariantData(baseData, variant);
+
+      const species = await speciesPromise;
+
+      const [data, megaEvolves] = await Promise.all([
+        dataPromise,
+        canMegaEvolve(species)
+      ]);
 
       const name =
         species.names.find(item => item.language.name === 'es')?.name ||
@@ -1011,21 +1143,21 @@
         .map(item => item.type.name);
 
       return {
-  ...pokemon,
-  dex,
-  name,
-  image,
-  variant,
-  types,
-  primaryType: types[0] || 'normal',
+        ...pokemon,
+        dex,
+        name,
+        image,
+        variant,
+        types,
+        primaryType: types[0] || 'normal',
 
-  legendary: species.is_legendary === true,
-  mythical: species.is_mythical === true,
+        legendary: species.is_legendary === true,
+        mythical: species.is_mythical === true,
 
-  megaEvolves,
+        megaEvolves,
 
-  background: pokemon.background
-};
+        background: pokemon.background
+      };
     }
 
     async function load(text) {
@@ -1226,16 +1358,16 @@
           );
 
         return (
-  matchesQuery &&
-  matchesRarity &&
-  matchesShiny &&
-  matchesDinamax &&
-  matchesMega &&
-  matchesStatus &&
-  matchesType &&
-  matchesRegion &&
-  matchesForm
-);
+          matchesQuery &&
+          matchesRarity &&
+          matchesShiny &&
+          matchesDinamax &&
+          matchesMega &&
+          matchesStatus &&
+          matchesType &&
+          matchesRegion &&
+          matchesForm
+        );
       });
 
       const sort = els.sort.value;
@@ -1334,11 +1466,11 @@
           : ''}
 
           ${pokemon.megaEvolves
-              ? `<span class="badge rounded-pill badge-mega">
+          ? `<span class="badge rounded-pill badge-mega">
                   <img src="/badgets/megaevolution.svg" class="badge-icon" alt="">
                   Megaevoluciona
                 </span>`
-              : ''}
+          : ''}
 
                   ${pokemon.status === 'shadow'
           ? '<span class="badge rounded-pill bg-dark">🌑 Oscuro</span>'
