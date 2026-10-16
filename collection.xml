@@ -8,6 +8,7 @@
     <name>venusaur</name>
     <cp>1887</cp>
     <status>purified</status>
+    <dinamax>yes</dinamax>
   </pokemon>
 
   <pokemon>

@@ -364,6 +364,11 @@
       color: #3a2700;
     }
 
+    .badge-dinamax {
+      background: linear-gradient(90deg, #813459, #dd0b82);
+      color: #3a2700;
+    }
+
     .badge-type {
       color: white;
       border: 1px solid rgba(255, 255, 255, .3);
@@ -445,6 +450,15 @@
           </select>
         </div>
 
+        <!-- Dinamax -->
+        <div class="col-6 col-lg-2">
+          <select id="shinyFilter" class="form-select">
+            <option value="">Todos los pokemons</option>
+            <option value="true">Solo Dinamax</option>
+            <option value="false">Solo no Dinamax</option>
+          </select>
+        </div>
+
         <!-- Estado -->
         <div class="col-6 col-lg-2">
           <select id="statusFilter" class="form-select">
@@ -522,6 +536,7 @@
 
       rarity: $('#rarityFilter'),
       shiny: $('#shinyFilter'),
+      shiny: $('#dinamaxFilter'),
       status: $('#statusFilter'),
       type: $('#typeFilter'),
       region: $('#regionFilter'),
@@ -707,6 +722,7 @@
           identifier,
           cp: Number(val(node, ['cp', 'pc'])) || 0,
           shiny: bool(val(node, ['shiny'])),
+          dinamax: bool(val(node, ['dinamax'])),
 
           variant: norm(
             val(node, ['variant', 'variante', 'form', 'region'])
@@ -1079,6 +1095,11 @@
           !els.shiny.value ||
           String(pokemon.shiny) === els.shiny.value;
 
+        // Dinamax
+        const matchesDinamax =
+          !els.dinamac.value ||
+          String(pokemon.dinamac) === els.dinamac.value;
+
         // Oscuro / Purificado
         const matchesStatus =
           !els.status.value ||
@@ -1128,6 +1149,7 @@
           matchesQuery &&
           matchesRarity &&
           matchesShiny &&
+          matchesDinamax &&
           matchesStatus &&
           matchesType &&
           matchesRegion &&
@@ -1224,6 +1246,10 @@
           ? '<span class="badge rounded-pill badge-shiny">✦ Shiny</span>'
           : ''}
 
+                ${pokemon.dinamax
+          ? '<span class="badge rounded-pill badge-dinamax">✦ Dinamax</span>'
+          : ''}
+
                   ${pokemon.status === 'shadow'
           ? '<span class="badge rounded-pill bg-dark">🌑 Oscuro</span>'
           : ''}
@@ -1277,6 +1303,7 @@
       els.search,
       els.rarity,
       els.shiny,
+      els.dinamax,
       els.status,
       els.type,
       els.region,
@@ -1295,6 +1322,7 @@
 
       els.rarity.value = '';
       els.shiny.value = '';
+      els.dinamax.value = '';
       els.status.value = '';
       els.type.value = '';
       els.region.value = '';
