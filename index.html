@@ -581,6 +581,7 @@
       rarity: $('#rarityFilter'),
       shiny: $('#shinyFilter'),
       dinamax: $('#dinamaxFilter'),
+      mega: $('#megaFilter'),
       status: $('#statusFilter'),
       type: $('#typeFilter'),
       region: $('#regionFilter'),
@@ -1165,6 +1166,11 @@
           !els.dinamax.value ||
           String(pokemon.dinamax) === els.dinamax.value;
 
+        // Megaevolución
+        const matchesMega =
+          !els.mega.value ||
+          String(pokemon.megaEvolves) === els.mega.value;
+
         // Oscuro / Purificado
         const matchesStatus =
           !els.status.value ||
@@ -1211,15 +1217,16 @@
           );
 
         return (
-          matchesQuery &&
-          matchesRarity &&
-          matchesShiny &&
-          matchesDinamax &&
-          matchesStatus &&
-          matchesType &&
-          matchesRegion &&
-          matchesForm
-        );
+  matchesQuery &&
+  matchesRarity &&
+  matchesShiny &&
+  matchesDinamax &&
+  matchesMega &&
+  matchesStatus &&
+  matchesType &&
+  matchesRegion &&
+  matchesForm
+);
       });
 
       const sort = els.sort.value;
@@ -1384,6 +1391,7 @@
       els.rarity,
       els.shiny,
       els.dinamax,
+      els.mega,
       els.status,
       els.type,
       els.region,
@@ -1397,21 +1405,21 @@
     });
 
     els.clear.addEventListener('click', () => {
+  els.search.value = '';
 
-      els.search.value = '';
+  els.rarity.value = '';
+  els.shiny.value = '';
+  els.dinamax.value = '';
+  els.mega.value = '';
+  els.status.value = '';
+  els.type.value = '';
+  els.region.value = '';
+  els.form.value = '';
 
-      els.rarity.value = '';
-      els.shiny.value = '';
-      els.dinamax.value = '';
-      els.status.value = '';
-      els.type.value = '';
-      els.region.value = '';
-      els.form.value = '';
+  els.sort.value = 'dex';
 
-      els.sort.value = 'dex';
-
-      apply();
-    });
+  apply();
+});
 
     loadDefaultXML();
   </script>
