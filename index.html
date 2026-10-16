@@ -365,8 +365,19 @@
     }
 
     .badge-dinamax {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28em;
       background: linear-gradient(90deg, #813459, #dd0b82);
       color: #3a2700;
+    }
+
+    .badge-dinamax-icon {
+        width: 1em;
+        height: 1em;
+        flex: 0 0 1em;
+        object-fit: contain;
+        vertical-align: -0.125em;
     }
 
     .badge-type {
@@ -400,6 +411,7 @@
       filter:
         brightness(1.05) drop-shadow(0 0 15px white) drop-shadow(0 0 30px #6feeff);
     }
+    
   </style>
 </head>
 
@@ -1247,7 +1259,10 @@
           : ''}
 
                 ${pokemon.dinamax
-          ? '<span class="badge rounded-pill badge-dinamax">✦ Dinamax</span>'
+          ? `<span class="badge rounded-pill badge-dinamax">
+              <img src="/badgets/dinamax.svg" class="badge-dinamax-icon" alt="">
+              Dinamax
+            </span>`
           : ''}
 
                   ${pokemon.status === 'shadow'
