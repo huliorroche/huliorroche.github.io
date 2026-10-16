@@ -8,7 +8,6 @@
     <name>venusaur</name>
     <cp>1887</cp>
     <status>purified</status>
-    <dinamax>yes</dinamax>
   </pokemon>
 
   <pokemon>
@@ -364,12 +363,6 @@
     <shiny>yes</shiny>
   </pokemon>
 
-  <!-- <pokemon>
-    <name>regigigas</name>
-    <cp>928</cp>
-    <status>shadow</status>
-  </pokemon> -->
-
   <pokemon>
     <name>roggenrola</name>
     <cp>403</cp>
@@ -485,6 +478,77 @@
     <name>rhyhorn</name>
     <cp>603</cp>
     <shiny>yes</shiny>
+  </pokemon>
+
+  <!-- LEGENDARIOS -->
+  <pokemon>
+    <name>heatran</name>
+    <cp>2601</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>kyogre</name>
+    <cp>2270</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>kyogre</name>
+    <cp>1706</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>kyurem</name>
+    <cp>1988</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>zapdos</name>
+    <cp>1961</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>groudon</name>
+    <cp>1717</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>cresselia</name>
+    <cp>1567</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>regieleki</name>
+    <cp>1553</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>latias</name>
+    <cp>1464</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>latias</name>
+    <cp>1441</cp>
+  </pokemon>
+
+  <pokemon>
+    <name>articuno</name>
+    <cp>1380</cp>
+  </pokemon>
+
+  
+
+  <!-- DINAMAX -->
+  <pokemon>
+    <name>rookidee</name>
+    <cp>345</cp>
+    <dinamax>yes</dinamax>
+  </pokemon>
+
+  <pokemon>
+    <name>regigigas</name>
+    <cp>928</cp>
+    <status>purified</status>
   </pokemon>
 
 </collection>
