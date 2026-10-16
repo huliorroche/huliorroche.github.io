@@ -405,6 +405,14 @@
       vertical-align: -0.125em;
     }
 
+    .badge-mega {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.28em;
+      background: linear-gradient(90deg, #7447d8, #e34fa3);
+      color: white;
+    }
+
     .badge-type {
       color: white;
       border: 1px solid rgba(255, 255, 255, .3);
@@ -853,6 +861,24 @@
       }
     }
 
+    async function canMegaEvolve(baseData) {
+  if (!baseData.forms?.length) {
+    return false;
+  }
+
+  const forms = await Promise.all(
+    baseData.forms.map(async form => {
+      try {
+        return await fetchJSON(form.url);
+      } catch (error) {
+        return null;
+      }
+    })
+  );
+
+  return forms.some(form => form?.is_mega === true);
+}
+
     async function tryGetPokemonForm(identifier) {
       try {
         return await fetchJSON(
@@ -939,10 +965,11 @@
       const dex = Number(baseData.id);
       const variant = variantAliases[pokemon.variant] || pokemon.variant;
 
-      const [species, data] = await Promise.all([
-        getSpeciesByDex(dex),
-        getVariantData(baseData, variant)
-      ]);
+      const [species, data, megaEvolves] = await Promise.all([
+  getSpeciesByDex(dex),
+  getVariantData(baseData, variant),
+  canMegaEvolve(baseData)
+]);
 
       const name =
         species.names.find(item => item.language.name === 'es')?.name ||
@@ -974,19 +1001,21 @@
         .map(item => item.type.name);
 
       return {
-        ...pokemon,
-        dex,
-        name,
-        image,
-        variant,
-        types,
-        primaryType: types[0] || 'normal',
+  ...pokemon,
+  dex,
+  name,
+  image,
+  variant,
+  types,
+  primaryType: types[0] || 'normal',
 
-        legendary: species.is_legendary === true,
-        mythical: species.is_mythical === true,
+  legendary: species.is_legendary === true,
+  mythical: species.is_mythical === true,
 
-        background: pokemon.background
-      };
+  megaEvolves,
+
+  background: pokemon.background
+};
     }
 
     async function load(text) {
@@ -1287,6 +1316,13 @@
               Dinamax
             </span>`
           : ''}
+
+          ${pokemon.megaEvolves
+              ? `<span class="badge rounded-pill badge-mega">
+                  <img src="/badgets/megaevolution.svg" class="badge-icon" alt="">
+                  Megaevoluciona
+                </span>`
+              : ''}
 
                   ${pokemon.status === 'shadow'
           ? '<span class="badge rounded-pill bg-dark">🌑 Oscuro</span>'
