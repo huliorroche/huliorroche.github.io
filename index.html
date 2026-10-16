@@ -171,19 +171,19 @@
       filter: blur(8px);
     }
 
-    .art img {
-      position: absolute;
-      z-index: 2;
-      height: 80%;
-      max-width: 92%;
-      object-fit: contain;
-      filter: drop-shadow(0 18px 14px rgba(0, 0, 0, .30));
-      transition: transform .25s;
-    }
+    .art .pokemon-image {
+  position: absolute;
+  z-index: 2;
+  height: 80%;
+  max-width: 92%;
+  object-fit: contain;
+  filter: drop-shadow(0 18px 14px rgba(0, 0, 0, .30));
+  transition: transform .25s;
+}
 
-    .pokemon-card:hover .art img {
-      transform: scale(1.06);
-    }
+.pokemon-card:hover .art .pokemon-image {
+  transform: scale(1.06);
+}
 
     .type-normal {
       --sky-top: #b9dcf1;
@@ -493,26 +493,29 @@
     }
 
     .vivillon-pattern-badge {
-      position: absolute;
-      z-index: 4;
+  position: absolute;
+  z-index: 5;
 
-      top: 12px;
-      right: 12px;
+  top: 12px;
+  right: 12px;
 
-      width: 46px;
-      height: 46px;
+  width: 48px;
+  height: 48px;
 
-      object-fit: contain;
+  object-fit: contain;
 
-      filter:
-        drop-shadow(0 2px 3px rgba(0, 0, 0, .35));
+  opacity: 1;
+  visibility: visible;
+  transform: none;
 
-      transition: transform .2s ease;
-    }
+  filter: drop-shadow(
+    0 2px 4px rgba(0, 0, 0, .35)
+  );
+}
 
-    .pokemon-card:hover .vivillon-pattern-badge {
-      transform: scale(1.08);
-    }
+.pokemon-card:hover .vivillon-pattern-badge {
+  transform: none;
+}
   </style>
 </head>
 
@@ -702,15 +705,33 @@
       sensu: 'Refinado',
 
       // Flabébé, Floette, Florges
-      red: 'Roja',
+      red: 'Rojo',
       blue: 'Azul',
-      yellow: 'Amarilla',
+      yellow: 'Amarillo',
       green: 'Verde',
       orange: 'Naranja',
-      purple: 'Morado',
-      pink: 'Rosa',
       white: 'Blanco',
       eternal: 'Negro',
+
+      // Vivillon
+      'icy-snow': 'Taiga',
+      polar: 'Polar',
+      tundra: 'Tundra',
+      continental: 'Continental',
+      garden: 'Vergel',
+      elegant: 'Oriental',
+      meadow: 'Floral',
+      modern: 'Moderno',
+      marine: 'Marino',
+      archipelago: 'Isleño',
+      'high-plains': 'Estepa',
+      sandstorm: 'Desierto',
+      river: 'Oasis',
+      monsoon: 'Monzón',
+      savanna: 'Pantano',
+      sun: 'Solar',
+      ocean: 'Océano',
+      jungle: 'Jungla',
 
       // Deerling, Sawsbuck
       spring: 'Primavera',
@@ -1736,8 +1757,12 @@
       "`
           : ''}>
               ${pokemon.image
-          ? `<img loading="lazy" src="${esc(pokemon.image)}" alt="${esc(pokemon.name)}">`
-          : '<span class="display-2 text-secondary">?</span>'}
+  ? `<img
+       class="pokemon-image"
+       loading="lazy"
+       src="${esc(pokemon.image)}"
+       alt="${esc(pokemon.name)}">`
+  : '<span class="display-2 text-secondary">?</span>'}
 
           ${pokemon.background?.name
           ? `<div class="background-name">
