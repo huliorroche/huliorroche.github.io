@@ -1843,7 +1843,9 @@ ${pokemon.background?.name
 
     async function loadDefaultXML() {
       try {
-        const response = await fetch(COLLECTION_URL);
+        const response = await fetch(COLLECTION_URL, {
+          cache: 'no-store'
+        });
 
         if (!response.ok) {
           throw new Error(`No se pudo cargar collection.xml (${response.status})`);
