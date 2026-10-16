@@ -185,10 +185,10 @@
     <shiny>yes</shiny>
   </pokemon>
 
-  <pokemon>
+  <!-- <pokemon>
     <name>mew</name>
     <cp>1342</cp>
-  </pokemon>
+  </pokemon> -->
 
   <pokemon>
     <name>feraligatr</name>
@@ -363,11 +363,11 @@
     <shiny>yes</shiny>
   </pokemon>
 
-  <pokemon>
+  <!-- <pokemon>
     <name>regigigas</name>
     <cp>928</cp>
     <status>shadow</status>
-  </pokemon>
+  </pokemon> -->
 
   <pokemon>
     <name>roggenrola</name>
