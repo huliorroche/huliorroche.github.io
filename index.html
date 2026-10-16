@@ -548,7 +548,7 @@
 
       rarity: $('#rarityFilter'),
       shiny: $('#shinyFilter'),
-      shiny: $('#dinamaxFilter'),
+      dinamax: $('#dinamaxFilter'),
       status: $('#statusFilter'),
       type: $('#typeFilter'),
       region: $('#regionFilter'),
@@ -1109,8 +1109,8 @@
 
         // Dinamax
         const matchesDinamax =
-          !els.dinamac.value ||
-          String(pokemon.dinamac) === els.dinamac.value;
+          !els.dinamax.value ||
+          String(pokemon.dinamax) === els.dinamax.value;
 
         // Oscuro / Purificado
         const matchesStatus =
