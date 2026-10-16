@@ -794,27 +794,199 @@
     }
 
     const CACHE_PREFIX = 'pokeapi:';
-    const CACHE_VERSION = '1';
+    const CACHE_VERSION = '2';
     const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 días
 
-    async function fetchJSON(url) {
+    function removeOldPersistentCache() {
+      try {
+        const currentPrefix = `${CACHE_PREFIX}${CACHE_VERSION}:`;
 
-      /*
-       * 1. Caché en memoria.
-       *
-       * Evita peticiones repetidas durante la ejecución actual
-       * e incluso comparte una misma Promise si dos Pokémon
-       * solicitan simultáneamente el mismo recurso.
-       */
+        for (let index = localStorage.length - 1; index >= 0; index--) {
+          const key = localStorage.key(index);
+
+          if (key?.startsWith(CACHE_PREFIX) && !key.startsWith(currentPrefix)) {
+            localStorage.removeItem(key);
+          }
+        }
+      } catch (error) {
+        console.warn('No se pudo limpiar la caché antigua.', error);
+      }
+    }
+
+    function compactNamedResource(resource) {
+      if (!resource) {
+        return null;
+      }
+
+      return {
+        name: resource.name,
+        url: resource.url
+      };
+    }
+
+    function compactSprites(sprites) {
+      if (!sprites) {
+        return null;
+      }
+
+      return {
+        front_default: sprites.front_default || null,
+        front_shiny: sprites.front_shiny || null,
+        other: {
+          home: sprites.other?.home
+            ? {
+                front_default: sprites.other.home.front_default || null,
+                front_shiny: sprites.other.home.front_shiny || null
+              }
+            : null,
+          'official-artwork': sprites.other?.['official-artwork']
+            ? {
+                front_default: sprites.other['official-artwork'].front_default || null,
+                front_shiny: sprites.other['official-artwork'].front_shiny || null
+              }
+            : null
+        }
+      };
+    }
+
+    function compactPokemon(data) {
+      return {
+        id: data.id,
+        name: data.name,
+        is_default: data.is_default ?? false,
+        species: compactNamedResource(data.species),
+        forms: (data.forms || []).map(compactNamedResource),
+        types: (data.types || []).map(item => ({
+          slot: item.slot,
+          type: compactNamedResource(item.type)
+        })),
+        sprites: compactSprites(data.sprites)
+      };
+    }
+
+    function compactSpecies(data) {
+      return {
+        id: data.id,
+        name: data.name,
+        names: (data.names || [])
+          .filter(item => item.language?.name === 'es')
+          .map(item => ({
+            name: item.name,
+            language: { name: item.language.name }
+          })),
+        is_legendary: data.is_legendary === true,
+        is_mythical: data.is_mythical === true,
+        evolution_chain: data.evolution_chain
+          ? { url: data.evolution_chain.url }
+          : null,
+        varieties: (data.varieties || []).map(variety => ({
+          is_default: variety.is_default ?? false,
+          pokemon: compactNamedResource(variety.pokemon)
+        }))
+      };
+    }
+
+    function compactPokemonForm(data) {
+      return {
+        id: data.id,
+        name: data.name,
+        form_name: data.form_name || '',
+        is_default: data.is_default ?? false,
+        is_mega: data.is_mega === true,
+        types: (data.types || []).map(item => ({
+          slot: item.slot,
+          type: compactNamedResource(item.type)
+        })),
+        sprites: compactSprites(data.sprites)
+      };
+    }
+
+    function compactEvolutionNode(node) {
+      if (!node) {
+        return null;
+      }
+
+      return {
+        species: compactNamedResource(node.species),
+        evolves_to: (node.evolves_to || []).map(compactEvolutionNode)
+      };
+    }
+
+    function compactEvolutionChain(data) {
+      return {
+        id: data.id,
+        chain: compactEvolutionNode(data.chain)
+      };
+    }
+
+    function compactApiData(url, data) {
+      if (url.includes('/pokemon-species/')) {
+        return compactSpecies(data);
+      }
+
+      if (url.includes('/pokemon-form/')) {
+        return compactPokemonForm(data);
+      }
+
+      if (url.includes('/evolution-chain/')) {
+        return compactEvolutionChain(data);
+      }
+
+      if (url.includes('/pokemon/')) {
+        return compactPokemon(data);
+      }
+
+      return null;
+    }
+
+    function removePersistentCacheEntry(cacheKey) {
+      try {
+        localStorage.removeItem(cacheKey);
+      } catch (error) {
+        // La caché es opcional; su fallo no debe afectar a la aplicación.
+      }
+    }
+
+    function savePersistentCache(cacheKey, data) {
+      const compactData = compactApiData(cacheKey, data);
+
+      if (!compactData) {
+        return;
+      }
+
+      const serialized = JSON.stringify({
+        timestamp: Date.now(),
+        data: compactData
+      });
+
+      try {
+        localStorage.setItem(cacheKey, serialized);
+      } catch (error) {
+        if (error?.name === 'QuotaExceededError') {
+          try {
+            for (let index = localStorage.length - 1; index >= 0; index--) {
+              const key = localStorage.key(index);
+
+              if (key?.startsWith(CACHE_PREFIX)) {
+                localStorage.removeItem(key);
+              }
+            }
+
+            localStorage.setItem(cacheKey, serialized);
+          } catch (retryError) {
+            console.warn(`No se pudo guardar ${cacheKey} en caché.`, retryError);
+          }
+        } else {
+          console.warn(`No se pudo guardar ${cacheKey} en caché.`, error);
+        }
+      }
+    }
+
+    async function fetchJSON(url) {
       if (requestCache.has(url)) {
         return requestCache.get(url);
       }
 
-      /*
-       * 2. Caché persistente.
-       *
-       * Se conserva incluso después de recargar la página.
-       */
       const cacheKey = `${CACHE_PREFIX}${CACHE_VERSION}:${url}`;
 
       try {
@@ -829,83 +1001,37 @@
             entry.data
           ) {
             const promise = Promise.resolve(entry.data);
-
             requestCache.set(url, promise);
-
             return promise;
           }
 
-          /*
-           * Entrada demasiado antigua.
-           */
-          localStorage.removeItem(cacheKey);
+          removePersistentCacheEntry(cacheKey);
         }
       } catch (error) {
-        console.warn(
-          `No se pudo leer la caché de ${url}.`,
-          error
-        );
+        removePersistentCacheEntry(cacheKey);
       }
 
-      /*
-       * 3. Solo si no existe en ninguna caché se consulta PokéAPI.
-       */
       const request = fetch(url)
         .then(async response => {
-
           if (!response.ok) {
-            throw new Error(
-              `API ${response.status}: ${url}`
-            );
+            throw new Error(`API ${response.status}: ${url}`);
           }
 
           const data = await response.json();
-
-          /*
-           * Guardar respuesta persistente.
-           */
-          try {
-            localStorage.setItem(
-              cacheKey,
-              JSON.stringify({
-                timestamp: Date.now(),
-                data
-              })
-            );
-          } catch (error) {
-            /*
-             * localStorage puede quedarse sin espacio.
-             * No debe impedir que funcione la aplicación.
-             */
-            console.warn(
-              `No se pudo guardar ${url} en caché.`,
-              error
-            );
-          }
-
+          savePersistentCache(cacheKey, data);
           return data;
         })
         .catch(error => {
-
-          /*
-           * Si la petición falla, eliminamos únicamente la
-           * Promise de memoria para permitir otro intento.
-           */
           requestCache.delete(url);
-
           throw error;
         });
 
-      /*
-       * Se almacena la Promise inmediatamente.
-       *
-       * Esto es importante porque si tres Pokémon solicitan
-       * simultáneamente la misma URL solo se realiza un fetch.
-       */
       requestCache.set(url, request);
-
       return request;
     }
+
+    removeOldPersistentCache();
+
     function getPokemon(identifier) {
       return fetchJSON(`${API_BASE}/pokemon/${encodeURIComponent(identifier)}`);
     }
