@@ -352,6 +352,38 @@
       color: #7d8db6;
     }
 
+    .poke-name-row,
+    .poke-variant-row {
+      display: flex;
+      align-items: baseline;
+      flex-wrap: wrap;
+      column-gap: 0.45rem;
+    }
+
+    .poke-name-english {
+      color: #8190ad;
+      font-size: 0.76rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
+    .poke-variant-row {
+      margin-bottom: -10px;
+    }
+
+    .poke-variant-row .poke-variant {
+      margin-bottom: 0;
+    }
+
+    .poke-variant-english {
+      color: #9aa5bc;
+      font-size: 0.68rem;
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      text-transform: none;
+    }
+
     .cp {
       font-size: 1.55rem;
       font-weight: 850;
@@ -639,6 +671,7 @@
     let currentLocale = 'es-ES';
     let currentPokeApiLanguage = 'es';
     let translations = null;
+    let englishTranslations = null;
 
     function t(key, fallback = key) {
       const value = key.split('.').reduce((current, part) => current?.[part], translations);
@@ -725,6 +758,28 @@
         }
 
         translations = await response.json();
+
+        if (language === 'ja') {
+          try {
+            const englishResponse = await fetch(
+              `${I18N_BASE_URL}/en.json`,
+              {
+                cache: 'no-store'
+              }
+            );
+
+            if (englishResponse.ok) {
+              englishTranslations = await englishResponse.json();
+            }
+          } catch (error) {
+            console.warn(
+              'No se pudieron cargar las referencias en inglés.',
+              error
+            );
+
+            englishTranslations = null;
+          }
+        }
 
       } catch (error) {
 
@@ -1052,7 +1107,7 @@
     }
 
     const CACHE_PREFIX = 'pokeapi:';
-    const CACHE_VERSION = '3';
+    const CACHE_VERSION = '4';
     const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 días
 
     function removeOldPersistentCache() {
@@ -1127,7 +1182,11 @@
         id: data.id,
         name: data.name,
         names: (data.names || [])
-          .filter(item => ['es', 'en', 'fr'].includes(item.language?.name))
+          .filter(item =>
+            ['es', 'en', 'fr', 'ja'].includes(
+              item.language?.name
+            )
+          )
           .map(item => ({
             name: item.name,
             language: { name: item.language.name }
@@ -1310,6 +1369,27 @@
         .replace(/[_\s]+/g, '-')
         .replace(/-+/g, '-');
     }
+
+    function labelVariantEnglish(variant) {
+      const normalizedVariant = norm(variant).toLowerCase();
+
+      if (!normalizedVariant) {
+        return '';
+      }
+
+      const englishVariants =
+        englishTranslations?.variants || {};
+
+      if (englishVariants[normalizedVariant]) {
+        return englishVariants[normalizedVariant];
+      }
+
+      return normalizedVariant
+        .split('-')
+        .map(capitalize)
+        .join(' ');
+    }
+
 
     function formMatches(formName, speciesName, variant) {
       const normalizedForm = normalizeFormName(formName);
@@ -1597,6 +1677,14 @@
         species.names.find(item => item.language.name === 'es')?.name ||
         species.name;
 
+      const englishName =
+        currentLanguage === 'ja'
+          ? species.names.find(
+            item => item.language.name === 'en'
+          )?.name || species.name
+          : '';
+
+
       const variantSprites = data.variantSprites;
       const variantHome = variantSprites?.other?.home;
       const variantArtwork = variantSprites?.other?.['official-artwork'];
@@ -1630,6 +1718,7 @@
         ...pokemon,
         dex,
         name,
+        englishName,
         image,
         variant,
         types,
@@ -1941,16 +2030,32 @@ ${pokemon.background?.name
         #${String(pokemon.dex).padStart(4, '0')}
     </div>
 
-    <h3 class="h5 poke-name mb-0">
-        ${esc(pokemon.name)}
-    </h3>
+    <div class="poke-name-row">
+  <h3 class="h5 poke-name mb-0">
+    ${esc(pokemon.name)}
+  </h3>
+
+  ${currentLanguage === 'ja' && pokemon.englishName
+          ? `<span class="poke-name-english">
+         ${esc(pokemon.englishName)}
+       </span>`
+          : ''}
+</div>
+
 
     ${pokemon.variant !== 'normal'
-          ? `<div class="poke-variant">
-                    ${esc(labelVariant(pokemon.variant))}
-               </div>`
-          : ''
-        }
+          ? `<div class="poke-variant-row">
+       <div class="poke-variant">
+         ${esc(labelVariant(pokemon.variant))}
+       </div>
+
+       ${currentLanguage === 'ja'
+            ? `<span class="poke-variant-english">
+              ${esc(labelVariantEnglish(pokemon.variant))}
+            </span>`
+            : ''}
+     </div>`
+          : ''}
 </div>
                 <div class="text-end">
                   <small class="text-secondary">PC</small>
