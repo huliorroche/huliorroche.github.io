@@ -360,14 +360,6 @@
       column-gap: 0.45rem;
     }
 
-    .poke-name-english {
-      color: #8190ad;
-      font-size: 1.25rem;
-      letter-spacing: 0.02em;
-      text-transform: none;
-      font-family: "Arial Narrow";
-    }
-
     .poke-variant-row {
       margin-bottom: -10px;
     }
@@ -376,12 +368,32 @@
       margin-bottom: 0;
     }
 
-    .poke-variant-english {
+    .poke-name-auxiliary {
+      color: #8190ad;
+      font-size: 1.25rem;
+      font-weight: 300;
+      letter-spacing: -0.02em;
+      text-transform: none;
+
+      font-family:
+        "Arial Narrow",
+        "Roboto Condensed",
+        Arial,
+        sans-serif;
+    }
+
+    .poke-variant-auxiliary {
       color: #9aa5bc;
       font-size: 0.8rem;
-      letter-spacing: 0.02em;
+      font-weight: 300;
+      letter-spacing: -0.02em;
       text-transform: none;
-      font-family: "Arial Narrow";
+
+      font-family:
+        "Arial Narrow",
+        "Roboto Condensed",
+        Arial,
+        sans-serif;
     }
 
     .cp {
@@ -671,7 +683,8 @@
     let currentLocale = 'es-ES';
     let currentPokeApiLanguage = 'es';
     let translations = null;
-    let englishTranslations = null;
+    let auxiliaryLanguage = null;
+    let auxiliaryTranslations = null;
 
     function t(key, fallback = key) {
       const value = key.split('.').reduce((current, part) => current?.[part], translations);
@@ -702,8 +715,35 @@
       return defaultLanguage;
     }
 
-    async function loadLocalization() {
+    async function loadTranslationFile(language) {
+      if (!language) {
+        return null;
+      }
 
+      try {
+        const response = await fetch(
+          `${I18N_BASE_URL}/${encodeURIComponent(language)}.json`,
+          {
+            cache: 'no-store'
+          }
+        );
+
+        if (!response.ok) {
+          return null;
+        }
+
+        return await response.json();
+      } catch (error) {
+        console.warn(
+          `No se pudo cargar el diccionario "${language}".`,
+          error
+        );
+
+        return null;
+      }
+    }
+
+    async function loadLocalization() {
       let language = 'es';
 
       try {
@@ -726,7 +766,6 @@
           config.supported || [],
           config.default || 'es'
         );
-
       } catch (error) {
         console.warn(
           'No se pudo detectar el idioma. Se utilizará español.',
@@ -736,59 +775,19 @@
         language = 'es';
       }
 
-      try {
+      translations = await loadTranslationFile(language);
 
-        let response = await fetch(
-          `${I18N_BASE_URL}/${language}.json`,
-          {
-            cache: 'no-store'
-          }
-        );
-
-        if (!response.ok) {
-
-          language = 'es';
-
-          response = await fetch(
-            `${I18N_BASE_URL}/es.json`,
-            {
-              cache: 'no-store'
-            }
-          );
-        }
-
-        translations = await response.json();
-
-        if (language === 'ja') {
-          try {
-            const englishResponse = await fetch(
-              `${I18N_BASE_URL}/en.json`,
-              {
-                cache: 'no-store'
-              }
-            );
-
-            if (englishResponse.ok) {
-              englishTranslations = await englishResponse.json();
-            }
-          } catch (error) {
-            console.warn(
-              'No se pudieron cargar las referencias en inglés.',
-              error
-            );
-
-            englishTranslations = null;
-          }
-        }
-
-      } catch (error) {
-
+      if (!translations) {
         language = 'es';
+        translations = await loadTranslationFile('es');
+      }
 
+      if (!translations) {
         translations = {
           meta: {
             locale: 'es-ES',
-            pokeApiLanguage: 'es'
+            pokeApiLanguage: 'es',
+            auxiliaryLanguage: null
           },
           ui: {},
           types: {},
@@ -804,7 +803,18 @@
 
       currentPokeApiLanguage =
         translations.meta?.pokeApiLanguage ||
+        language ||
         'es';
+
+      auxiliaryLanguage =
+        translations.meta?.auxiliaryLanguage ||
+        null;
+
+      auxiliaryTranslations =
+        auxiliaryLanguage &&
+          auxiliaryLanguage !== currentLanguage
+          ? await loadTranslationFile(auxiliaryLanguage)
+          : null;
 
       document.documentElement.lang =
         currentLanguage;
@@ -1107,7 +1117,7 @@
     }
 
     const CACHE_PREFIX = 'pokeapi:';
-    const CACHE_VERSION = '4';
+    const CACHE_VERSION = '5';
     const CACHE_TTL = 30 * 24 * 60 * 60 * 1000; // 30 días
 
     function removeOldPersistentCache() {
@@ -1181,25 +1191,36 @@
       return {
         id: data.id,
         name: data.name,
-        names: (data.names || [])
-          .filter(item =>
-            ['es', 'en', 'fr', 'ja'].includes(
-              item.language?.name
-            )
-          )
-          .map(item => ({
-            name: item.name,
-            language: { name: item.language.name }
-          })),
-        is_legendary: data.is_legendary === true,
-        is_mythical: data.is_mythical === true,
-        evolution_chain: data.evolution_chain
-          ? { url: data.evolution_chain.url }
-          : null,
-        varieties: (data.varieties || []).map(variety => ({
-          is_default: variety.is_default ?? false,
-          pokemon: compactNamedResource(variety.pokemon)
-        }))
+
+        names: (data.names || []).map(item => ({
+          name: item.name,
+          language: {
+            name: item.language.name
+          }
+        })),
+
+        is_legendary:
+          data.is_legendary === true,
+
+        is_mythical:
+          data.is_mythical === true,
+
+        evolution_chain:
+          data.evolution_chain
+            ? {
+              url: data.evolution_chain.url
+            }
+            : null,
+
+        varieties: (data.varieties || []).map(
+          variety => ({
+            is_default:
+              variety.is_default ?? false,
+
+            pokemon:
+              compactNamedResource(variety.pokemon)
+          })
+        )
       };
     }
 
@@ -1370,18 +1391,26 @@
         .replace(/-+/g, '-');
     }
 
-    function labelVariantEnglish(variant) {
-      const normalizedVariant = norm(variant).toLowerCase();
-
-      if (!normalizedVariant) {
+    function labelVariantAuxiliary(variant) {
+      if (!auxiliaryLanguage || !auxiliaryTranslations) {
         return '';
       }
 
-      const englishVariants =
-        englishTranslations?.variants || {};
+      const normalizedVariant =
+        norm(variant).toLowerCase();
 
-      if (englishVariants[normalizedVariant]) {
-        return englishVariants[normalizedVariant];
+      if (
+        !normalizedVariant ||
+        normalizedVariant === 'normal'
+      ) {
+        return '';
+      }
+
+      const auxiliaryVariants =
+        auxiliaryTranslations.variants || {};
+
+      if (auxiliaryVariants[normalizedVariant]) {
+        return auxiliaryVariants[normalizedVariant];
       }
 
       return normalizedVariant
@@ -1389,7 +1418,6 @@
         .map(capitalize)
         .join(' ');
     }
-
 
     function formMatches(formName, speciesName, variant) {
       const normalizedForm = normalizeFormName(formName);
@@ -1677,11 +1705,12 @@
         species.names.find(item => item.language.name === 'es')?.name ||
         species.name;
 
-      const englishName =
-        currentLanguage === 'ja'
+      const auxiliaryName =
+        auxiliaryLanguage
           ? species.names.find(
-            item => item.language.name === 'en'
-          )?.name || species.name
+            item =>
+              item.language.name === auxiliaryLanguage
+          )?.name || ''
           : '';
 
 
@@ -1718,7 +1747,7 @@
         ...pokemon,
         dex,
         name,
-        englishName,
+        auxiliaryName,
         image,
         variant,
         types,
@@ -2035,10 +2064,12 @@ ${pokemon.background?.name
     ${esc(pokemon.name)}
   </h3>
 
-  ${currentLanguage === 'ja' && pokemon.englishName
-          ? `<span class="poke-name-english">
-         ${esc(pokemon.englishName)}
-       </span>`
+  ${auxiliaryLanguage && pokemon.auxiliaryName
+          ? `<span
+       class="poke-name-auxiliary"
+       lang="${esc(auxiliaryLanguage)}">
+       ${esc(pokemon.auxiliaryName)}
+     </span>`
           : ''}
 </div>
 
@@ -2049,10 +2080,15 @@ ${pokemon.background?.name
          ${esc(labelVariant(pokemon.variant))}
        </div>
 
-       ${currentLanguage === 'ja'
-            ? `<span class="poke-variant-english">
-              ${esc(labelVariantEnglish(pokemon.variant))}
-            </span>`
+       ${auxiliaryLanguage &&
+            labelVariantAuxiliary(pokemon.variant)
+            ? `<span
+         class="poke-variant-auxiliary"
+         lang="${esc(auxiliaryLanguage)}">
+         ${esc(
+              labelVariantAuxiliary(pokemon.variant)
+            )}
+       </span>`
             : ''}
      </div>`
           : ''}

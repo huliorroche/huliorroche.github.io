@@ -1,7 +1,8 @@
 {
   "meta": {
     "locale": "ja-JP",
-    "pokeApiLanguage": "ja"
+    "pokeApiLanguage": "ja",
+    "auxiliaryLanguage": "en"
   },
   "ui": {
     "search": "名前または図鑑番号で検索…",
