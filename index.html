@@ -503,6 +503,15 @@
           </select>
         </div>
 
+        <!-- Megaevolución -->
+        <div class="col-6 col-lg-2">
+          <select id="megaFilter" class="form-select">
+            <option value="">Todos los pokemons</option>
+            <option value="true">Megaevoluciona</option>
+            <option value="false">No megaevoluciona</option>
+          </select>
+        </div>
+
         <!-- Estado -->
         <div class="col-6 col-lg-2">
           <select id="statusFilter" class="form-select">
@@ -1405,21 +1414,21 @@
     });
 
     els.clear.addEventListener('click', () => {
-  els.search.value = '';
+      els.search.value = '';
 
-  els.rarity.value = '';
-  els.shiny.value = '';
-  els.dinamax.value = '';
-  els.mega.value = '';
-  els.status.value = '';
-  els.type.value = '';
-  els.region.value = '';
-  els.form.value = '';
+      els.rarity.value = '';
+      els.shiny.value = '';
+      els.dinamax.value = '';
+      els.mega.value = '';
+      els.status.value = '';
+      els.type.value = '';
+      els.region.value = '';
+      els.form.value = '';
 
-  els.sort.value = 'dex';
+      els.sort.value = 'dex';
 
-  apply();
-});
+      apply();
+    });
 
     loadDefaultXML();
   </script>
