@@ -444,6 +444,39 @@
       filter:
         brightness(1.05) drop-shadow(0 0 15px white) drop-shadow(0 0 30px #6feeff);
     }
+
+    .custom-background {
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+    }
+
+    .background-name {
+      position: absolute;
+      z-index: 3;
+
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      padding: 18px 12px 10px;
+
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+
+      color: white;
+
+      background:
+        linear-gradient(to bottom,
+          transparent,
+          rgba(10, 18, 35, 0.75));
+
+      text-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.8);
+    }
   </style>
 </head>
 
@@ -786,9 +819,24 @@
             val(node, ['status'])
           ).toLowerCase() || 'normal',
 
-          background: norm(
-            val(node, ['background'])
-          )
+          background: (() => {
+            const backgroundElement = [...node.children].find(
+              child => child.tagName.toLowerCase() === 'background'
+            );
+
+            if (!backgroundElement) {
+              return null;
+            }
+
+            return {
+              name: norm(
+                val(backgroundElement, ['name'])
+              ),
+              id: norm(
+                val(backgroundElement, ['id'])
+              )
+            };
+          })()
         };
       });
     }
@@ -835,15 +883,15 @@
         other: {
           home: sprites.other?.home
             ? {
-                front_default: sprites.other.home.front_default || null,
-                front_shiny: sprites.other.home.front_shiny || null
-              }
+              front_default: sprites.other.home.front_default || null,
+              front_shiny: sprites.other.home.front_shiny || null
+            }
             : null,
           'official-artwork': sprites.other?.['official-artwork']
             ? {
-                front_default: sprites.other['official-artwork'].front_default || null,
-                front_shiny: sprites.other['official-artwork'].front_shiny || null
-              }
+              front_default: sprites.other['official-artwork'].front_default || null,
+              front_shiny: sprites.other['official-artwork'].front_shiny || null
+            }
             : null
         }
       };
@@ -1636,20 +1684,25 @@
         <article class="col-sm-6 col-lg-4 col-xl-3">
           <div class="pokemon-card">
             <div
-  class="art ${pokemon.background ? 'custom-background' : 'type-' + esc(pokemon.primaryType)}
+  class="art ${pokemon.background?.id ? 'custom-background' : 'type-' + esc(pokemon.primaryType)}
   ${pokemon.status === 'shadow' ? 'shadow-pokemon' : ''}
   ${pokemon.status === 'purified' ? 'purified-pokemon' : ''}"
 
-  ${pokemon.background
+  ${pokemon.background?.id
           ? `style="
-        background-image: url('/backgrounds/${encodeURIComponent(pokemon.background)}.png');
-        background-size: cover;
-        background-position: center;
+        background-image: url('https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/LocationCards/${encodeURIComponent(pokemon.background.id)}.png');
       "`
           : ''}>
               ${pokemon.image
           ? `<img loading="lazy" src="${esc(pokemon.image)}" alt="${esc(pokemon.name)}">`
           : '<span class="display-2 text-secondary">?</span>'}
+
+          ${pokemon.background?.name
+          ? `<div class="background-name">
+       ${esc(pokemon.background.name)}
+     </div>`
+          : ''}
+
             </div>
             <div class="card-info p-3">
               <div class="d-flex justify-content-between align-items-start gap-2">

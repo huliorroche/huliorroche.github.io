@@ -377,7 +377,10 @@
   <pokemon>
     <name>zorua</name>
     <cp>532</cp>
-    <background>Día de la Comunidad 2026</background>
+    <background>
+      <name>Día de la Comunidad</name>
+      <id>sb_Community_2026</id>
+    </background>
   </pokemon>
 
   <pokemon>
