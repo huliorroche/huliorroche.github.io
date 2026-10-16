@@ -633,7 +633,7 @@
   <script>
     const API_BASE = 'https://pokeapi.co/api/v2';
     const COLLECTION_URL = 'https://huliorroche.github.io/collection.xml';
-    const COUNTRY_LANGUAGE_URL = './countries.json';
+    const LANGUAGE_CONFIG_URL = './languages.json';
     const I18N_BASE_URL = './i18n';
     let currentLanguage = 'es';
     let currentLocale = 'es-ES';
@@ -645,51 +645,125 @@
       return value ?? fallback;
     }
 
-    function detectCountryCode() {
-      const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
+    function detectBrowserLanguage(supportedLanguages, defaultLanguage) {
+      const browserLanguages =
+        navigator.languages?.length
+          ? navigator.languages
+          : [navigator.language];
 
-      for (const locale of locales) {
-        const match = String(locale || '').match(/[-_]([A-Za-z]{2})(?:$|[-_])/);
-        if (match) {
-          return match[1].toUpperCase();
+      for (const browserLanguage of browserLanguages) {
+        if (!browserLanguage) {
+          continue;
+        }
+
+        const language = browserLanguage
+          .replace('_', '-')
+          .split('-')[0]
+          .toLowerCase();
+
+        if (supportedLanguages.includes(language)) {
+          return language;
         }
       }
 
-      return null;
+      return defaultLanguage;
     }
 
     async function loadLocalization() {
+
       let language = 'es';
 
       try {
-        const configResponse = await fetch(COUNTRY_LANGUAGE_URL, { cache: 'no-store' });
-        if (configResponse.ok) {
-          const config = await configResponse.json();
-          const country = detectCountryCode();
-          language = (country && config.countries?.[country]) || config.default || 'es';
+        const configResponse = await fetch(
+          LANGUAGE_CONFIG_URL,
+          {
+            cache: 'no-store'
+          }
+        );
+
+        if (!configResponse.ok) {
+          throw new Error(
+            `No se pudo cargar languages.json (${configResponse.status})`
+          );
         }
+
+        const config = await configResponse.json();
+
+        language = detectBrowserLanguage(
+          config.supported || [],
+          config.default || 'es'
+        );
+
       } catch (error) {
+        console.warn(
+          'No se pudo detectar el idioma. Se utilizará español.',
+          error
+        );
+
         language = 'es';
       }
 
       try {
-        let response = await fetch(`${I18N_BASE_URL}/${language}.json`, { cache: 'no-store' });
+
+        let response = await fetch(
+          `${I18N_BASE_URL}/${language}.json`,
+          {
+            cache: 'no-store'
+          }
+        );
+
         if (!response.ok) {
+
           language = 'es';
-          response = await fetch(`${I18N_BASE_URL}/es.json`, { cache: 'no-store' });
+
+          response = await fetch(
+            `${I18N_BASE_URL}/es.json`,
+            {
+              cache: 'no-store'
+            }
+          );
         }
+
         translations = await response.json();
+
       } catch (error) {
+
         language = 'es';
-        translations = { meta: { locale: 'es-ES', pokeApiLanguage: 'es' }, ui: {}, types: {}, variants: {} };
+
+        translations = {
+          meta: {
+            locale: 'es-ES',
+            pokeApiLanguage: 'es'
+          },
+          ui: {},
+          types: {},
+          variants: {}
+        };
       }
 
       currentLanguage = language;
-      currentLocale = translations.meta?.locale || 'es-ES';
-      currentPokeApiLanguage = translations.meta?.pokeApiLanguage || 'es';
-      document.documentElement.lang = currentLanguage;
-      Object.assign(TYPE_NAMES, translations.types || {});
-      Object.assign(VARIANT_NAMES, translations.variants || {});
+
+      currentLocale =
+        translations.meta?.locale ||
+        'es-ES';
+
+      currentPokeApiLanguage =
+        translations.meta?.pokeApiLanguage ||
+        'es';
+
+      document.documentElement.lang =
+        currentLanguage;
+
+      Object.assign(
+        TYPE_NAMES,
+        translations.types || {}
+      );
+
+      Object.assign(
+        VARIANT_NAMES,
+        translations.variants || {}
+      );
+
       applyStaticTranslations();
     }
 
