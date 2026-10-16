@@ -554,4 +554,10 @@
     <status>purified</status>
   </pokemon>
 
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>324</cp>
+    <variant>marine</variant>
+  </pokemon>
+
 </collection>

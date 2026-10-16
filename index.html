@@ -128,6 +128,20 @@
         linear-gradient(to bottom, var(--sky-top) 0 64%, var(--sky-bottom) 64% 67%, var(--ground-top) 68%, var(--ground-bottom) 100%);
     }
 
+    .art>img.pokemon-image {
+      position: absolute;
+      z-index: 2;
+      height: 80%;
+      max-width: 92%;
+      object-fit: contain;
+      filter: drop-shadow(0 18px 14px rgba(0, 0, 0, .30));
+      transition: transform .25s;
+    }
+
+    .pokemon-card:hover .art>img.pokemon-image {
+      transform: scale(1.06);
+    }
+
     .art::before {
       content: "";
       position: absolute;
@@ -476,6 +490,28 @@
 
       text-shadow:
         0 1px 3px rgba(0, 0, 0, 0.8);
+    }
+
+    .vivillon-pattern-badge {
+      position: absolute;
+      z-index: 4;
+
+      top: 12px;
+      right: 12px;
+
+      width: 46px;
+      height: 46px;
+
+      object-fit: contain;
+
+      filter:
+        drop-shadow(0 2px 3px rgba(0, 0, 0, .35));
+
+      transition: transform .2s ease;
+    }
+
+    .pokemon-card:hover .vivillon-pattern-badge {
+      transform: scale(1.08);
     }
   </style>
 </head>
@@ -1411,6 +1447,10 @@
         .sort((a, b) => a.slot - b.slot)
         .map(item => item.type.name);
 
+      const isVivillonFamily =
+        ['scatterbug', 'spewpa', 'vivillon'].includes(
+          species.name.toLowerCase()
+        );
       return {
         ...pokemon,
         dex,
@@ -1424,6 +1464,8 @@
         mythical: species.is_mythical === true,
 
         megaEvolves,
+
+        isVivillonFamily,
 
         background: pokemon.background
       };
@@ -1770,6 +1812,15 @@
                   <img src="/badgets/mythical.png" class="badge-icon" alt="">
                   Singular
                 </span>`
+          : ''}
+
+          ${pokemon.isVivillonFamily &&
+          pokemon.variant !== 'normal' &&
+          (pokemon.dex === 664 || pokemon.dex === 665)
+          ? `<img
+         class="vivillon-pattern-badge"
+         src="https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Badges/Vivillon/${encodeURIComponent(pokemon.variant)}.png"
+         alt="${esc(labelVariant(pokemon.variant))}">`
           : ''}
 
                 ${renderTypeBadges(pokemon.types)}
