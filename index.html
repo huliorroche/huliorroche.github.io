@@ -372,7 +372,7 @@
       color: white;
     }
 
-    .badge-dinamax-icon {
+    .badge-icon {
       width: 1em;
       height: 1em;
       flex: 0 0 1em;
@@ -1283,7 +1283,7 @@
 
                 ${pokemon.dinamax
           ? `<span class="badge rounded-pill badge-dinamax">
-              <img src="/badgets/dinamax.svg" class="badge-dinamax-icon" alt="">
+              <img src="/badgets/dinamax.svg" class="badge-icon" alt="">
               Dinamax
             </span>`
           : ''}
@@ -1298,14 +1298,14 @@
 
                 ${pokemon.legendary
           ? `<span class="badge rounded-pill badge-legendary">
-                  /badgets/legendary.png
+                  <img src="/badgets/legendary.png" class="badge-icon" alt="">
                   Legendario
                 </span>`
           : ''}
 
           ${pokemon.mythical
           ? `<span class="badge rounded-pill badge-mythical">
-                  /badgets/mythical.png
+                  <img src="/badgets/mythical.png" class="badge-icon" alt="">
                   Singular
                 </span>`
           : ''}
