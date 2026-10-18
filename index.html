@@ -1282,12 +1282,38 @@
             els.grid.innerHTML = list.length ? list.map(p => `<article class="col-sm-6 col-lg-4 col-xl-3" data-uid="${p.uid}"><div class="pokemon-card" role="button" tabindex="0"><div class="art type-${esc(p.primaryType)}">${p.image ? `<img class="pokemon-image" src="${esc(p.image)}" alt="${esc(p.name)}">` : ''}</div><div class="card-info p-3"><div class="d-flex justify-content-between"><div><div class="dex">#${String(p.dex).padStart(4, '0')}</div><h3 class="h5 poke-name mb-0">${esc(p.name)}</h3>${p.variant !== 'normal' ? `<div class="poke-variant">${esc(labelVariant(p.variant))}</div>` : ''}</div><div class="text-end"><small>PC</small><div class="cp">${p.cp.toLocaleString(currentLocale)}</div></div></div><div class="d-flex flex-wrap gap-2 mt-3">${cardBadges(p)}</div></div><div class="pokemon-mobile-details" id="details-${p.uid}">${detailsInfo(p)}</div></div></article>`).join('') : `<div class="col-12"><div class="glass empty"><strong>${esc(t('ui.noResults', 'No hay resultados'))}</strong></div></div>`
         }
 
-        function refreshFilters() {
-            const types = [...new Set(state.all.flatMap(p => p.types))].sort();
-            els.type.innerHTML = `<option value="">${esc(t('ui.allTypes', 'Todos los tipos'))}</option>` + types.map(x => `<option value="${x}">${esc(TYPE_NAMES[x] || x)}</option>`).join('');
-            const regions = [...new Set(state.all.filter(p => REGIONS.includes(p.variant)).map(p => p.variant))];
-            els.region.innerHTML = `<option value="">${esc(t('ui.allRegions', 'Todas las regiones'))}</option>` + regions.map(x => `<option value="${x}">${esc(labelVariant(x))}</option>`).join('')
-        }
+         function refreshFilters() {
+
+      // Tipos
+      const types = [...new Set(
+        state.all.flatMap(pokemon => pokemon.types)
+      )].sort();
+
+      els.type.innerHTML =
+        `<option value="">${esc(t('ui.allTypes', 'Todos los tipos'))}</option>` +
+        types.map(type =>
+          `<option value="${type}">
+                ${TYPE_NAMES[type] || type}
+            </option>`
+        ).join('');
+
+      // Regiones
+      const regions = [...new Set(
+        state.all
+          .filter(pokemon => REGIONS.includes(pokemon.variant))
+          .map(pokemon => pokemon.variant)
+      )].sort();
+
+      els.region.innerHTML =
+        `<option value="">${esc(t('ui.allRegions', 'Todas las regiones'))}</option>` +
+        `<option value="__regional__">${esc(t('ui.anyRegion', 'Cualquier región'))}</option>` +
+        regions.map(region =>
+          `<option value="${region}">
+                ${region.charAt(0).toUpperCase() + region.slice(1)}
+            </option>`
+        ).join('');
+    }
+
 
         function apply() {
             const q = key(els.search.value),
