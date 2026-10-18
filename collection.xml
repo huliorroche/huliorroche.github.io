@@ -2,11 +2,11 @@
   <pokemon>
     <name>bulbasaur</name>
     <cp>938</cp>
-    <attacks>
-    <fast>Impactrueno</fast>
-    <charged>Voltio Cruel</charged>
-    <charged>Surf</charged>
-  </attacks>
+    <moves>
+      <fast>Impactrueno</fast>
+      <charged>Rayo</charged>
+      <charged>Surf</charged>
+    </moves>
   </pokemon>
 
   <pokemon>
