@@ -1276,11 +1276,11 @@
         function detailsInfo(p) {
             return `${p.auxiliaryName ? `<div class="details-auxiliary"><div class="details-auxiliary-name">${esc(p.auxiliaryName)}</div></div>` : ''}${renderMoveGroups(p)}`
         }
-    function render(pokemonList) {
-      els.count.textContent = pokemonList.length;
+        function render(pokemonList) {
+            els.count.textContent = pokemonList.length;
 
-      if (!pokemonList.length) {
-        els.grid.innerHTML = `
+            if (!pokemonList.length) {
+                els.grid.innerHTML = `
           <div class="col-12">
             <div class="glass rounded-4 empty">
               <div>
@@ -1290,10 +1290,10 @@
               </div>
             </div>
           </div>`;
-        return;
-      }
+                return;
+            }
 
-      els.grid.innerHTML = pokemonList.map(pokemon => `
+            els.grid.innerHTML = pokemonList.map(pokemon => `
         <article class="col-sm-6 col-lg-4 col-xl-3">
           <div class="pokemon-card">
             <div
@@ -1302,32 +1302,32 @@
   ${pokemon.status === 'purified' ? 'purified-pokemon' : ''}"
 
   ${pokemon.background?.id
-          ? `style="
+                    ? `style="
         background-image: url('https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/LocationCards/${encodeURIComponent(pokemon.background.id)}.png');
       "`
-          : ''}>
+                    : ''}>
               ${pokemon.image
-          ? `<img
+                    ? `<img
        class="pokemon-image"
        loading="lazy"
        src="${esc(pokemon.image)}"
        alt="${esc(pokemon.name)}">`
-          : '<span class="display-2 text-secondary">?</span>'}
+                    : '<span class="display-2 text-secondary">?</span>'}
 
       ${pokemon.isVivillonFamily &&
-          pokemon.variant !== 'normal' &&
-          (pokemon.dex === 664 || pokemon.dex === 665)
-          ? `<img
+                    pokemon.variant !== 'normal' &&
+                    (pokemon.dex === 664 || pokemon.dex === 665)
+                    ? `<img
          class="vivillon-pattern-badge"
          src="https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Badges/Vivillon/${encodeURIComponent(pokemon.variant)}.png"
          alt="${esc(labelVariant(pokemon.variant))}">`
-          : ''}
+                    : ''}
 
 ${pokemon.background?.name
-          ? `<div class="background-name">
+                    ? `<div class="background-name">
        ${esc(pokemon.background.name)}
      </div>`
-          : ''}
+                    : ''}
 
 </div>
             <div class="card-info p-3">
@@ -1343,33 +1343,33 @@ ${pokemon.background?.name
   </h3>
 
   ${auxiliaryLanguage && pokemon.auxiliaryName
-          ? `<span
+                    ? `<span
        class="poke-name-auxiliary"
        lang="${esc(auxiliaryLanguage)}">
        ${esc(pokemon.auxiliaryName)}
      </span>`
-          : ''}
+                    : ''}
 </div>
 
 
     ${pokemon.variant !== 'normal'
-          ? `<div class="poke-variant-row">
+                    ? `<div class="poke-variant-row">
        <div class="poke-variant">
          ${esc(labelVariant(pokemon.variant))}
        </div>
 
        ${auxiliaryLanguage &&
-            labelVariantAuxiliary(pokemon.variant)
-            ? `<span
+                        labelVariantAuxiliary(pokemon.variant)
+                        ? `<span
          class="poke-variant-auxiliary"
          lang="${esc(auxiliaryLanguage)}">
          ${esc(
-              labelVariantAuxiliary(pokemon.variant)
-            )}
+                            labelVariantAuxiliary(pokemon.variant)
+                        )}
        </span>`
-            : ''}
+                        : ''}
      </div>`
-          : ''}
+                    : ''}
 </div>
                 <div class="text-end">
                   <small class="text-secondary">PC</small>
@@ -1378,48 +1378,48 @@ ${pokemon.background?.name
               </div>
               <div class="d-flex flex-wrap gap-2 mt-3">
                 ${pokemon.shiny
-          ? `<span class="badge rounded-pill badge-shiny">
+                    ? `<span class="badge rounded-pill badge-shiny">
             <img src="https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Filters/ic_shiny_white.png" class="badge-icon" alt="">
             ${esc(t('ui.shiny', 'Shiny'))}</span>`
-          : ''}
+                    : ''}
 
           
 
                 ${pokemon.dinamax
-          ? `<span class="badge rounded-pill badge-dinamax">
+                    ? `<span class="badge rounded-pill badge-dinamax">
               <img src="/badgets/dinamax.svg" class="badge-icon" alt="">
               ${esc(t('ui.dynamax', 'Dinamax'))}
             </span>`
-          : ''}
+                    : ''}
 
           ${pokemon.megaEvolves
-          ? `<span class="badge rounded-pill badge-mega">
+                    ? `<span class="badge rounded-pill badge-mega">
                   <img src="/badgets/megaevolution.png" class="badge-icon" alt="">
                   ${esc(t('ui.mega', 'Megaevoluciona'))}
                 </span>`
-          : ''}
+                    : ''}
 
                   ${pokemon.status === 'shadow'
-          ? `<span class="badge rounded-pill bg-dark">🌑 ${esc(t('ui.shadow', 'Oscuro'))}</span>`
-          : ''}
+                    ? `<span class="badge rounded-pill bg-dark">🌑 ${esc(t('ui.shadow', 'Oscuro'))}</span>`
+                    : ''}
 
                 ${pokemon.status === 'purified'
-          ? `<span class="badge rounded-pill bg-light text-dark">✨ ${esc(t('ui.purifiedBadge', 'Purificado'))}</span>`
-          : ''}
+                    ? `<span class="badge rounded-pill bg-light text-dark">✨ ${esc(t('ui.purifiedBadge', 'Purificado'))}</span>`
+                    : ''}
 
                 ${pokemon.legendary
-          ? `<span class="badge rounded-pill badge-legendary">
+                    ? `<span class="badge rounded-pill badge-legendary">
                   <img src="/badgets/legendary.png" class="badge-icon" alt="">
                   ${esc(t('ui.legendary', 'Legendario'))}
                 </span>`
-          : ''}
+                    : ''}
 
           ${pokemon.mythical
-          ? `<span class="badge rounded-pill badge-mythical">
+                    ? `<span class="badge rounded-pill badge-mythical">
                   <img src="/badgets/mythical.png" class="badge-icon" alt="">
                   ${esc(t('ui.mythical', 'Singular'))}
                 </span>`
-          : ''}
+                    : ''}
 
                 ${renderTypeBadges(pokemon.types)}
                 
@@ -1427,50 +1427,79 @@ ${pokemon.background?.name
             </div>
           </div>
         </article>`
-      ).join('');
-    }
+            ).join('');
+        }
 
         function renderTypeBadges(types) {
-      return types.map(type => `
+            return types.map(type => `
         <span class="badge rounded-pill badge-type"
               style="background:${TYPE_COLORS[type] || TYPE_COLORS.normal}">
           ${esc((translations?.types || {})[type] || TYPE_NAMES[type] || type)}
         </span>`
-      ).join('');
-    }
+            ).join('');
+        }
+
+        function labelVariantAuxiliary(variant) {
+            if (!auxiliaryLanguage || !auxiliaryTranslations) {
+                return '';
+            }
+
+            const normalizedVariant =
+                norm(variant).toLowerCase();
+
+            if (
+                !normalizedVariant ||
+                normalizedVariant === 'normal'
+            ) {
+                return '';
+            }
+
+            const auxiliaryVariants =
+                auxiliaryTranslations.variants || {};
+
+            if (auxiliaryVariants[normalizedVariant]) {
+                return auxiliaryVariants[normalizedVariant];
+            }
+
+            return normalizedVariant
+                .split('-')
+                .map(capitalize)
+                .join(' ');
+        }
 
 
-         function refreshFilters() {
 
-      // Tipos
-      const types = [...new Set(
-        state.all.flatMap(pokemon => pokemon.types)
-      )].sort();
+        function refreshFilters() {
 
-      els.type.innerHTML =
-        `<option value="">${esc(t('ui.allTypes', 'Todos los tipos'))}</option>` +
-        types.map(type =>
-          `<option value="${type}">
+            // Tipos
+            const types = [...new Set(
+                state.all.flatMap(pokemon => pokemon.types)
+            )].sort();
+
+            els.type.innerHTML =
+                `<option value="">${esc(t('ui.allTypes', 'Todos los tipos'))}</option>` +
+                types.map(type =>
+                    `<option value="${type}">
                 ${TYPE_NAMES[type] || type}
             </option>`
-        ).join('');
+                ).join('');
 
-      // Regiones
-      const regions = [...new Set(
-        state.all
-          .filter(pokemon => REGIONS.includes(pokemon.variant))
-          .map(pokemon => pokemon.variant)
-      )].sort();
+            // Regiones
+            const regions = [...new Set(
+                state.all
+                    .filter(pokemon => REGIONS.includes(pokemon.variant))
+                    .map(pokemon => pokemon.variant)
+            )].sort();
 
-      els.region.innerHTML =
-        `<option value="">${esc(t('ui.allRegions', 'Todas las regiones'))}</option>` +
-        `<option value="__regional__">${esc(t('ui.anyRegion', 'Cualquier región'))}</option>` +
-        regions.map(region =>
-          `<option value="${region}">
+            els.region.innerHTML =
+                `<option value="">${esc(t('ui.allRegions', 'Todas las regiones'))}</option>` +
+                `<option value="__regional__">${esc(t('ui.anyRegion', 'Cualquier región'))}</option>` +
+                regions.map(region =>
+                    `<option value="${region}">
                 ${region.charAt(0).toUpperCase() + region.slice(1)}
             </option>`
-        ).join('');
-    }
+                ).join('');
+        }
 
 
         function apply() {
