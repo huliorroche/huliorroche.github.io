@@ -496,20 +496,6 @@
             gap: .65rem
         }
 
-        .move-detail {
-            padding: .8rem;
-            border: 1px solid var(--line);
-            border-radius: 1rem;
-            background: #f7f9fe
-        }
-
-        .move-head {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            gap: .75rem
-        }
-
         .move-name {
             font-weight: 800
         }
@@ -517,22 +503,6 @@
         .move-aux {
             color: #8190ad;
             font: 300 .82rem "Arial Narrow", Arial, sans-serif
-        }
-
-        .move-stats {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .45rem;
-            margin-top: .55rem;
-            color: #526080;
-            font-size: .78rem
-        }
-
-        .move-stat {
-            background: #fff;
-            border: 1px solid var(--line);
-            border-radius: 999px;
-            padding: .25rem .5rem
         }
 
         .move-missing {
@@ -584,38 +554,134 @@
             opacity: .42
         }
 
-        .move-name-line {
-            display: flex;
-            align-items: center;
-            gap: .55rem;
-            flex-wrap: wrap;
-        }
+        .move-list {
+    display: grid;
+    gap: .9rem;
+}
 
-        .move-energy-bars {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            height: 10px;
-        }
+.move-detail {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: .65rem;
 
-        .move-energy-bar {
-            display: block;
-            width: 42px;
-            height: 8px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
 
-            border-radius: 2px;
+.move-type-icon {
+    width: 32px;
+    height: 32px;
 
-            transform: skewX(-12deg);
+    object-fit: contain;
 
-            box-shadow:
-                inset 0 1px 0 rgba(255, 255, 255, .3);
-        }
+    flex: 0 0 32px;
+}
+
+.move-main {
+    min-width: 0;
+}
+
+.move-name-line {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    min-width: 0;
+}
+
+.move-name {
+    flex: 0 0 auto;
+
+    color: #40565a;
+    font-size: 1.05rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.move-aux {
+    margin-top: .1rem;
+
+    color: #8190ad;
+    font: 300 .78rem
+        "Arial Narrow",
+        "Roboto Condensed",
+        Arial,
+        sans-serif;
+}
+
+.move-power {
+    min-width: 2.5rem;
+
+    color: #40565a;
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-align: right;
+}
+
+.move-energy-bars {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+
+    max-width: 150px;
+    min-width: 45px;
+
+    gap: 5px;
+}
+
+.move-energy-bar {
+    display: block;
+
+    flex: 1 1 0;
+    height: 10px;
+
+    border-radius: 1px;
+
+    transform: skewX(-12deg);
+
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, .28);
+}
+
+.move-missing {
+    color: #a33;
+}
+
 
         @media(max-width:575.98px) {
-            .pokemon-card:hover {
-                transform: none
-            }
-        }
+    .pokemon-card:hover {
+        transform: none;
+    }
+
+    .move-detail {
+        grid-template-columns: 30px minmax(0, 1fr) auto;
+        gap: .55rem;
+    }
+
+    .move-type-icon {
+        width: 28px;
+        height: 28px;
+    }
+
+    .move-name {
+        font-size: .95rem;
+    }
+
+    .move-energy-bars {
+        max-width: 115px;
+    }
+
+    .move-energy-bar {
+        height: 8px;
+    }
+
+    .move-power {
+        font-size: 1rem;
+    }
+}
     </style>
 </head>
 
@@ -858,34 +924,44 @@
             return 1;
         }
 
+
         function renderMoveEnergyBars(move) {
-            if (move.category !== 'charged') {
-                return '';
-            }
+    if (move.category !== 'charged') {
+        return '';
+    }
 
-            const bars = getMoveEnergyBars(move);
+    const bars =
+        getMoveEnergyBars(move);
 
-            if (!bars) {
-                return '';
-            }
+    if (!bars) {
+        return '';
+    }
 
-            return `
-        <span class="move-energy-bars"
-              aria-hidden="true">
+    const color =
+        TYPE_COLORS[move.type] ||
+        TYPE_COLORS.normal;
+
+    return `
+        <span
+            class="move-energy-bars"
+            aria-hidden="true">
+
             ${Array.from(
                 { length: bars },
                 () => `
                     <span
                         class="move-energy-bar"
-                        style="background:
-                            ${TYPE_COLORS[move.type] ||
-                    TYPE_COLORS.normal}">
+                        style="
+                            background:
+                                ${color};
+                        ">
                     </span>
                 `
             ).join('')}
+
         </span>
     `;
-        }
+}
 
         async function json(url, storageKey) {
             if (cache.has(url)) return cache.get(url);
@@ -1095,25 +1171,99 @@
             return `${p.shiny ? `<span class="badge badge-shiny">${esc(t('ui.shiny', 'Shiny'))}</span>` : ''}${p.dinamax ? `<span class="badge badge-dinamax">${esc(t('ui.dynamax', 'Dinamax'))}</span>` : ''}${typeBadges(p.types)}`
         }
 
+        function getMoveTypeIcon(type) {
+    const normalizedType =
+        String(type || 'normal')
+            .trim()
+            .toUpperCase();
+
+    return (
+        'https://raw.githubusercontent.com/' +
+        'PokeMiners/pogo_assets/' +
+        'master/Images/Types/' +
+        `POKEMON_TYPE_${encodeURIComponent(normalizedType)}.png`
+    );
+}
+
         function renderMove(m) {
-            if (m.missing) return `<div class="move-detail move-missing"><strong>${esc(m.id)}</strong><div>${esc(t('ui.moveNotFound', 'Movimiento no encontrado en Pokémon GO'))}</div></div>`;
-            const power = m.power ?? m.combat?.power,
-                energy = m.energy ?? m.energyDelta ?? m.combat?.energy,
-                duration = m.durationMs,
-                turns = m.combat?.turns;
-            return `<div class="move-detail"><div class="move-head"><div>
+    if (m.missing) {
+        return `
+            <div class="move-detail move-missing">
+
+                <div></div>
+
+                <div class="move-main">
+                    <div class="move-name">
+                        ${esc(m.id)}
+                    </div>
+
+                    <div class="move-aux">
+                        ${esc(
+                            t(
+                                'ui.moveNotFound',
+                                'Movimiento no encontrado en Pokémon GO'
+                            )
+                        )}
+                    </div>
+                </div>
+
+                <div></div>
+
+            </div>
+        `;
+    }
+
+    const power =
+        m.power ??
+        m.combat?.power ??
+        null;
+
+    return `
+        <div class="move-detail">
+
+            ${esc(
+                    getMoveTypeIcon(m.type)
+                )}}">
+
+            <div class="move-main">
+
                 <div class="move-name-line">
 
-    <div class="move-name">
-        ${esc(m.name)}
-    </div>
+                    <span class="move-name">
+                        ${esc(m.name)}
+                    </span>
 
-    ${renderMoveEnergyBars(m)}
+                    ${renderMoveEnergyBars(m)}
 
-</div>
-                
-                ${m.auxiliaryName ? `<div class="move-aux" lang="${esc(auxiliaryLanguage)}">${esc(m.auxiliaryName)}</div>` : ''}</div><span class="badge badge-type" style="background:${TYPE_COLORS[m.type] || TYPE_COLORS.normal}">${esc(TYPE_NAMES[m.type] || m.type)}</span></div><div class="move-stats">${power != null ? `<span class="move-stat">${esc(t('ui.power', 'Potencia'))}: <strong>${power}</strong></span>` : ''}${energy != null ? `<span class="move-stat">${esc(t('ui.energy', 'Energía'))}: <strong>${Math.abs(energy)}</strong></span>` : ''}${duration != null ? `<span class="move-stat">${esc(t('ui.duration', 'Duración'))}: <strong>${duration / 1000}s</strong></span>` : ''}${turns != null ? `<span class="move-stat">${esc(t('ui.turns', 'Turnos'))}: <strong>${turns}</strong></span>` : ''}</div></div>`
-        }
+                </div>
+
+                ${m.auxiliaryName
+                    ? `
+                        <div
+                            class="move-aux"
+                            lang="${esc(
+                                auxiliaryLanguage
+                            )}">
+                            ${esc(
+                                m.auxiliaryName
+                            )}
+                        </div>
+                    `
+                    : ''
+                }
+
+            </div>
+
+            <div class="move-power">
+                ${power != null
+                    ? esc(power)
+                    : '—'
+                }
+            </div>
+
+        </div>
+    `;
+}
 
         function renderMoveGroups(p) {
             const f = p.moves.fast,
