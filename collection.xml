@@ -2,11 +2,6 @@
   <pokemon>
     <name>bulbasaur</name>
     <cp>938</cp>
-    <moves>
-      <fast>Impactrueno</fast>
-      <charged>Rayo</charged>
-      <charged>Surf</charged>
-    </moves>
   </pokemon>
 
   <pokemon>
@@ -431,6 +426,12 @@
     <cp>868</cp>
     <variant>red</variant>
   </pokemon>
+  
+  <pokemon>
+    <name>flabebe</name>
+    <cp>804</cp>
+    <variant>red</variant>
+  </pokemon>
 
    <pokemon>
     <name>flabebe</name>
@@ -487,16 +488,35 @@
     <cp>603</cp>
     <shiny>yes</shiny>
   </pokemon>
+  
+  <pokemon>
+    <name>standler</name>
+    <cp>272</cp>
+    <shiny>yes</shiny>
+  </pokemon>
+
+  <pokemon>
+    <name>mightyena</name>
+    <cp>1451</cp>
+  </pokemon>
 
   <!-- LEGENDARIOS -->
   <pokemon>
     <name>heatran</name>
     <cp>2601</cp>
+    <moves>
+      <fast>Giro Fuego</fast>
+      <charged>Cabeza de Hierro</charged>
+    </moves>
   </pokemon>
 
   <pokemon>
     <name>kyogre</name>
     <cp>2270</cp>
+    <moves>
+      <fast>Cascada</fast>
+      <charged>Surf</charged>
+    </moves>
   </pokemon>
 
   <pokemon>
@@ -544,8 +564,6 @@
     <cp>1380</cp>
   </pokemon>
 
-  
-
   <!-- DINAMAX -->
   <pokemon>
     <name>rookidee</name>
@@ -559,7 +577,22 @@
     <status>purified</status>
   </pokemon>
 
+  <pokemon>
+    <name>magikarp</name>
+    <cp>145</cp>
+    <dinamax>yes</dinamax>
+  </pokemon>
+
+  <!-- DISFRAZADOS -->
+
+  <pokemon>
+    <name>pikachu</name>
+    <cp>382</cp>
+    <costume>gorra</costume>
+  </pokemon>
+
   <!-- VIVILLON -->
+  <!-- https://es.pinterest.com/pin/331155378871105409/ -->
 
   <pokemon>
     <name>scatterbug</name>
@@ -572,11 +605,29 @@
     <cp>197</cp>
     <variant>meadow</variant>
   </pokemon>
+  
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>197</cp>
+    <variant>garden</variant>
+  </pokemon>
 
   <pokemon>
     <name>scatterbug</name>
     <cp>195</cp>
     <variant>polar</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>195</cp>
+    <variant>savanna</variant>
+  </pokemon>
+
+  <pokemon>
+    <name>scatterbug</name>
+    <cp>194</cp>
+    <variant>marine</variant>
   </pokemon>
 
   <pokemon>
