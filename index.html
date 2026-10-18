@@ -1167,7 +1167,53 @@
         }
 
         function cardBadges(p) {
-            return `${p.shiny ? `<span class="badge badge-shiny">${esc(t('ui.shiny', 'Shiny'))}</span>` : ''}${p.dinamax ? `<span class="badge badge-dinamax">${esc(t('ui.dynamax', 'Dinamax'))}</span>` : ''}${typeBadges(p.types)}`
+            return `
+            ${pokemon.shiny
+                    ? `<span class="badge rounded-pill badge-shiny">
+            <img src="https://raw.githubusercontent.com/PokeMiners/pogo_assets/refs/heads/master/Images/Filters/ic_shiny_white.png" class="badge-icon" alt="">
+            ${esc(t('ui.shiny', 'Shiny'))}</span>`
+                    : ''}
+
+          
+
+                ${pokemon.dinamax
+                    ? `<span class="badge rounded-pill badge-dinamax">
+              <img src="/badgets/dinamax.svg" class="badge-icon" alt="">
+              ${esc(t('ui.dynamax', 'Dinamax'))}
+            </span>`
+                    : ''}
+
+          ${pokemon.megaEvolves
+                    ? `<span class="badge rounded-pill badge-mega">
+                  <img src="/badgets/megaevolution.png" class="badge-icon" alt="">
+                  ${esc(t('ui.mega', 'Megaevoluciona'))}
+                </span>`
+                    : ''}
+
+                  ${pokemon.status === 'shadow'
+                    ? `<span class="badge rounded-pill bg-dark">🌑 ${esc(t('ui.shadow', 'Oscuro'))}</span>`
+                    : ''}
+
+                ${pokemon.status === 'purified'
+                    ? `<span class="badge rounded-pill bg-light text-dark">✨ ${esc(t('ui.purifiedBadge', 'Purificado'))}</span>`
+                    : ''}
+
+                ${pokemon.legendary
+                    ? `<span class="badge rounded-pill badge-legendary">
+                  <img src="/badgets/legendary.png" class="badge-icon" alt="">
+                  ${esc(t('ui.legendary', 'Legendario'))}
+                </span>`
+                    : ''}
+
+          ${pokemon.mythical
+                    ? `<span class="badge rounded-pill badge-mythical">
+                  <img src="/badgets/mythical.png" class="badge-icon" alt="">
+                  ${esc(t('ui.mythical', 'Singular'))}
+                </span>`
+                    : ''}
+
+                ${renderTypeBadges(pokemon.types)}
+                `
         }
 
         function getMoveTypeIcon(type) {
@@ -1276,62 +1322,62 @@
         function detailsInfo(p) {
             return `${p.auxiliaryName ? `<div class="details-auxiliary"><div class="details-auxiliary-name">${esc(p.auxiliaryName)}</div></div>` : ''}${renderMoveGroups(p)}`
         }
-        
-function render(list) {
-els.count.textContent = list.length;
-els.grid.innerHTML = list.length ? list.map(p => `<article class="col-sm-6 col-lg-4 col-xl-3" data-uid="${p.uid}">
-  <div class="pokemon-card" role="button" tabindex="0">
-    <div class="art type-${esc(p.primaryType)}">${p.image ? `<img class="pokemon-image" src="${esc(p.image)}" alt="${esc(p.name)}">` : ''}</div>
-    <div class="card-info p-3">
-      <div class="d-flex justify-content-between">
-        <div>
-          <div class="dex">#${String(p.dex).padStart(4, '0')}</div>
-          <h3 class="h5 poke-name mb-0">${esc(p.name)}</h3>${p.variant !== 'normal' ? `<div class="poke-variant">${esc(labelVariant(p.variant))}</div>` : ''}
-        </div>
-        <div class="text-end"><small>PC</small>
-          <div class="cp">${p.cp.toLocaleString(currentLocale)}</div>
-        </div>
-      </div>
-      <div class="d-flex flex-wrap gap-2 mt-3">${cardBadges(p)}</div>
-    </div>
-    <div class="pokemon-mobile-details" id="details-${p.uid}">${detailsInfo(p)}</div>
-  </div>
-</article>`).join('') : `<div class="col-12">
-  <div class="glass empty"><strong>${esc(t('ui.noResults', 'No hay resultados'))}</strong></div>
-</div>`
-}
 
-         function refreshFilters() {
+        function render(list) {
+            els.count.textContent = list.length;
+            els.grid.innerHTML = list.length ? list.map(p => `<article class="col-sm-6 col-lg-4 col-xl-3" data-uid="${p.uid}">
+            <div class="pokemon-card" role="button" tabindex="0">
+                <div class="art type-${esc(p.primaryType)}">${p.image ? `<img class="pokemon-image" src="${esc(p.image)}" alt="${esc(p.name)}">` : ''}</div>
+                <div class="card-info p-3">
+                <div class="d-flex justify-content-between">
+                    <div>
+                    <div class="dex">#${String(p.dex).padStart(4, '0')}</div>
+                    <h3 class="h5 poke-name mb-0">${esc(p.name)}</h3>${p.variant !== 'normal' ? `<div class="poke-variant">${esc(labelVariant(p.variant))}</div>` : ''}
+                    </div>
+                    <div class="text-end"><small>PC</small>
+                    <div class="cp">${p.cp.toLocaleString(currentLocale)}</div>
+                    </div>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-3">${cardBadges(p)}</div>
+                </div>
+                <div class="pokemon-mobile-details" id="details-${p.uid}">${detailsInfo(p)}</div>
+            </div>
+            </article>`).join('') : `<div class="col-12">
+            <div class="glass empty"><strong>${esc(t('ui.noResults', 'No hay resultados'))}</strong></div>
+            </div>`
+        }
 
-      // Tipos
-      const types = [...new Set(
-        state.all.flatMap(pokemon => pokemon.types)
-      )].sort();
+        function refreshFilters() {
 
-      els.type.innerHTML =
-        `<option value="">${esc(t('ui.allTypes', 'Todos los tipos'))}</option>` +
-        types.map(type =>
-          `<option value="${type}">
+            // Tipos
+            const types = [...new Set(
+                state.all.flatMap(pokemon => pokemon.types)
+            )].sort();
+
+            els.type.innerHTML =
+                `<option value="">${esc(t('ui.allTypes', 'Todos los tipos'))}</option>` +
+                types.map(type =>
+                    `<option value="${type}">
                 ${TYPE_NAMES[type] || type}
             </option>`
-        ).join('');
+                ).join('');
 
-      // Regiones
-      const regions = [...new Set(
-        state.all
-          .filter(pokemon => REGIONS.includes(pokemon.variant))
-          .map(pokemon => pokemon.variant)
-      )].sort();
+            // Regiones
+            const regions = [...new Set(
+                state.all
+                    .filter(pokemon => REGIONS.includes(pokemon.variant))
+                    .map(pokemon => pokemon.variant)
+            )].sort();
 
-      els.region.innerHTML =
-        `<option value="">${esc(t('ui.allRegions', 'Todas las regiones'))}</option>` +
-        `<option value="__regional__">${esc(t('ui.anyRegion', 'Cualquier región'))}</option>` +
-        regions.map(region =>
-          `<option value="${region}">
+            els.region.innerHTML =
+                `<option value="">${esc(t('ui.allRegions', 'Todas las regiones'))}</option>` +
+                `<option value="__regional__">${esc(t('ui.anyRegion', 'Cualquier región'))}</option>` +
+                regions.map(region =>
+                    `<option value="${region}">
                 ${region.charAt(0).toUpperCase() + region.slice(1)}
             </option>`
-        ).join('');
-    }
+                ).join('');
+        }
 
 
         function apply() {
