@@ -584,6 +584,33 @@
             opacity: .42
         }
 
+        .move-name-line {
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            flex-wrap: wrap;
+        }
+
+        .move-energy-bars {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            height: 10px;
+        }
+
+        .move-energy-bar {
+            display: block;
+            width: 42px;
+            height: 8px;
+
+            border-radius: 2px;
+
+            transform: skewX(-12deg);
+
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, .3);
+        }
+
         @media(max-width:575.98px) {
             .pokemon-card:hover {
                 transform: none
@@ -808,6 +835,58 @@
             $('#toastText').textContent = m;
             bootstrap.Toast.getOrCreateInstance($('#toast')).show()
         }
+
+        function getMoveEnergyBars(move) {
+            const energy = Math.abs(
+                move.energy ??
+                move.energyDelta ??
+                0
+            );
+
+            if (!energy) {
+                return 0;
+            }
+
+            if (energy <= 33) {
+                return 3;
+            }
+
+            if (energy <= 50) {
+                return 2;
+            }
+
+            return 1;
+        }
+
+        function renderMoveEnergyBars(move) {
+            if (move.category !== 'charged') {
+                return '';
+            }
+
+            const bars = getMoveEnergyBars(move);
+
+            if (!bars) {
+                return '';
+            }
+
+            return `
+        <span class="move-energy-bars"
+              aria-hidden="true">
+            ${Array.from(
+                { length: bars },
+                () => `
+                    <span
+                        class="move-energy-bar"
+                        style="background:
+                            ${TYPE_COLORS[move.type] ||
+                    TYPE_COLORS.normal}">
+                    </span>
+                `
+            ).join('')}
+        </span>
+    `;
+        }
+
         async function json(url, storageKey) {
             if (cache.has(url)) return cache.get(url);
             try {
@@ -1022,7 +1101,18 @@
                 energy = m.energy ?? m.energyDelta ?? m.combat?.energy,
                 duration = m.durationMs,
                 turns = m.combat?.turns;
-            return `<div class="move-detail"><div class="move-head"><div><div class="move-name">${esc(m.name)}</div>${m.auxiliaryName ? `<div class="move-aux" lang="${esc(auxiliaryLanguage)}">${esc(m.auxiliaryName)}</div>` : ''}</div><span class="badge badge-type" style="background:${TYPE_COLORS[m.type] || TYPE_COLORS.normal}">${esc(TYPE_NAMES[m.type] || m.type)}</span></div><div class="move-stats">${power != null ? `<span class="move-stat">${esc(t('ui.power', 'Potencia'))}: <strong>${power}</strong></span>` : ''}${energy != null ? `<span class="move-stat">${esc(t('ui.energy', 'Energía'))}: <strong>${Math.abs(energy)}</strong></span>` : ''}${duration != null ? `<span class="move-stat">${esc(t('ui.duration', 'Duración'))}: <strong>${duration / 1000}s</strong></span>` : ''}${turns != null ? `<span class="move-stat">${esc(t('ui.turns', 'Turnos'))}: <strong>${turns}</strong></span>` : ''}</div></div>`
+            return `<div class="move-detail"><div class="move-head"><div>
+                <div class="move-name-line">
+
+    <div class="move-name">
+        ${esc(m.name)}
+    </div>
+
+    ${renderMoveEnergyBars(m)}
+
+</div>
+                
+                ${m.auxiliaryName ? `<div class="move-aux" lang="${esc(auxiliaryLanguage)}">${esc(m.auxiliaryName)}</div>` : ''}</div><span class="badge badge-type" style="background:${TYPE_COLORS[m.type] || TYPE_COLORS.normal}">${esc(TYPE_NAMES[m.type] || m.type)}</span></div><div class="move-stats">${power != null ? `<span class="move-stat">${esc(t('ui.power', 'Potencia'))}: <strong>${power}</strong></span>` : ''}${energy != null ? `<span class="move-stat">${esc(t('ui.energy', 'Energía'))}: <strong>${Math.abs(energy)}</strong></span>` : ''}${duration != null ? `<span class="move-stat">${esc(t('ui.duration', 'Duración'))}: <strong>${duration / 1000}s</strong></span>` : ''}${turns != null ? `<span class="move-stat">${esc(t('ui.turns', 'Turnos'))}: <strong>${turns}</strong></span>` : ''}</div></div>`
         }
 
         function renderMoveGroups(p) {
