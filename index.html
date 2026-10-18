@@ -1216,6 +1216,15 @@
                 `
         }
 
+        function renderTypeBadges(types) {
+      return types.map(type => `
+        <span class="badge rounded-pill badge-type"
+              style="background:${TYPE_COLORS[type] || TYPE_COLORS.normal}">
+          ${esc((translations?.types || {})[type] || TYPE_NAMES[type] || type)}
+        </span>`
+      ).join('');
+    }
+
         function getMoveTypeIcon(type) {
             const normalizedType =
                 String(type || 'normal')
