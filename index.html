@@ -1166,7 +1166,7 @@
             return types.map(x => `<span class="badge rounded-pill badge-type" style="background:${TYPE_COLORS[x] || TYPE_COLORS.normal}">${esc(TYPE_NAMES[x] || x)}</span>`).join('')
         }
 
-        function cardBadges(p) {
+        function cardBadges(pokemon) {
             return `
             ${pokemon.shiny
                     ? `<span class="badge rounded-pill badge-shiny">
