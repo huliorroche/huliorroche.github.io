@@ -1221,10 +1221,10 @@
         <div class="move-detail">
 
             <img
-    class="move-type-icon"
-    src="${esc(getMoveTypeIcon(m.type))}"
-    alt="${esc(TYPE_NAMES[m.type] || m.type)}"
->
+                class="move-type-icon"
+                src="${esc(getMoveTypeIcon(m.type))}"
+                alt="${esc(TYPE_NAMES[m.type] || m.type)}"
+            >
 
             <div class="move-main">
 
@@ -1305,7 +1305,7 @@
                 $(`#details-${uid}`).classList.toggle('is-open');
                 return
             }
-            els.modalBody.innerHTML = `<div class="col-md-5 pokemon-modal-art type-${esc(p.primaryType)}"><img src="${esc(p.image)}" alt="${esc(p.name)}"></div><div class="col-md-7 pokemon-modal-info"><div class="dex">#${String(p.dex).padStart(4, '0')}</div><div class="d-flex align-items-baseline gap-2"><h2>${esc(p.name)}</h2>${p.auxiliaryName ? `<span class="details-auxiliary-name">${esc(p.auxiliaryName)}</span>` : ''}</div><div class="cp mb-3">PC ${p.cp.toLocaleString(currentLocale)}</div><div class="d-flex gap-2 mb-4">${cardBadges(p)}</div>${renderMoveGroups(p)}</div>`;
+            els.modalBody.innerHTML = `<div class="col-md-5 pokemon-modal-art type-${esc(p.primaryType)}"><img src="${esc(p.image)}" alt="${esc(p.name)}"></div><div class="col-md-7 pokemon-modal-info"><div class="dex">#${String(p.dex).padStart(4, '0')}</div><div class="d-flex gap-2" style="align-items: center; margin-bottom: 0.5rem"><h2 style="margin-bottom: 0">${esc(p.name)}</h2>${p.auxiliaryName ? `<span class="details-auxiliary-name">${esc(p.auxiliaryName)}</span>` : ''}</div><div class="cp mb-3">PC ${p.cp.toLocaleString(currentLocale)}</div><div class="d-flex gap-2 mb-4">${cardBadges(p)}</div>${renderMoveGroups(p)}</div>`;
             bootstrap.Modal.getOrCreateInstance($('#pokemonDetailsModal')).show()
         }
         els.grid.addEventListener('click', e => {
