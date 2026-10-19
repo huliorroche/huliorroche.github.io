@@ -742,7 +742,7 @@
             <path d="M22 19V3"></path>
           </svg></div>
         <div class="progress-content">
-          <div class="progress-header"><span>Dinero recuperado</span><span id="progressDetail">0,00 € de 0,00
+          <div class="progress-header"><span>Saldo total</span><span id="progressDetail">0,00 € de 0,00
               €</span></div>
           <div class="progress-track" role="progressbar" aria-label="Porcentaje de dinero recuperado" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
             <div id="progressBar" class="progress-bar"></div>
@@ -828,6 +828,12 @@
         updated: "",
         movements: []
       };
+      const PERSON_FILTER =
+    new URLSearchParams(window.location.search)
+        .get("person")
+        ?.trim()
+        .toLowerCase();
+        
       const elements = {
         personName: document.getElementById("personName"),
         balanceAmount: document.getElementById("balanceAmount"),
@@ -938,8 +944,34 @@
       function parseXml(xmlText) {
         const xml = new DOMParser().parseFromString(xmlText, "application/xml");
         if (xml.querySelector("parsererror")) throw new Error("El fichero /debts.xml no contiene XML válido.");
-        const debts = xml.querySelector("debts");
-        if (!debts) throw new Error("No se ha encontrado el elemento <debts>.");
+        let debts;
+
+if (PERSON_FILTER) {
+
+    debts = [...xml.querySelectorAll("debts")]
+        .find(node =>
+            (node.getAttribute("person") || "")
+                .trim()
+                .toLowerCase() === PERSON_FILTER
+        );
+
+    if (!debts) {
+        throw new Error(
+            `No existe ningún contacto llamado "${PERSON_FILTER}".`
+        );
+    }
+
+} else {
+
+    debts = xml.querySelector("debts");
+
+    if (!debts) {
+        throw new Error(
+            "No se ha encontrado ningún elemento <debts>."
+        );
+    }
+
+}
         const ids = new Set();
         const movements = [...debts.querySelectorAll(":scope > movement")].map((node, index) => {
           const id = node.getAttribute("id") || `movement-${index + 1}`;
@@ -994,7 +1026,11 @@
 
       function renderSummary() {
         const s = calculateSummary();
-        elements.personName.textContent = `Cuenta con ${state.person}`;
+        elements.personName.textContent =
+    `Cuenta con ${state.person}`;
+
+document.title =
+    `Deudas con ${state.person}`;
         elements.balanceAmount.textContent = formatCurrency(s.balance, true);
         elements.deliveredAmount.textContent = formatCurrency(s.advanced);
         elements.returnedAmount.textContent = formatCurrency(s.returned);
