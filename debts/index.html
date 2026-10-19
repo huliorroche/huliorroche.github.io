@@ -1441,13 +1441,10 @@
         }
 
         function calculateSummary() {
-            const typeLabel =
-                MOVEMENT_TYPES[movement.type]?.label ||
-                capitalize(movement.type);
 
-            const methodLabel =
-                MOVEMENT_METHODS[movement.method]?.label ||
-                capitalize(movement.method);
+            const deliveries = state.movements.filter(
+                movement => movement.type === "entrega"
+            );
 
             const expenses = state.movements.filter(
                 movement => movement.type === "gasto"
@@ -1458,23 +1455,17 @@
             );
 
             const delivered = deliveries.reduce(
-                (sum, movement) => {
-                    return sum + Math.abs(movement.quantity);
-                },
+                (sum, movement) => sum + Math.abs(movement.quantity),
                 0
             );
 
             const spent = expenses.reduce(
-                (sum, movement) => {
-                    return sum + Math.abs(movement.quantity);
-                },
+                (sum, movement) => sum + Math.abs(movement.quantity),
                 0
             );
 
             const returned = returns.reduce(
-                (sum, movement) => {
-                    return sum + movement.quantity;
-                },
+                (sum, movement) => sum + movement.quantity,
                 0
             );
 
