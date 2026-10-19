@@ -47,31 +47,25 @@
             <date>2025-04-10</date>
         </movement>
 
-        <movement id="mov-005" type="entrega" method="bizum">
-            <quantity>-260.00</quantity>
-            <concept>Préstamo</concept>
-            <date>2025-04-10</date>
-        </movement>
-
-        <movement id="mov-006" type="entrega" method="transferencia">
+        <movement id="mov-005" type="entrega" method="transferencia">
             <quantity>-200.00</quantity>
             <concept>Préstamo</concept>
             <date>2026-08-16</date>
         </movement>
 
-        <movement id="mov-007" type="entrega" method="transferencia">
+        <movement id="mov-006" type="entrega" method="transferencia">
             <quantity>-100.00</quantity>
             <concept>Préstamo</concept>
             <date>2026-08-26</date>
         </movement>
 
-        <movement id="mov-008" type="devolucion" method="transferencia">
+        <movement id="mov-007" type="devolucion" method="transferencia">
             <quantity>+200.00</quantity>
             <concept>Devolución</concept>
             <date>2026-09-01</date>
         </movement>
 
-        <movement id="mov-009" type="entrega" method="transferencia">
+        <movement id="mov-008" type="entrega" method="transferencia">
             <quantity>-200.00</quantity>
             <concept>Préstamo</concept>
             <date>2026-08-26</date>
