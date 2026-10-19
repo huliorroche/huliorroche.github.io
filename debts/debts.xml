@@ -50,14 +50,20 @@
             <date>2026-08-26</date>
         </movement>
 
-        <movement id="mov-009" type="gasto" method="edenred">
+        <movement id="mov-009" type="entrega" method="transferencia">
+            <quantity>-200.00</quantity>
+            <concept>Préstamo</concept>
+            <date>2026-10-17</date>
+        </movement>
+
+        <movement id="mov-010" type="gasto" method="edenred">
             <quantity>-25.39</quantity>
             <concept>Glovo</concept>
             <date>2026-10-18</date>
             <notes>V1t1bkjb</notes>
         </movement>
 
-        <movement id="mov-010" type="gasto" method="edenred">
+        <movement id="mov-011" type="gasto" method="edenred">
             <quantity>-10.30</quantity>
             <concept>Bombón Boss Valencia</concept>
             <date>2026-10-18</date>
