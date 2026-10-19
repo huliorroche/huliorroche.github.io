@@ -1,87 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Control de deudas</title>
-
     <style>
         :root {
             --background: #f4f6fb;
-            --surface: #ffffff;
+            --surface: #fff;
             --surface-secondary: #f8fafc;
             --text-primary: #172033;
             --text-secondary: #667085;
             --border: #e4e7ec;
-
             --primary: #5b5ce2;
             --primary-light: #eeeeff;
-
             --negative: #e5484d;
             --negative-light: #fff1f1;
-
             --positive: #17a673;
             --positive-light: #eafbf4;
-
-            --neutral: #667085;
+            --expense: #d97706;
+            --expense-light: #fff7e6;
             --neutral-light: #f2f4f7;
-
-            --shadow:
-                0 1px 2px rgba(16, 24, 40, 0.04),
-                0 8px 24px rgba(16, 24, 40, 0.06);
-
+            --shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 8px 24px rgba(16, 24, 40, .06);
             --radius-large: 24px;
             --radius-medium: 16px;
-            --radius-small: 12px;
         }
 
         * {
-            box-sizing: border-box;
+            box-sizing: border-box
         }
 
         body {
             margin: 0;
             min-height: 100vh;
-            font-family:
-                Inter,
-                ui-sans-serif,
-                system-ui,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
             color: var(--text-primary);
-            background:
-                radial-gradient(
-                    circle at top left,
-                    rgba(91, 92, 226, 0.10),
-                    transparent 34rem
-                ),
-                var(--background);
+            background: radial-gradient(circle at top left, rgba(91, 92, 226, .10), transparent 34rem), var(--background)
         }
 
-        button,
         input,
         select {
-            font: inherit;
-        }
-
-        button {
-            cursor: pointer;
+            font: inherit
         }
 
         svg {
-            display: block;
+            display: block
         }
 
         .app {
             width: min(1180px, calc(100% - 32px));
             margin: 0 auto;
-            padding: 40px 0 64px;
+            padding: 40px 0 64px
         }
 
         .page-header {
@@ -89,13 +59,13 @@
             align-items: center;
             justify-content: space-between;
             gap: 24px;
-            margin-bottom: 28px;
+            margin-bottom: 28px
         }
 
         .brand {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 16px
         }
 
         .brand-icon {
@@ -103,76 +73,42 @@
             place-items: center;
             width: 52px;
             height: 52px;
-            color: white;
+            color: #fff;
             background: linear-gradient(135deg, #6869ef, #494ac7);
             border-radius: 16px;
-            box-shadow: 0 12px 24px rgba(91, 92, 226, 0.24);
+            box-shadow: 0 12px 24px rgba(91, 92, 226, .24)
         }
 
         .brand-icon svg {
             width: 27px;
-            height: 27px;
+            height: 27px
         }
 
         .page-title {
             margin: 0;
             font-size: clamp(1.55rem, 4vw, 2.15rem);
             line-height: 1.1;
-            letter-spacing: -0.04em;
+            letter-spacing: -.04em
         }
 
         .page-subtitle {
             margin: 7px 0 0;
             color: var(--text-secondary);
-            font-size: 0.96rem;
-        }
-
-        .load-button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-            min-height: 44px;
-            padding: 0 17px;
-            color: var(--primary);
-            font-weight: 700;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 13px;
-            box-shadow: var(--shadow);
-            transition:
-                transform 160ms ease,
-                border-color 160ms ease,
-                background 160ms ease;
-        }
-
-        .load-button:hover {
-            background: var(--primary-light);
-            border-color: rgba(91, 92, 226, 0.3);
-            transform: translateY(-1px);
-        }
-
-        .load-button svg {
-            width: 19px;
-            height: 19px;
-        }
-
-        #fileInput {
-            display: none;
+            font-size: .96rem
         }
 
         .summary-grid {
             display: grid;
             grid-template-columns: 1.5fr 1fr 1fr;
             gap: 18px;
-            margin-bottom: 24px;
+            margin-bottom: 24px
         }
 
         .card {
             background: var(--surface);
-            border: 1px solid rgba(228, 231, 236, 0.9);
+            border: 1px solid rgba(228, 231, 236, .9);
             border-radius: var(--radius-large);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow)
         }
 
         .balance-card {
@@ -180,15 +116,9 @@
             overflow: hidden;
             min-height: 230px;
             padding: 28px;
-            color: white;
-            background:
-                linear-gradient(
-                    135deg,
-                    #6264e8 0%,
-                    #4e4fc6 58%,
-                    #393a9f 100%
-                );
-            border: 0;
+            color: #fff;
+            background: linear-gradient(135deg, #6264e8 0%, #4e4fc6 58%, #393a9f 100%);
+            border: 0
         }
 
         .balance-card::before,
@@ -196,7 +126,7 @@
             position: absolute;
             content: "";
             border-radius: 50%;
-            pointer-events: none;
+            pointer-events: none
         }
 
         .balance-card::before {
@@ -204,7 +134,7 @@
             right: -55px;
             width: 210px;
             height: 210px;
-            background: rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, .08)
         }
 
         .balance-card::after {
@@ -212,12 +142,12 @@
             bottom: -105px;
             width: 190px;
             height: 190px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, .05)
         }
 
         .balance-content {
             position: relative;
-            z-index: 1;
+            z-index: 1
         }
 
         .card-label {
@@ -225,25 +155,21 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 18px;
-            font-size: 0.92rem;
+            font-size: .92rem;
             font-weight: 700;
-            color: var(--text-secondary);
-        }
-
-        .balance-card .card-label {
-            color: rgba(255, 255, 255, 0.76);
+            color: rgba(255, 255, 255, .76)
         }
 
         .card-label svg {
             width: 19px;
-            height: 19px;
+            height: 19px
         }
 
         .person-name {
             margin: 0 0 6px;
-            color: rgba(255, 255, 255, 0.82);
+            color: rgba(255, 255, 255, .82);
             font-size: 1rem;
-            font-weight: 600;
+            font-weight: 600
         }
 
         .balance-amount {
@@ -251,7 +177,7 @@
             font-size: clamp(2.3rem, 6vw, 3.5rem);
             font-weight: 800;
             line-height: 1;
-            letter-spacing: -0.06em;
+            letter-spacing: -.06em
         }
 
         .balance-status {
@@ -260,18 +186,18 @@
             gap: 8px;
             margin-top: 20px;
             padding: 8px 12px;
-            font-size: 0.88rem;
+            font-size: .88rem;
             font-weight: 700;
-            color: white;
-            background: rgba(255, 255, 255, 0.13);
-            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #fff;
+            background: rgba(255, 255, 255, .13);
+            border: 1px solid rgba(255, 255, 255, .16);
             border-radius: 999px;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px)
         }
 
         .balance-status svg {
             width: 17px;
-            height: 17px;
+            height: 17px
         }
 
         .stat-card {
@@ -279,7 +205,7 @@
             flex-direction: column;
             justify-content: space-between;
             min-height: 230px;
-            padding: 24px;
+            padding: 24px
         }
 
         .stat-icon {
@@ -288,42 +214,42 @@
             width: 46px;
             height: 46px;
             margin-bottom: 24px;
-            border-radius: 14px;
+            border-radius: 14px
         }
 
         .stat-icon svg {
             width: 23px;
-            height: 23px;
+            height: 23px
         }
 
         .stat-icon.delivered {
             color: var(--negative);
-            background: var(--negative-light);
+            background: var(--negative-light)
         }
 
         .stat-icon.returned {
             color: var(--positive);
-            background: var(--positive-light);
+            background: var(--positive-light)
         }
 
         .stat-name {
             margin: 0 0 8px;
             color: var(--text-secondary);
-            font-size: 0.92rem;
-            font-weight: 650;
+            font-size: .92rem;
+            font-weight: 650
         }
 
         .stat-value {
             margin: 0;
             font-size: clamp(1.65rem, 4vw, 2.2rem);
             font-weight: 800;
-            letter-spacing: -0.045em;
+            letter-spacing: -.045em
         }
 
         .stat-detail {
             margin: 12px 0 0;
             color: var(--text-secondary);
-            font-size: 0.84rem;
+            font-size: .84rem
         }
 
         .progress-card {
@@ -336,7 +262,7 @@
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius-medium);
-            box-shadow: var(--shadow);
+            box-shadow: var(--shadow)
         }
 
         .progress-icon {
@@ -346,16 +272,16 @@
             height: 42px;
             color: var(--primary);
             background: var(--primary-light);
-            border-radius: 13px;
+            border-radius: 13px
         }
 
         .progress-icon svg {
             width: 21px;
-            height: 21px;
+            height: 21px
         }
 
         .progress-content {
-            min-width: 0;
+            min-width: 0
         }
 
         .progress-header {
@@ -363,15 +289,15 @@
             justify-content: space-between;
             gap: 12px;
             margin-bottom: 9px;
-            font-size: 0.86rem;
-            font-weight: 700;
+            font-size: .86rem;
+            font-weight: 700
         }
 
         .progress-track {
             overflow: hidden;
             height: 8px;
             background: #eceef2;
-            border-radius: 999px;
+            border-radius: 999px
         }
 
         .progress-bar {
@@ -379,7 +305,7 @@
             height: 100%;
             background: linear-gradient(90deg, #6264e8, #17a673);
             border-radius: inherit;
-            transition: width 400ms ease;
+            transition: width 400ms ease
         }
 
         .progress-percentage {
@@ -387,11 +313,11 @@
             color: var(--positive);
             font-size: 1.05rem;
             font-weight: 800;
-            text-align: right;
+            text-align: right
         }
 
         .movements-card {
-            overflow: hidden;
+            overflow: hidden
         }
 
         .movements-header {
@@ -399,29 +325,30 @@
             align-items: center;
             justify-content: space-between;
             gap: 18px;
-            padding: 24px 24px 18px;
+            padding: 24px 24px 18px
         }
 
         .section-title {
             margin: 0;
             font-size: 1.18rem;
-            letter-spacing: -0.025em;
+            letter-spacing: -.025em
         }
 
         .movement-count {
             margin: 5px 0 0;
             color: var(--text-secondary);
-            font-size: 0.88rem;
+            font-size: .88rem
         }
 
         .filters {
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap
         }
 
         .search-box {
-            position: relative;
+            position: relative
         }
 
         .search-box svg {
@@ -432,7 +359,7 @@
             height: 18px;
             color: var(--text-secondary);
             transform: translateY(-50%);
-            pointer-events: none;
+            pointer-events: none
         }
 
         .search-box input {
@@ -443,16 +370,13 @@
             background: var(--surface-secondary);
             border: 1px solid var(--border);
             border-radius: 12px;
-            outline: none;
-            transition:
-                border-color 160ms ease,
-                box-shadow 160ms ease;
+            outline: none
         }
 
         .search-box input:focus,
         .filter-select:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(91, 92, 226, 0.12);
+            box-shadow: 0 0 0 3px rgba(91, 92, 226, .12)
         }
 
         .filter-select {
@@ -463,11 +387,11 @@
             background: var(--surface-secondary);
             border: 1px solid var(--border);
             border-radius: 12px;
-            outline: none;
+            outline: none
         }
 
         .movements-list {
-            border-top: 1px solid var(--border);
+            border-top: 1px solid var(--border)
         }
 
         .movement {
@@ -477,15 +401,15 @@
             gap: 16px;
             padding: 19px 24px;
             border-bottom: 1px solid var(--border);
-            transition: background 150ms ease;
+            transition: background 150ms ease
         }
 
         .movement:last-child {
-            border-bottom: 0;
+            border-bottom: 0
         }
 
         .movement:hover {
-            background: #fbfcfe;
+            background: #fbfcfe
         }
 
         .movement-icon {
@@ -493,35 +417,40 @@
             place-items: center;
             width: 45px;
             height: 45px;
-            border-radius: 14px;
+            border-radius: 14px
         }
 
         .movement-icon svg {
             width: 22px;
-            height: 22px;
+            height: 22px
         }
 
         .movement.entrega .movement-icon {
             color: var(--negative);
-            background: var(--negative-light);
+            background: var(--negative-light)
         }
 
         .movement.devolucion .movement-icon {
             color: var(--positive);
-            background: var(--positive-light);
+            background: var(--positive-light)
+        }
+
+        .movement.gasto .movement-icon {
+            color: var(--expense);
+            background: var(--expense-light)
         }
 
         .movement-info {
-            min-width: 0;
+            min-width: 0
         }
 
         .movement-concept {
             overflow: hidden;
             margin: 0;
-            font-size: 0.97rem;
+            font-size: .97rem;
             font-weight: 750;
             text-overflow: ellipsis;
-            white-space: nowrap;
+            white-space: nowrap
         }
 
         .movement-meta {
@@ -531,41 +460,62 @@
             gap: 7px;
             margin-top: 6px;
             color: var(--text-secondary);
-            font-size: 0.82rem;
+            font-size: .82rem
         }
 
-        .movement-type {
+        .movement-type,
+        .movement-method {
             display: inline-flex;
             align-items: center;
+            gap: 5px;
             padding: 3px 8px;
-            font-size: 0.74rem;
+            font-size: .74rem;
             font-weight: 750;
-            border-radius: 999px;
+            border-radius: 999px
         }
 
         .movement.entrega .movement-type {
             color: var(--negative);
-            background: var(--negative-light);
+            background: var(--negative-light)
         }
 
         .movement.devolucion .movement-type {
             color: var(--positive);
-            background: var(--positive-light);
+            background: var(--positive-light)
+        }
+
+        .movement.gasto .movement-type {
+            color: #b45309;
+            background: var(--expense-light)
+        }
+
+        .movement-method {
+            color: var(--text-secondary);
+            background: var(--neutral-light)
+        }
+
+        .movement-method svg {
+            width: 13px;
+            height: 13px
         }
 
         .movement-amount {
             font-size: 1.04rem;
             font-weight: 800;
             text-align: right;
-            white-space: nowrap;
+            white-space: nowrap
         }
 
         .movement.entrega .movement-amount {
-            color: var(--negative);
+            color: var(--negative)
         }
 
         .movement.devolucion .movement-amount {
-            color: var(--positive);
+            color: var(--positive)
+        }
+
+        .movement.gasto .movement-amount {
+            color: var(--expense)
         }
 
         .empty-state,
@@ -575,7 +525,7 @@
             place-items: center;
             min-height: 240px;
             padding: 40px 24px;
-            text-align: center;
+            text-align: center
         }
 
         .state-icon {
@@ -583,155 +533,146 @@
             place-items: center;
             width: 58px;
             height: 58px;
-            margin-bottom: 16px;
+            margin: 0 auto 16px;
             color: var(--primary);
             background: var(--primary-light);
-            border-radius: 18px;
+            border-radius: 18px
         }
 
         .state-icon svg {
             width: 28px;
-            height: 28px;
+            height: 28px
         }
 
         .error-state .state-icon {
             color: var(--negative);
-            background: var(--negative-light);
+            background: var(--negative-light)
         }
 
         .state-title {
             margin: 0 0 7px;
-            font-size: 1.05rem;
+            font-size: 1.05rem
         }
 
         .state-description {
             max-width: 480px;
             margin: 0;
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            line-height: 1.55;
+            font-size: .9rem;
+            line-height: 1.55
         }
 
         .spinner {
             width: 28px;
             height: 28px;
-            border: 3px solid rgba(91, 92, 226, 0.18);
+            border: 3px solid rgba(91, 92, 226, .18);
             border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin 800ms linear infinite;
+            animation: spin 800ms linear infinite
         }
 
         .last-update {
             margin: 18px 0 0;
             color: var(--text-secondary);
-            font-size: 0.79rem;
-            text-align: center;
+            font-size: .79rem;
+            text-align: center
         }
 
         @keyframes spin {
             to {
-                transform: rotate(360deg);
+                transform: rotate(360deg)
             }
         }
 
-        @media (max-width: 850px) {
+        @media(max-width:850px) {
             .summary-grid {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: 1fr 1fr
             }
 
             .balance-card {
-                grid-column: 1 / -1;
+                grid-column: 1/-1
             }
 
             .stat-card {
-                min-height: 190px;
+                min-height: 190px
             }
 
             .movements-header {
                 align-items: stretch;
-                flex-direction: column;
+                flex-direction: column
             }
 
             .filters {
-                width: 100%;
+                width: 100%
             }
 
             .search-box {
-                flex: 1;
+                flex: 1
             }
 
             .search-box input {
-                width: 100%;
+                width: 100%
             }
         }
 
-        @media (max-width: 600px) {
+        @media(max-width:600px) {
             .app {
                 width: min(100% - 22px, 1180px);
-                padding: 22px 0 40px;
-            }
-
-            .page-header {
-                align-items: flex-start;
-                flex-direction: column;
-            }
-
-            .load-button {
-                width: 100%;
+                padding: 22px 0 40px
             }
 
             .summary-grid {
                 grid-template-columns: 1fr;
-                gap: 13px;
+                gap: 13px
             }
 
             .balance-card {
                 grid-column: auto;
                 min-height: 215px;
-                padding: 24px;
+                padding: 24px
             }
 
             .stat-card {
                 min-height: auto;
-                padding: 20px;
+                padding: 20px
             }
 
             .stat-icon {
-                margin-bottom: 18px;
+                margin-bottom: 18px
             }
 
             .progress-card {
                 grid-template-columns: auto 1fr;
-                padding: 16px;
+                padding: 16px
             }
 
             .progress-percentage {
                 grid-column: 2;
-                text-align: left;
+                text-align: left
             }
 
             .filters {
                 align-items: stretch;
-                flex-direction: column;
+                flex-direction: column
             }
 
             .filter-select {
-                width: 100%;
+                width: 100%
             }
 
             .movements-header {
-                padding: 21px 18px 16px;
+                padding: 21px 18px 16px
             }
 
             .movement {
                 grid-template-columns: auto minmax(0, 1fr);
                 gap: 13px;
-                padding: 17px 18px;
+                padding: 17px 18px
             }
 
             .movement-amount {
                 grid-column: 2;
-                text-align: left;
+                text-align: left
             }
         }
     </style>
@@ -741,1001 +682,151 @@
     <main class="app">
         <header class="page-header">
             <div class="brand">
-                <div class="brand-icon" aria-hidden="true">
-                    <svg
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
+                <div class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="3" y="5" width="18" height="15" rx="3"></rect>
                         <path d="M16 13h5"></path>
                         <path d="M16 9h2"></path>
                         <path d="M7 5V3"></path>
                         <path d="M17 5V3"></path>
-                    </svg>
-                </div>
-
+                    </svg></div>
                 <div>
                     <h1 class="page-title">Control de deudas</h1>
-                    <p class="page-subtitle">
-                        Consulta entregas, devoluciones y saldo pendiente.
-                    </p>
+                    <p class="page-subtitle">Consulta entregas, gastos, devoluciones y saldo pendiente.</p>
                 </div>
             </div>
-
-            <label class="load-button" for="fileInput">
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
-                    <path d="M12 3v12"></path>
-                    <path d="m7 10 5 5 5-5"></path>
-                    <path d="M5 21h14"></path>
-                </svg>
-
-                Cargar otro XML
-            </label>
-
-            <input
-                id="fileInput"
-                type="file"
-                accept=".xml,text/xml,application/xml"
-            >
         </header>
 
         <section class="summary-grid">
             <article class="card balance-card">
                 <div class="balance-content">
-                    <div class="card-label">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            aria-hidden="true"
-                        >
+                    <div class="card-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="12" cy="12" r="9"></circle>
                             <path d="M16 8.5a4 4 0 1 0 0 7"></path>
                             <path d="M7.5 11h7"></path>
                             <path d="M7.5 14h6"></path>
-                        </svg>
-
-                        Saldo total
-                    </div>
-
-                    <p id="personName" class="person-name">
-                        Cargando información…
-                    </p>
-
-                    <p id="balanceAmount" class="balance-amount">
-                        0,00 €
-                    </p>
-
-                    <div id="balanceStatus" class="balance-status">
-                        Calculando saldo
-                    </div>
+                        </svg>Saldo total</div>
+                    <p id="personName" class="person-name">Cargando información…</p>
+                    <p id="balanceAmount" class="balance-amount">0,00 €</p>
+                    <div id="balanceStatus" class="balance-status">Calculando saldo</div>
                 </div>
             </article>
-
             <article class="card stat-card">
                 <div>
-                    <div class="stat-icon delivered">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            aria-hidden="true"
-                        >
+                    <div class="stat-icon delivered"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <path d="M12 20V4"></path>
                             <path d="m6 10 6-6 6 6"></path>
-                        </svg>
-                    </div>
-
-                    <p class="stat-name">Total prestado</p>
+                        </svg></div>
+                    <p class="stat-name">Total prestado y gastado</p>
                     <p id="deliveredAmount" class="stat-value">0,00 €</p>
                 </div>
-
-                <p id="deliveredCount" class="stat-detail">
-                    0 entregas
-                </p>
+                <p id="deliveredCount" class="stat-detail">0 entregas y 0 gastos</p>
             </article>
-
             <article class="card stat-card">
                 <div>
-                    <div class="stat-icon returned">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            aria-hidden="true"
-                        >
+                    <div class="stat-icon returned"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <path d="M12 4v16"></path>
                             <path d="m18 14-6 6-6-6"></path>
-                        </svg>
-                    </div>
-
+                        </svg></div>
                     <p class="stat-name">Total devuelto</p>
                     <p id="returnedAmount" class="stat-value">0,00 €</p>
                 </div>
-
-                <p id="returnedCount" class="stat-detail">
-                    0 devoluciones
-                </p>
+                <p id="returnedCount" class="stat-detail">0 devoluciones</p>
             </article>
         </section>
 
         <section class="progress-card">
-            <div class="progress-icon">
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
+            <div class="progress-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M4 19V9"></path>
                     <path d="M10 19V5"></path>
                     <path d="M16 19v-7"></path>
                     <path d="M22 19V3"></path>
-                </svg>
-            </div>
-
+                </svg></div>
             <div class="progress-content">
-                <div class="progress-header">
-                    <span>Dinero recuperado</span>
-                    <span id="progressDetail">0,00 € de 0,00 €</span>
-                </div>
-
-                <div
-                    class="progress-track"
-                    role="progressbar"
-                    aria-label="Porcentaje de dinero recuperado"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    aria-valuenow="0"
-                >
+                <div class="progress-header"><span>Dinero recuperado</span><span id="progressDetail">0,00 € de 0,00
+                        €</span></div>
+                <div class="progress-track" role="progressbar" aria-label="Porcentaje de dinero recuperado"
+                    aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                     <div id="progressBar" class="progress-bar"></div>
                 </div>
             </div>
-
-            <div id="progressPercentage" class="progress-percentage">
-                0 %
-            </div>
+            <div id="progressPercentage" class="progress-percentage">0 %</div>
         </section>
 
         <section class="card movements-card">
             <div class="movements-header">
                 <div>
                     <h2 class="section-title">Movimientos</h2>
-                    <p id="movementCount" class="movement-count">
-                        Cargando movimientos…
-                    </p>
+                    <p id="movementCount" class="movement-count">Cargando movimientos…</p>
                 </div>
-
                 <div class="filters">
-                    <div class="search-box">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            aria-hidden="true"
-                        >
+                    <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="11" cy="11" r="7"></circle>
                             <path d="m20 20-4-4"></path>
-                        </svg>
-
-                        <input
-                            id="searchInput"
-                            type="search"
-                            placeholder="Buscar concepto…"
-                            autocomplete="off"
-                        >
-                    </div>
-
-                    <select
-                        id="typeFilter"
-                        class="filter-select"
-                        aria-label="Filtrar movimientos por tipo"
-                    >
-                        <option value="all">
-                            Todos los movimientos
-                        </option>
-
-                        <option value="entrega">
-                            Solo entregas
-                        </option>
-
-                        <option value="devolucion">
-                            Solo devoluciones
-                        </option>
+                        </svg><input id="searchInput" type="search" placeholder="Buscar concepto, método…"
+                            autocomplete="off"></div>
+                    <select id="typeFilter" class="filter-select" aria-label="Filtrar por tipo">
+                        <option value="all">Todos los tipos</option>
+                        <option value="entrega">Entregas</option>
+                        <option value="devolucion">Devoluciones</option>
+                        <option value="gasto">Gastos</option>
+                    </select>
+                    <select id="methodFilter" class="filter-select" aria-label="Filtrar por modalidad">
+                        <option value="all">Todas las modalidades</option>
+                        <option value="transferencia">Transferencia bancaria</option>
+                        <option value="bizum">Bizum</option>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="edenred">Tarjeta Edenred</option>
                     </select>
                 </div>
             </div>
-
             <div id="movementsList" class="movements-list">
                 <div class="loading-state">
                     <div>
                         <div class="state-icon">
                             <div class="spinner"></div>
                         </div>
-
-                        <h3 class="state-title">
-                            Cargando movimientos
-                        </h3>
-
-                        <p class="state-description">
-                            Leyendo la información del fichero XML.
-                        </p>
+                        <h3 class="state-title">Cargando movimientos</h3>
+                        <p class="state-description">Leyendo /debts.xml.</p>
                     </div>
                 </div>
             </div>
         </section>
-
         <p id="lastUpdate" class="last-update"></p>
     </main>
 
     <script>
         "use strict";
-
-        const state = {
-            person: "",
-            currency: "EUR",
-            updated: "",
-            movements: []
-        };
-
-        const elements = {
-            fileInput: document.getElementById("fileInput"),
-            personName: document.getElementById("personName"),
-            balanceAmount: document.getElementById("balanceAmount"),
-            balanceStatus: document.getElementById("balanceStatus"),
-            deliveredAmount: document.getElementById("deliveredAmount"),
-            returnedAmount: document.getElementById("returnedAmount"),
-            deliveredCount: document.getElementById("deliveredCount"),
-            returnedCount: document.getElementById("returnedCount"),
-            progressDetail: document.getElementById("progressDetail"),
-            progressBar: document.getElementById("progressBar"),
-            progressPercentage:
-                document.getElementById("progressPercentage"),
-            progressTrack: document.querySelector(".progress-track"),
-            movementCount: document.getElementById("movementCount"),
-            movementsList: document.getElementById("movementsList"),
-            searchInput: document.getElementById("searchInput"),
-            typeFilter: document.getElementById("typeFilter"),
-            lastUpdate: document.getElementById("lastUpdate")
-        };
-
-        const icons = {
-            entrega: `
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
-                    <path d="M12 20V4"></path>
-                    <path d="m6 10 6-6 6 6"></path>
-                </svg>
-            `,
-
-            devolucion: `
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
-                    <path d="M12 4v16"></path>
-                    <path d="m18 14-6 6-6-6"></path>
-                </svg>
-            `,
-
-            pendiente: `
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
-                    <circle cx="12" cy="12" r="9"></circle>
-                    <path d="M12 7v5"></path>
-                    <path d="m12 12 3 2"></path>
-                </svg>
-            `,
-
-            completado: `
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
-                    <circle cx="12" cy="12" r="9"></circle>
-                    <path d="m8 12 2.5 2.5L16 9"></path>
-                </svg>
-            `,
-
-            info: `
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
-                    <circle cx="12" cy="12" r="9"></circle>
-                    <path d="M12 11v5"></path>
-                    <path d="M12 8h.01"></path>
-                </svg>
-            `,
-
-            vacio: `
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
-                    <path d="M4 7h16"></path>
-                    <path d="M6 7l1 13h10l1-13"></path>
-                    <path d="M9 7V4h6v3"></path>
-                </svg>
-            `,
-
-            error: `
-                <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                >
-                    <path d="M12 3 2.5 20h19L12 3Z"></path>
-                    <path d="M12 9v4"></path>
-                    <path d="M12 17h.01"></path>
-                </svg>
-            `
-        };
-
-        function getElementText(parent, selector, fallback = "") {
-            const element = parent.querySelector(selector);
-
-            if (!element) {
-                return fallback;
-            }
-
-            return element.textContent.trim();
-        }
-
-        function parseQuantity(value) {
-            const normalized = String(value)
-                .trim()
-                .replace(/\s/g, "")
-                .replace(",", ".");
-
-            const quantity = Number.parseFloat(normalized);
-
-            return Number.isFinite(quantity) ? quantity : null;
-        }
-
-        function parseDate(dateValue) {
-            const value = String(dateValue).trim();
-
-            if (/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-                const [year, month, day] = value.split("-").map(Number);
-                return new Date(year, month - 1, day);
-            }
-
-            if (/^\d{2}\/\d{2}\/\d{4}$/.test(value)) {
-                const [day, month, year] = value.split("/").map(Number);
-                return new Date(year, month - 1, day);
-            }
-
-            return null;
-        }
-
-        function formatDate(dateValue) {
-            const date = parseDate(dateValue);
-
-            if (!date || Number.isNaN(date.getTime())) {
-                return dateValue || "Fecha desconocida";
-            }
-
-            return new Intl.DateTimeFormat("es-ES", {
-                day: "2-digit",
-                month: "short",
-                year: "numeric"
-            }).format(date);
-        }
-
-        function formatCurrency(value, showSign = false) {
-            const formatter = new Intl.NumberFormat("es-ES", {
-                style: "currency",
-                currency: state.currency || "EUR",
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-                signDisplay: showSign ? "always" : "auto"
-            });
-
-            return formatter.format(normalizeZero(value));
-        }
-
-        function normalizeZero(value) {
-            return Math.abs(value) < 0.000001 ? 0 : value;
-        }
-
-        function escapeHtml(value) {
-            return String(value)
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;")
-                .replaceAll("'", "&#039;");
-        }
-
-        function capitalize(value) {
-            if (!value) {
-                return "";
-            }
-
-            return value.charAt(0).toUpperCase() + value.slice(1);
-        }
-
-        function pluralize(count, singular, plural) {
-            return count === 1 ? singular : plural;
-        }
-
-        function validateMovementType(type, quantity) {
-            const normalizedType = type.toLowerCase().trim();
-
-            if (
-                normalizedType === "entrega" ||
-                normalizedType === "devolucion"
-            ) {
-                return normalizedType;
-            }
-
-            return quantity < 0 ? "entrega" : "devolucion";
-        }
-
-        function parseXml(xmlText) {
-            const parser = new DOMParser();
-            const xml = parser.parseFromString(
-                xmlText,
-                "application/xml"
-            );
-
-            const parseError = xml.querySelector("parsererror");
-
-            if (parseError) {
-                throw new Error(
-                    "El fichero XML no tiene una estructura válida."
-                );
-            }
-
-            const debts = xml.querySelector("debts");
-
-            if (!debts) {
-                throw new Error(
-                    "No se ha encontrado el elemento principal <debts>."
-                );
-            }
-
-            const person =
-                debts.getAttribute("person") ||
-                debts.getAttribute("name") ||
-                "Persona sin nombre";
-
-            const currency =
-                debts.getAttribute("currency") ||
-                "EUR";
-
-            const updated =
-                debts.getAttribute("updated") ||
-                "";
-
-            const movements = [...debts.querySelectorAll("movement")]
-                .map((movement, index) => {
-                    const quantity = parseQuantity(
-                        getElementText(movement, "quantity")
-                    );
-
-                    if (quantity === null) {
-                        console.warn(
-                            `Movimiento ${index + 1} ignorado: ` +
-                            "la cantidad no es válida."
-                        );
-
-                        return null;
-                    }
-
-                    const declaredType =
-                        movement.getAttribute("type") || "";
-
-                    const type = validateMovementType(
-                        declaredType,
-                        quantity
-                    );
-
-                    /*
-                     * La cantidad determina el significado real:
-                     * negativa = entrega
-                     * positiva = devolución
-                     */
-                    const correctedType =
-                        quantity < 0 ? "entrega" : "devolucion";
-
-                    if (
-                        declaredType &&
-                        type !== correctedType &&
-                        quantity !== 0
-                    ) {
-                        console.warn(
-                            `El movimiento ${index + 1} declara ` +
-                            `"${declaredType}", pero el signo de la ` +
-                            `cantidad corresponde a "${correctedType}".`
-                        );
-                    }
-
-                    return {
-                        id:
-                            movement.getAttribute("id") ||
-                            `movement-${index + 1}`,
-                        type:
-                            quantity === 0
-                                ? type
-                                : correctedType,
-                        quantity,
-                        concept:
-                            getElementText(
-                                movement,
-                                "concept",
-                                "Sin concepto"
-                            ),
-                        date:
-                            getElementText(
-                                movement,
-                                "date",
-                                ""
-                            ),
-                        notes:
-                            getElementText(
-                                movement,
-                                "notes",
-                                ""
-                            )
-                    };
-                })
-                .filter(Boolean)
-                .sort((first, second) => {
-                    const firstDate = parseDate(first.date);
-                    const secondDate = parseDate(second.date);
-
-                    if (!firstDate && !secondDate) {
-                        return 0;
-                    }
-
-                    if (!firstDate) {
-                        return 1;
-                    }
-
-                    if (!secondDate) {
-                        return -1;
-                    }
-
-                    return secondDate.getTime() - firstDate.getTime();
-                });
-
-            state.person = person;
-            state.currency = currency;
-            state.updated = updated;
-            state.movements = movements;
-
-            render();
-        }
-
-        function calculateSummary() {
-            const deliveredMovements = state.movements.filter(
-                movement => movement.quantity < 0
-            );
-
-            const returnedMovements = state.movements.filter(
-                movement => movement.quantity > 0
-            );
-
-            const delivered = deliveredMovements.reduce(
-                (sum, movement) => sum + Math.abs(movement.quantity),
-                0
-            );
-
-            const returned = returnedMovements.reduce(
-                (sum, movement) => sum + movement.quantity,
-                0
-            );
-
-            const balance = state.movements.reduce(
-                (sum, movement) => sum + movement.quantity,
-                0
-            );
-
-            const recoveredPercentage =
-                delivered > 0
-                    ? Math.min(
-                        Math.max((returned / delivered) * 100, 0),
-                        100
-                    )
-                    : 0;
-
-            return {
-                delivered,
-                returned,
-                balance: normalizeZero(balance),
-                deliveredCount: deliveredMovements.length,
-                returnedCount: returnedMovements.length,
-                recoveredPercentage
-            };
-        }
-
-        function renderSummary() {
-            const summary = calculateSummary();
-
-            elements.personName.textContent =
-                `Cuenta con ${state.person}`;
-
-            elements.balanceAmount.textContent =
-                formatCurrency(summary.balance, true);
-
-            elements.deliveredAmount.textContent =
-                formatCurrency(summary.delivered);
-
-            elements.returnedAmount.textContent =
-                formatCurrency(summary.returned);
-
-            elements.deliveredCount.textContent =
-                `${summary.deliveredCount} ${
-                    pluralize(
-                        summary.deliveredCount,
-                        "entrega registrada",
-                        "entregas registradas"
-                    )
-                }`;
-
-            elements.returnedCount.textContent =
-                `${summary.returnedCount} ${
-                    pluralize(
-                        summary.returnedCount,
-                        "devolución registrada",
-                        "devoluciones registradas"
-                    )
-                }`;
-
-            if (summary.balance < 0) {
-                elements.balanceStatus.innerHTML =
-                    `${icons.pendiente} ` +
-                    `${escapeHtml(state.person)} te debe ` +
-                    `${escapeHtml(
-                        formatCurrency(Math.abs(summary.balance))
-                    )}`;
-            } else if (summary.balance > 0) {
-                elements.balanceStatus.innerHTML =
-                    `${icons.info} Debes ` +
-                    `${escapeHtml(formatCurrency(summary.balance))} ` +
-                    `a ${escapeHtml(state.person)}`;
-            } else {
-                elements.balanceStatus.innerHTML =
-                    `${icons.completado} Deuda completamente saldada`;
-            }
-
-            elements.progressDetail.textContent =
-                `${formatCurrency(summary.returned)} de ` +
-                `${formatCurrency(summary.delivered)}`;
-
-            const roundedPercentage =
-                Math.round(summary.recoveredPercentage);
-
-            elements.progressPercentage.textContent =
-                `${roundedPercentage} %`;
-
-            elements.progressBar.style.width =
-                `${summary.recoveredPercentage}%`;
-
-            elements.progressTrack.setAttribute(
-                "aria-valuenow",
-                String(roundedPercentage)
-            );
-        }
-
-        function getFilteredMovements() {
-            const query = elements.searchInput.value
-                .trim()
-                .toLocaleLowerCase("es");
-
-            const selectedType = elements.typeFilter.value;
-
-            return state.movements.filter(movement => {
-                const matchesType =
-                    selectedType === "all" ||
-                    movement.type === selectedType;
-
-                const searchableText = [
-                    movement.concept,
-                    movement.notes,
-                    movement.date,
-                    movement.quantity
-                ]
-                    .join(" ")
-                    .toLocaleLowerCase("es");
-
-                const matchesQuery =
-                    !query || searchableText.includes(query);
-
-                return matchesType && matchesQuery;
-            });
-        }
-
-        function renderMovements() {
-            const filteredMovements = getFilteredMovements();
-            const total = state.movements.length;
-            const shown = filteredMovements.length;
-
-            if (shown === total) {
-                elements.movementCount.textContent =
-                    `${total} ${
-                        pluralize(
-                            total,
-                            "movimiento registrado",
-                            "movimientos registrados"
-                        )
-                    }`;
-            } else {
-                elements.movementCount.textContent =
-                    `${shown} de ${total} movimientos`;
-            }
-
-            if (filteredMovements.length === 0) {
-                elements.movementsList.innerHTML = `
-                    <div class="empty-state">
-                        <div>
-                            <div class="state-icon">
-                                ${icons.vacio}
-                            </div>
-
-                            <h3 class="state-title">
-                                No hay movimientos
-                            </h3>
-
-                            <p class="state-description">
-                                No se han encontrado movimientos que
-                                coincidan con los filtros seleccionados.
-                            </p>
-                        </div>
-                    </div>
-                `;
-
-                return;
-            }
-
-            elements.movementsList.innerHTML =
-                filteredMovements
-                    .map(movement => {
-                        const typeLabel =
-                            movement.type === "entrega"
-                                ? "Entrega"
-                                : "Devolución";
-
-                        const notesMarkup = movement.notes
-                            ? `
-                                <span aria-hidden="true">•</span>
-                                <span title="${escapeHtml(
-                                    movement.notes
-                                )}">
-                                    ${escapeHtml(movement.notes)}
-                                </span>
-                            `
-                            : "";
-
-                        return `
-                            <article
-                                class="movement ${movement.type}"
-                                data-id="${escapeHtml(movement.id)}"
-                            >
-                                <div
-                                    class="movement-icon"
-                                    aria-hidden="true"
-                                >
-                                    ${icons[movement.type]}
-                                </div>
-
-                                <div class="movement-info">
-                                    <h3 class="movement-concept">
-                                        ${escapeHtml(movement.concept)}
-                                    </h3>
-
-                                    <div class="movement-meta">
-                                        <span class="movement-type">
-                                            ${typeLabel}
-                                        </span>
-
-                                        <span>
-                                            ${escapeHtml(
-                                                formatDate(movement.date)
-                                            )}
-                                        </span>
-
-                                        ${notesMarkup}
-                                    </div>
-                                </div>
-
-                                <div class="movement-amount">
-                                    ${escapeHtml(
-                                        formatCurrency(
-                                            movement.quantity,
-                                            true
-                                        )
-                                    )}
-                                </div>
-                            </article>
-                        `;
-                    })
-                    .join("");
-        }
-
-        function renderLastUpdate() {
-            if (!state.updated) {
-                elements.lastUpdate.textContent = "";
-                return;
-            }
-
-            elements.lastUpdate.textContent =
-                `Datos actualizados el ${formatDate(state.updated)}.`;
-        }
-
-        function render() {
-            renderSummary();
-            renderMovements();
-            renderLastUpdate();
-        }
-
-        function showError(message) {
-            elements.personName.textContent =
-                "No se han podido cargar los datos";
-
-            elements.balanceAmount.textContent =
-                formatCurrency(0);
-
-            elements.balanceStatus.innerHTML =
-                `${icons.error} Error de carga`;
-
-            elements.movementCount.textContent =
-                "Sin datos disponibles";
-
-            elements.movementsList.innerHTML = `
-                <div class="error-state">
-                    <div>
-                        <div class="state-icon">
-                            ${icons.error}
-                        </div>
-
-                        <h3 class="state-title">
-                            No se pudo leer el fichero XML
-                        </h3>
-
-                        <p class="state-description">
-                            ${escapeHtml(message)}
-                            Puedes seleccionar manualmente el fichero
-                            mediante el botón «Cargar otro XML».
-                        </p>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function loadDefaultXml() {
-            try {
-                const response = await fetch(
-                    `debts.xml?timestamp=${Date.now()}`
-                );
-
-                if (!response.ok) {
-                    throw new Error(
-                        `El servidor respondió con el estado ` +
-                        `${response.status}.`
-                    );
-                }
-
-                const xmlText = await response.text();
-                parseXml(xmlText);
-            } catch (error) {
-                console.error(error);
-
-                showError(
-                    "Comprueba que debts.xml se encuentra en la misma " +
-                    "carpeta que index.html y que la página se está " +
-                    "ejecutando mediante un servidor web."
-                );
-            }
-        }
-
-        elements.fileInput.addEventListener("change", event => {
-            const [file] = event.target.files;
-
-            if (!file) {
-                return;
-            }
-
-            const reader = new FileReader();
-
-            reader.addEventListener("load", () => {
-                try {
-                    parseXml(String(reader.result));
-                } catch (error) {
-                    console.error(error);
-                    showError(error.message);
-                }
-            });
-
-            reader.addEventListener("error", () => {
-                showError(
-                    "El navegador no ha podido leer el fichero seleccionado."
-                );
-            });
-
-            reader.readAsText(file, "UTF-8");
-
-            event.target.value = "";
-        });
-
-        elements.searchInput.addEventListener(
-            "input",
-            renderMovements
-        );
-
-        elements.typeFilter.addEventListener(
-            "change",
-            renderMovements
-        );
-
-        loadDefaultXml();
+        const MOVEMENT_TYPES = Object.freeze({ entrega: { label: "Entrega", sign: "negative" }, devolucion: { label: "Devolución", sign: "positive" }, gasto: { label: "Gasto", sign: "negative" } });
+        const MOVEMENT_METHODS = Object.freeze({ transferencia: { label: "Transferencia bancaria" }, bizum: { label: "Bizum" }, efectivo: { label: "Efectivo" }, edenred: { label: "Tarjeta Edenred" } });
+        const state = { person: "", currency: "EUR", updated: "", movements: [] };
+        const elements = { personName: document.getElementById("personName"), balanceAmount: document.getElementById("balanceAmount"), balanceStatus: document.getElementById("balanceStatus"), deliveredAmount: document.getElementById("deliveredAmount"), returnedAmount: document.getElementById("returnedAmount"), deliveredCount: document.getElementById("deliveredCount"), returnedCount: document.getElementById("returnedCount"), progressDetail: document.getElementById("progressDetail"), progressBar: document.getElementById("progressBar"), progressPercentage: document.getElementById("progressPercentage"), progressTrack: document.querySelector(".progress-track"), movementCount: document.getElementById("movementCount"), movementsList: document.getElementById("movementsList"), searchInput: document.getElementById("searchInput"), typeFilter: document.getElementById("typeFilter"), methodFilter: document.getElementById("methodFilter"), lastUpdate: document.getElementById("lastUpdate") };
+        const svg = (body) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+        const icons = { entrega: svg('<path d="M12 20V4"></path><path d="m6 10 6-6 6 6"></path>'), devolucion: svg('<path d="M12 4v16"></path><path d="m18 14-6 6-6-6"></path>'), gasto: svg('<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path>'), transferencia: svg('<path d="M3 10h18"></path><path d="M5 10v8M9 10v8M15 10v8M19 10v8"></path><path d="M3 18h18"></path><path d="m12 3 9 5H3l9-5Z"></path>'), bizum: svg('<rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path><path d="m9 10 2 2 4-4"></path>'), efectivo: svg('<rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 9H4v2M18 15h2v-2"></path>'), edenred: svg('<rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path><path d="M6 15h4"></path>'), pendiente: svg('<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5"></path><path d="m12 12 3 2"></path>'), completado: svg('<circle cx="12" cy="12" r="9"></circle><path d="m8 12 2.5 2.5L16 9"></path>'), info: svg('<circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path>'), vacio: svg('<path d="M4 7h16"></path><path d="M6 7l1 13h10l1-13"></path><path d="M9 7V4h6v3"></path>'), error: svg('<path d="M12 3 2.5 20h19L12 3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path>') };
+        function getElementText(parent, selector, fallback = "") { const el = parent.querySelector(selector); return el ? el.textContent.trim() : fallback }
+        function parseQuantity(value) { const n = Number.parseFloat(String(value).trim().replace(/\s/g, "").replace(",", ".")); return Number.isFinite(n) ? n : null }
+        function parseDate(value) { const v = String(value || "").trim(); let y, m, d; if (/^\d{4}-\d{2}-\d{2}$/.test(v)) { [y, m, d] = v.split("-").map(Number) } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) { [d, m, y] = v.split("/").map(Number) } else { return null } const date = new Date(y, m - 1, d); return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d ? date : null }
+        function formatDate(v) { const d = parseDate(v); return d ? new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "short", year: "numeric" }).format(d) : (v || "Fecha desconocida") }
+        function normalizeZero(v) { return Math.abs(v) < .000001 ? 0 : v }
+        function formatCurrency(v, showSign = false) { return new Intl.NumberFormat("es-ES", { style: "currency", currency: state.currency || "EUR", minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: showSign ? "always" : "auto" }).format(normalizeZero(v)) }
+        function escapeHtml(v) { return String(v).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;") }
+        function pluralize(n, s, p) { return n === 1 ? s : p }
+        function normalizeType(v) { const type = String(v || "").trim().toLocaleLowerCase("es"); if (!Object.hasOwn(MOVEMENT_TYPES, type)) throw new Error(`Tipo no válido: "${v}".`); return type }
+        function normalizeMethod(v) { const method = String(v || "").trim().toLocaleLowerCase("es"); if (!Object.hasOwn(MOVEMENT_METHODS, method)) throw new Error(`Modalidad no válida: "${v}".`); return method }
+        function validateSign(type, quantity, id) { if ((type === "entrega" || type === "gasto") && quantity >= 0) throw new Error(`El movimiento "${id}" debe tener una cantidad negativa.`); if (type === "devolucion" && quantity <= 0) throw new Error(`El movimiento "${id}" debe tener una cantidad positiva.`) }
+        function parseXml(xmlText) { const xml = new DOMParser().parseFromString(xmlText, "application/xml"); if (xml.querySelector("parsererror")) throw new Error("El fichero /debts.xml no contiene XML válido."); const debts = xml.querySelector("debts"); if (!debts) throw new Error("No se ha encontrado el elemento <debts>."); const ids = new Set(); const movements = [...debts.querySelectorAll(":scope > movement")].map((node, index) => { const id = node.getAttribute("id") || `movement-${index + 1}`; if (ids.has(id)) throw new Error(`El identificador "${id}" está repetido.`); ids.add(id); const type = normalizeType(node.getAttribute("type")); const method = normalizeMethod(node.getAttribute("method")); const quantity = parseQuantity(getElementText(node, "quantity")); if (quantity === null) throw new Error(`Cantidad no válida en "${id}".`); validateSign(type, quantity, id); const date = getElementText(node, "date"); if (!parseDate(date)) throw new Error(`Fecha no válida en "${id}". Usa AAAA-MM-DD.`); return { id, type, method, quantity: normalizeZero(quantity), concept: getElementText(node, "concept", "Sin concepto"), date, notes: getElementText(node, "notes", "") } }).sort((a, b) => parseDate(b.date) - parseDate(a.date)); state.person = debts.getAttribute("person") || debts.getAttribute("name") || "Persona sin nombre"; state.currency = debts.getAttribute("currency") || "EUR"; state.updated = debts.getAttribute("updated") || ""; state.movements = movements; render() }
+        function calculateSummary() { const deliveries = state.movements.filter(m => m.type === "entrega"); const expenses = state.movements.filter(m => m.type === "gasto"); const returns = state.movements.filter(m => m.type === "devolucion"); const delivered = deliveries.reduce((s, m) => s + Math.abs(m.quantity), 0); const spent = expenses.reduce((s, m) => s + Math.abs(m.quantity), 0); const returned = returns.reduce((s, m) => s + m.quantity, 0); const advanced = delivered + spent; const balance = state.movements.reduce((s, m) => s + m.quantity, 0); const recoveredPercentage = advanced > 0 ? Math.min(Math.max(returned / advanced * 100, 0), 100) : 0; return { delivered, spent, advanced, returned, balance: normalizeZero(balance), deliveredCount: deliveries.length, expenseCount: expenses.length, returnedCount: returns.length, recoveredPercentage } }
+        function renderSummary() { const s = calculateSummary(); elements.personName.textContent = `Cuenta con ${state.person}`; elements.balanceAmount.textContent = formatCurrency(s.balance, true); elements.deliveredAmount.textContent = formatCurrency(s.advanced); elements.returnedAmount.textContent = formatCurrency(s.returned); elements.deliveredCount.textContent = `${s.deliveredCount} ${pluralize(s.deliveredCount, "entrega", "entregas")} y ${s.expenseCount} ${pluralize(s.expenseCount, "gasto", "gastos")}`; elements.returnedCount.textContent = `${s.returnedCount} ${pluralize(s.returnedCount, "devolución registrada", "devoluciones registradas")}`; if (s.balance < 0) elements.balanceStatus.innerHTML = `${icons.pendiente} ${escapeHtml(state.person)} te debe ${escapeHtml(formatCurrency(Math.abs(s.balance)))}`; else if (s.balance > 0) elements.balanceStatus.innerHTML = `${icons.info} Debes ${escapeHtml(formatCurrency(s.balance))} a ${escapeHtml(state.person)}`; else elements.balanceStatus.innerHTML = `${icons.completado} Deuda completamente saldada`; elements.progressDetail.textContent = `${formatCurrency(s.returned)} de ${formatCurrency(s.advanced)}`; const p = Math.round(s.recoveredPercentage); elements.progressPercentage.textContent = `${p} %`; elements.progressBar.style.width = `${s.recoveredPercentage}%`; elements.progressTrack.setAttribute("aria-valuenow", String(p)) }
+        function getFilteredMovements() { const q = elements.searchInput.value.trim().toLocaleLowerCase("es"); const type = elements.typeFilter.value; const method = elements.methodFilter.value; return state.movements.filter(m => { const searchable = [m.concept, m.notes, m.date, m.quantity, m.type, m.method, MOVEMENT_TYPES[m.type].label, MOVEMENT_METHODS[m.method].label].join(" ").toLocaleLowerCase("es"); return (type === "all" || m.type === type) && (method === "all" || m.method === method) && (!q || searchable.includes(q)) }) }
+        function renderMovements() { const list = getFilteredMovements(), total = state.movements.length; elements.movementCount.textContent = list.length === total ? `${total} ${pluralize(total, "movimiento registrado", "movimientos registrados")}` : `${list.length} de ${total} movimientos`; if (!list.length) { elements.movementsList.innerHTML = `<div class="empty-state"><div><div class="state-icon">${icons.vacio}</div><h3 class="state-title">No hay movimientos</h3><p class="state-description">No se han encontrado movimientos que coincidan con los filtros seleccionados.</p></div></div>`; return } elements.movementsList.innerHTML = list.map(m => { const typeLabel = MOVEMENT_TYPES[m.type].label; const methodLabel = MOVEMENT_METHODS[m.method].label; const notes = m.notes ? `<span aria-hidden="true">•</span><span title="${escapeHtml(m.notes)}">${escapeHtml(m.notes)}</span>` : ""; return `<article class="movement ${m.type}" data-id="${escapeHtml(m.id)}"><div class="movement-icon" aria-hidden="true">${icons[m.type]}</div><div class="movement-info"><h3 class="movement-concept">${escapeHtml(m.concept)}</h3><div class="movement-meta"><span class="movement-type">${escapeHtml(typeLabel)}</span><span class="movement-method">${icons[m.method]} ${escapeHtml(methodLabel)}</span><span>${escapeHtml(formatDate(m.date))}</span>${notes}</div></div><div class="movement-amount">${escapeHtml(formatCurrency(m.quantity, true))}</div></article>` }).join("") }
+        function renderLastUpdate() { elements.lastUpdate.textContent = state.updated ? `Datos actualizados el ${formatDate(state.updated)}.` : "" }
+        function render() { renderSummary(); renderMovements(); renderLastUpdate() }
+        function showError(message) { elements.personName.textContent = "No se han podido cargar los datos"; elements.balanceAmount.textContent = formatCurrency(0); elements.balanceStatus.innerHTML = `${icons.error} Error de carga`; elements.movementCount.textContent = "Sin datos disponibles"; elements.movementsList.innerHTML = `<div class="error-state"><div><div class="state-icon">${icons.error}</div><h3 class="state-title">No se pudo leer /debts.xml</h3><p class="state-description">${escapeHtml(message)}</p></div></div>` }
+        async function loadDebtsXml() { try { const response = await fetch(`/debts.xml?timestamp=${Date.now()}`, { headers: { Accept: "application/xml, text/xml" }, cache: "no-store" }); if (!response.ok) throw new Error(`El servidor respondió con el estado ${response.status}.`); const text = await response.text(); if (!text.trim()) throw new Error("El fichero /debts.xml está vacío."); parseXml(text) } catch (error) { console.error("Error cargando /debts.xml:", error); showError(error instanceof Error ? error.message : "No se ha podido cargar /debts.xml.") } }
+        elements.searchInput.addEventListener("input", renderMovements); elements.typeFilter.addEventListener("change", renderMovements); elements.methodFilter.addEventListener("change", renderMovements); loadDebtsXml();
     </script>
 </body>
+
 </html>
