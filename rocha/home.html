@@ -86,8 +86,11 @@ header{
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const SUPABASE_URL = 'https://lpmpqeibsrzvmmvjnmgf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwbXBxZWlic3J6dm1tdmpubWdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0OTY1OTksImV4cCI6MjEwODA3MjU5OX0.onXwjCF71iu-yHR3yVYVhnEoARS2YWQWpKVftS99Stg';
+const SUPABASE_URL =
+    'https://lpmpqeibsrzvmmvjnmgf.supabase.co';
+
+const SUPABASE_ANON_KEY =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwbXBxZWlic3J6dm1tdmpubWdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0OTY1OTksImV4cCI6MjEwODA3MjU5OX0.onXwjCF71iu-yHR3yVYVhnEoARS2YWQWpKVftS99Stg';
 
 const supabase = createClient(
     SUPABASE_URL,
@@ -104,66 +107,125 @@ if (!session) {
 
 const user = session.user;
 
-const githubUsername =
+const email = user.email || '';
+
+const username =
     user.user_metadata?.user_name ||
     user.user_metadata?.preferred_username ||
-    user.email;
+    email.split('@')[0];
 
 const fullName =
     user.user_metadata?.full_name ||
-    githubUsername;
+    username;
 
 const avatar =
-    user.user_metadata?.avatar_url;
+    user.user_metadata?.avatar_url || null;
+
+const provider =
+    user.app_metadata?.provider || 'email';
 
 document.querySelector(".welcome h1").textContent =
     `Bienvenido ${fullName}`;
 
 document.querySelector(".welcome p").textContent =
-    "Has iniciado sesión correctamente con GitHub.";
+    provider === 'github'
+        ? 'Has iniciado sesión correctamente con GitHub.'
+        : 'Has iniciado sesión correctamente con correo electrónico.';
 
-document.getElementById("userInfo").innerHTML = `
-    <div style="
-        display:flex;
-        align-items:center;
-        gap:10px;
-    ">
-        <img
-            src="${avatar}"
-            alt=""
-            style="
+if (avatar) {
+
+    document.getElementById("userInfo").innerHTML = `
+        <div style="
+            display:flex;
+            align-items:center;
+            gap:10px;
+        ">
+            <img
+                src="${avatar}"
+                alt=""
+                style="
+                    width:40px;
+                    height:40px;
+                    border-radius:50%;
+                "
+            >
+
+            <div style="text-align:right;">
+                <div>${fullName}</div>
+                <div style="
+                    font-size:.85rem;
+                    color:#b3b9c9;
+                ">
+                    @${username}
+                </div>
+            </div>
+
+            <button
+                id="logoutButton"
+                style="
+                    margin-left:12px;
+                    background:none;
+                    border:1px solid rgba(255,255,255,.2);
+                    color:white;
+                    padding:8px 12px;
+                    border-radius:10px;
+                    cursor:pointer;
+                "
+            >
+                Salir
+            </button>
+        </div>
+    `;
+
+} else {
+
+    document.getElementById("userInfo").innerHTML = `
+        <div style="
+            display:flex;
+            align-items:center;
+            gap:10px;
+        ">
+
+            <div style="
                 width:40px;
                 height:40px;
                 border-radius:50%;
-            "
-        >
-
-        <div style="text-align:right;">
-            <div>${fullName}</div>
-            <div style="
-                font-size:.85rem;
-                color:#b3b9c9;
+                background:#4f7cff;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                font-weight:bold;
             ">
-                @${githubUsername}
+                ${fullName.charAt(0).toUpperCase()}
             </div>
-        </div>
 
-        <button
-            id="logoutButton"
-            style="
-                margin-left:12px;
-                background:none;
-                border:1px solid rgba(255,255,255,.2);
-                color:white;
-                padding:8px 12px;
-                border-radius:10px;
-                cursor:pointer;
-            "
-        >
-            Salir
-        </button>
-    </div>
-`;
+            <div style="text-align:right;">
+                <div>${fullName}</div>
+                <div style="
+                    font-size:.85rem;
+                    color:#b3b9c9;
+                ">
+                    ${email}
+                </div>
+            </div>
+
+            <button
+                id="logoutButton"
+                style="
+                    margin-left:12px;
+                    background:none;
+                    border:1px solid rgba(255,255,255,.2);
+                    color:white;
+                    padding:8px 12px;
+                    border-radius:10px;
+                    cursor:pointer;
+                "
+            >
+                Salir
+            </button>
+        </div>
+    `;
+}
 
 document
     .getElementById("logoutButton")
@@ -175,7 +237,6 @@ document
             "index.html"
         );
     });
-
 </script>
 
 <body>

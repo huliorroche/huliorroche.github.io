@@ -56,9 +56,27 @@ body {
 
 .subtitle {
     color: var(--muted);
-    margin-bottom: 40px;
+    margin-bottom: 30px;
 }
 
+.input {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,.08);
+    color: white;
+    outline: none;
+    font-size: .95rem;
+}
+
+.input::placeholder {
+    color: var(--muted);
+}
+
+.email-btn,
+.register-btn,
 .github-btn {
     width: 100%;
     border: 0;
@@ -67,27 +85,132 @@ body {
     border-radius: 14px;
     font-size: 1rem;
     font-weight: 600;
-    background: linear-gradient(135deg,#4f7cff,#7a5cff);
     color: white;
     transition: .2s;
 }
 
+.email-btn:hover,
+.register-btn:hover,
 .github-btn:hover {
     transform: translateY(-2px);
 }
 
-.github-btn.loading {
+.email-btn {
+    background: linear-gradient(135deg,#16a34a,#15803d);
+    margin-bottom: 10px;
+}
+
+.register-btn {
+    background: rgba(255,255,255,.12);
+    margin-bottom: 20px;
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted);
+    margin-bottom: 20px;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.github-btn {
+    background: linear-gradient(135deg,#4f7cff,#7a5cff);
+}
+
+.github-btn.loading,
+.email-btn.loading,
+.register-btn.loading {
     opacity: .7;
     pointer-events: none;
 }
 </style>
 </head>
 
+<body>
+
+<div class="login-card">
+
+    <div class="logo">R</div>
+
+    <div class="subtitle">
+        pp
+    </div>
+
+    <input
+        id="email"
+        class="input"
+        type="email"
+        placeholder="Correo electrónico">
+
+    <input
+        id="password"
+        class="input"
+        type="password"
+        placeholder="Contraseña">
+
+    <button
+        class="email-btn"
+        onclick="loginWithEmail()">
+        Iniciar sesión
+    </button>
+
+    <button
+        class="register-btn"
+        onclick="registerWithEmail()">
+        Crear cuenta
+    </button>
+
+    <div class="divider">
+        o
+    </div>
+
+    <button
+        class="github-btn"
+        onclick="loginWithGithub()">
+
+        <svg
+            width="20"
+            height="20"
+            viewBox="0 0 16 16"
+            fill="currentColor"
+            style="vertical-align:middle;margin-right:8px;">
+
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+            0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+            -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+            .07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95
+            0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
+            0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 4 0
+            c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+            .51.56.82 1.27.82 2.15
+            0 3.07-1.87 3.75-3.65 3.95
+            .29.25.54.73.54 1.48
+            0 1.07-.01 1.93-.01 2.2
+            0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8
+            c0-4.42-3.58-8-8-8z"/>
+        </svg>
+
+        Iniciar sesión con GitHub
+    </button>
+
+</div>
+
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const SUPABASE_URL = 'https://lpmpqeibsrzvmmvjnmgf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwbXBxZWlic3J6dm1tdmpubWdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0OTY1OTksImV4cCI6MjEwODA3MjU5OX0.onXwjCF71iu-yHR3yVYVhnEoARS2YWQWpKVftS99Stg';
+const SUPABASE_URL =
+    'https://lpmpqeibsrzvmmvjnmgf.supabase.co';
+
+const SUPABASE_ANON_KEY =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwbXBxZWlic3J6dm1tdmpubWdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0OTY1OTksImV4cCI6MjEwODA3MjU5OX0.onXwjCF71iu-yHR3yVYVhnEoARS2YWQWpKVftS99Stg';
 
 const supabase = createClient(
     SUPABASE_URL,
@@ -104,16 +227,68 @@ window.loginWithGithub = async function () {
     const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
-            scopes : 'read:user user:email',
-            redirectTo: window.location.origin + '/rocha/home.html'
+            scopes: 'read:user user:email',
+            redirectTo:
+                window.location.origin + '/rocha/home.html'
         }
     });
 
     if (error) {
         button.classList.remove("loading");
-        button.textContent = "Iniciar sesión con GitHub";
+        button.innerHTML = "Iniciar sesión con GitHub";
         alert(error.message);
     }
+};
+
+window.loginWithEmail = async function () {
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const { error } =
+        await supabase.auth.signInWithPassword({
+            email,
+            password
+        });
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    window.location.replace("home.html");
+};
+
+window.registerWithEmail = async function () {
+
+    const email =
+        document.getElementById("email").value.trim();
+
+    const password =
+        document.getElementById("password").value;
+
+    const { error } =
+        await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                emailRedirectTo:
+                    window.location.origin +
+                    '/rocha/home.html'
+            }
+        });
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    alert(
+        "Cuenta creada. Revisa tu correo para confirmar el registro."
+    );
 };
 
 const {
@@ -124,45 +299,6 @@ if (session) {
     window.location.replace("home.html");
 }
 </script>
-
-<body>
-
-<div class="login-card">
-
-    <div class="logo">R</div>
-
-    <div class="subtitle">
-        pp
-    </div>
-
-    <button class="github-btn"
-    onclick="loginWithGithub()">
-
-    <svg
-        width="20"
-        height="20"
-        viewBox="0 0 16 16"
-        fill="currentColor"
-        style="vertical-align:middle;margin-right:8px;">
-        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
-        0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
-        -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
-        .07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95
-        0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
-        0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 4 0
-        c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
-        .51.56.82 1.27.82 2.15
-        0 3.07-1.87 3.75-3.65 3.95
-        .29.25.54.73.54 1.48
-        0 1.07-.01 1.93-.01 2.2
-        0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8
-        c0-4.42-3.58-8-8-8z"/>
-    </svg>
-
-    Iniciar sesión con GitHub
-</button>
-
-</div>
 
 </body>
 </html>
