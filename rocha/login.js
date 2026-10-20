@@ -15,28 +15,71 @@ export const {
     data: { session }
 } = await supabase.auth.getSession();
 
-if (!session) {
-    window.location.replace("../");
+const accessToken =
+    new URLSearchParams(
+        window.location.search
+    ).get("access");
+
+let tokenUser = null;
+
+if (!session && accessToken) {
+
+    const {
+        data
+    } = await supabase
+        .from("access_tokens")
+        .select("user_id")
+        .eq("token", accessToken)
+        .eq("enabled", true)
+        .maybeSingle();
+
+    if (data) {
+
+        tokenUser = {
+            id: data.user_id,
+            email: "access-token"
+        };
+
+    }
+
 }
 
-export const user = session.user;
+if (!session && !tokenUser) {
 
-const email = user.email || '';
+    window.location.replace("../");
+
+}
+
+export const user =
+    session?.user ||
+    tokenUser;
+
+const email =
+    user?.email || '';
 
 const username =
-    user.user_metadata?.user_name ||
-    user.user_metadata?.preferred_username ||
-    email.split('@')[0];
+    user?.user_metadata?.user_name ||
+    user?.user_metadata?.preferred_username ||
+    (
+        email.includes("@")
+            ? email.split('@')[0]
+            : "Invitado"
+    );
 
 const fullName =
-    user.user_metadata?.full_name ||
+    user?.user_metadata?.full_name ||
     username;
 
 const avatar =
-    user.user_metadata?.avatar_url || null;
+    user?.user_metadata?.avatar_url || null;
 
 const provider =
-    user.app_metadata?.provider || 'email';
+    user?.app_metadata?.provider ||
+    (
+        email === "access-token"
+            ? "token"
+            : "email"
+    );
 
 
 if (document.querySelector(".welcome h1")){
@@ -46,7 +89,9 @@ if (document.querySelector(".welcome h1")){
 if (document.querySelector(".welcome p")){
     document.querySelector(".welcome p").textContent =
     provider === 'github'
-        ? 'Has iniciado sesión correctamente con GitHub.'
+    ? 'Has iniciado sesión correctamente con GitHub.'
+    : provider === 'token'
+        ? 'Has accedido mediante un enlace privado.'
         : 'Has iniciado sesión correctamente con correo electrónico.';
 }
 
