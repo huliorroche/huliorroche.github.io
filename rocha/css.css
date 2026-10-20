@@ -89,7 +89,7 @@ header {
 
 .welcome h1 {
 
-    font-family: "Cormorant Garamond", serif;
+    /* font-family: "Cormorant Garamond", serif; */
 
     font-size: 3rem;
 
@@ -147,7 +147,7 @@ header {
 
 .card h3 {
 
-    font-family: "Cormorant Garamond", serif;
+    /* font-family: "Cormorant Garamond", serif; */
 
     font-size: 1.8rem;
 

@@ -16,7 +16,7 @@ const {
 } = await supabase.auth.getSession();
 
 if (!session) {
-    window.location.replace("index.html");
+    window.location.replace("../");
 }
 
 const user = session.user;
