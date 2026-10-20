@@ -94,7 +94,6 @@ const supabase = createClient(
     SUPABASE_ANON_KEY
 );
 
-
 const {
     data: { session }
 } = await supabase.auth.getSession();
@@ -177,15 +176,13 @@ document
         );
     });
 
-
-    
 </script>
 
 <body>
 
 <header>
 
-    <div class="logo">ROCHA</div>
+    <div class="logo">R</div>
 
     <div class="user" id="userInfo">
     Cargando...
