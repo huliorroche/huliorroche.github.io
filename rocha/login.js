@@ -51,8 +51,8 @@ if (document.querySelector(".welcome p")){
 }
 
 if (avatar) {
-
     document.getElementById("userInfo").innerHTML = `
+    
     <div style="
         display:flex;
         align-items:center;
