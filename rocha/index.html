@@ -104,6 +104,7 @@ window.loginWithGithub = async function () {
     const { error } = await supabase.auth.signInWithOAuth({
         provider: 'github',
         options: {
+            scopes : 'read:user user:email',
             redirectTo: window.location.origin + '/rocha/home.html'
         }
     });
