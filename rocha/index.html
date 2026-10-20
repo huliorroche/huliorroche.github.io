@@ -1,382 +1,351 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>ROCHA</title>
+    <title>Login | Rocha Services</title>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
 
-<style>
+    <style>
+        :root {
+            --rocha-black: #161b24;
+            --rocha-gold: #b99b68;
+            --rocha-gold-light: #d2bb91;
+            --rocha-bg: #f7f6f3;
+            --rocha-card: #ffffff;
+            --rocha-border: #e9e3d7;
+            --rocha-text: #161b24;
+            --rocha-muted: #7f8691;
+        }
 
-:root{
-    --rocha-black:#161b24;
-    --rocha-gold:#b99b68;
-    --rocha-gold-light:#d2bb91;
-    --rocha-bg:#f7f6f3;
-    --rocha-card:#ffffff;
-    --rocha-border:#e9e3d7;
-    --rocha-text:#161b24;
-    --rocha-muted:#7f8691;
-}
+        * {
+            box-sizing: border-box;
+        }
 
-*{
-    box-sizing:border-box;
-}
+        body {
 
-body{
+            font-family: "Inter", sans-serif;
 
-    font-family:"Inter",sans-serif;
+            min-height: 100vh;
 
-    min-height:100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+            padding: 30px;
 
-    padding:30px;
+            background:
+                radial-gradient(circle at top right,
+                    rgba(185, 155, 104, .12),
+                    transparent 35%),
+                radial-gradient(circle at bottom left,
+                    rgba(185, 155, 104, .08),
+                    transparent 30%),
+                linear-gradient(135deg,
+                    #faf9f7,
+                    #f3f1ec);
+        }
 
-    background:
-        radial-gradient(
-            circle at top right,
-            rgba(185,155,104,.12),
-            transparent 35%
-        ),
-        radial-gradient(
-            circle at bottom left,
-            rgba(185,155,104,.08),
-            transparent 30%
-        ),
-        linear-gradient(
-            135deg,
-            #faf9f7,
-            #f3f1ec
-        );
-}
+        .login-card {
 
-.login-card{
+            width: 100%;
+            max-width: 540px;
 
-    width:100%;
-    max-width:540px;
+            background: rgba(255, 255, 255, .96);
 
-    background:rgba(255,255,255,.96);
+            border: 1px solid var(--rocha-border);
 
-    border:1px solid var(--rocha-border);
+            border-radius: 32px;
 
-    border-radius:32px;
+            padding: 50px;
 
-    padding:50px;
+            box-shadow:
+                0 30px 80px rgba(22, 27, 36, .08),
+                0 10px 30px rgba(22, 27, 36, .04);
 
-    box-shadow:
-        0 30px 80px rgba(22,27,36,.08),
-        0 10px 30px rgba(22,27,36,.04);
+            backdrop-filter: blur(20px);
+        }
 
-    backdrop-filter:blur(20px);
-}
+        .logo-container {
 
-.logo-container{
+            text-align: center;
 
-    text-align:center;
+            margin-bottom: 25px;
+        }
 
-    margin-bottom:25px;
-}
+        .logo-placeholder {
 
-.logo-placeholder{
+            width: 100%;
+            max-width: 260px;
 
-    width:100%;
-    max-width:260px;
+            height: auto;
+        }
 
-    height:auto;
-}
+        .brand-title {
 
-.brand-title{
+            font-family: "Cormorant Garamond", serif;
 
-    font-family:"Cormorant Garamond",serif;
+            text-align: center;
 
-    text-align:center;
+            color: var(--rocha-black);
 
-    color:var(--rocha-black);
+            font-size: 3rem;
 
-    font-size:3rem;
+            letter-spacing: .22em;
 
-    letter-spacing:.22em;
+            margin-bottom: 6px;
+        }
 
-    margin-bottom:6px;
-}
+        .brand-divider {
 
-.brand-divider{
+            width: 120px;
+            height: 2px;
 
-    width:120px;
-    height:2px;
+            background: var(--rocha-gold);
 
-    background:var(--rocha-gold);
+            margin: 0 auto 16px;
+        }
 
-    margin:0 auto 16px;
-}
+        .subtitle {
 
-.subtitle{
+            text-align: center;
 
-    text-align:center;
+            color: var(--rocha-muted);
 
-    color:var(--rocha-muted);
+            letter-spacing: .25em;
 
-    letter-spacing:.25em;
+            text-transform: uppercase;
 
-    text-transform:uppercase;
+            font-size: .82rem;
 
-    font-size:.82rem;
+            margin-bottom: 35px;
+        }
 
-    margin-bottom:35px;
-}
+        .input {
 
-.input{
+            width: 100%;
 
-    width:100%;
+            background: white;
 
-    background:white;
+            border: 1px solid var(--rocha-border);
 
-    border:1px solid var(--rocha-border);
+            border-radius: 16px;
 
-    border-radius:16px;
+            padding: 15px 18px;
 
-    padding:15px 18px;
+            margin-bottom: 14px;
 
-    margin-bottom:14px;
+            color: var(--rocha-text);
 
-    color:var(--rocha-text);
+            font-size: .95rem;
 
-    font-size:.95rem;
+            transition: .2s;
+        }
 
-    transition:.2s;
-}
+        .input:focus {
 
-.input:focus{
+            outline: none;
 
-    outline:none;
+            border-color: var(--rocha-gold);
 
-    border-color:var(--rocha-gold);
+            box-shadow:
+                0 0 0 5px rgba(185, 155, 104, .15);
+        }
 
-    box-shadow:
-        0 0 0 5px rgba(185,155,104,.15);
-}
+        .input::placeholder {
+            color: var(--rocha-muted);
+        }
 
-.input::placeholder{
-    color:var(--rocha-muted);
-}
+        .email-btn,
+        .register-btn,
+        .github-btn {
 
-.email-btn,
-.register-btn,
-.github-btn{
+            width: 100%;
 
-    width:100%;
+            border: 0;
 
-    border:0;
+            border-radius: 16px;
 
-    border-radius:16px;
+            padding: 15px;
 
-    padding:15px;
+            font-weight: 600;
 
-    font-weight:600;
+            transition: .25s;
 
-    transition:.25s;
+            cursor: pointer;
+        }
 
-    cursor:pointer;
-}
+        .email-btn:hover,
+        .register-btn:hover,
+        .github-btn:hover {
+            transform: translateY(-2px);
+        }
 
-.email-btn:hover,
-.register-btn:hover,
-.github-btn:hover{
-    transform:translateY(-2px);
-}
+        .email-btn {
 
-.email-btn{
+            background:
+                linear-gradient(135deg,
+                    var(--rocha-gold),
+                    var(--rocha-gold-light));
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--rocha-gold),
-            var(--rocha-gold-light)
-        );
+            color: white;
 
-    color:white;
+            margin-bottom: 12px;
+        }
 
-    margin-bottom:12px;
-}
+        .email-btn:hover {
 
-.email-btn:hover{
+            box-shadow:
+                0 12px 30px rgba(185, 155, 104, .35);
+        }
 
-    box-shadow:
-        0 12px 30px rgba(185,155,104,.35);
-}
+        .register-btn {
 
-.register-btn{
+            background: #f8f6f2;
 
-    background:#f8f6f2;
+            color: var(--rocha-black);
 
-    color:var(--rocha-black);
+            border: 1px solid var(--rocha-border);
 
-    border:1px solid var(--rocha-border);
+            margin-bottom: 24px;
+        }
 
-    margin-bottom:24px;
-}
+        .register-btn:hover {
 
-.register-btn:hover{
+            background: white;
+        }
 
-    background:white;
-}
+        .divider {
 
-.divider{
+            display: flex;
+            align-items: center;
 
-    display:flex;
-    align-items:center;
+            gap: 15px;
 
-    gap:15px;
+            color: var(--rocha-muted);
 
-    color:var(--rocha-muted);
+            margin-bottom: 24px;
 
-    margin-bottom:24px;
+            font-size: .9rem;
+        }
 
-    font-size:.9rem;
-}
+        .divider::before,
+        .divider::after {
 
-.divider::before,
-.divider::after{
+            content: "";
 
-    content:"";
+            flex: 1;
 
-    flex:1;
+            height: 1px;
 
-    height:1px;
+            background: var(--rocha-border);
+        }
 
-    background:var(--rocha-border);
-}
+        .github-btn {
 
-.github-btn{
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
-    display:flex;
-    justify-content:center;
-    align-items:center;
+            gap: 10px;
 
-    gap:10px;
+            background: var(--rocha-black);
 
-    background:var(--rocha-black);
+            color: white;
+        }
 
-    color:white;
-}
+        .github-btn:hover {
 
-.github-btn:hover{
+            background: #262d38;
 
-    background:#262d38;
+            box-shadow:
+                0 12px 30px rgba(22, 27, 36, .25);
+        }
 
-    box-shadow:
-        0 12px 30px rgba(22,27,36,.25);
-}
+        .loading {
+            opacity: .7;
+            pointer-events: none;
+        }
 
-.loading{
-    opacity:.7;
-    pointer-events:none;
-}
+        .footer-note {
 
-.footer-note{
+            text-align: center;
 
-    text-align:center;
+            margin-top: 20px;
 
-    margin-top:20px;
+            color: var(--rocha-muted);
 
-    color:var(--rocha-muted);
+            font-size: .85rem;
+        }
 
-    font-size:.85rem;
-}
+        @media (max-width:576px) {
 
-@media (max-width:576px){
+            .login-card {
+                padding: 35px 25px;
+            }
 
-    .login-card{
-        padding:35px 25px;
-    }
-
-    .brand-title{
-        font-size:2.3rem;
-    }
-}
-
-</style>
+            .brand-title {
+                font-size: 2.3rem;
+            }
+        }
+    </style>
 
 </head>
 
 <body>
 
-<div class="login-card">
+    <div class="login-card">
 
-    <div class="logo-container">
+        <div class="logo-container">
+            <img src="images/logo.png" class="logo-placeholder">
+        </div>
 
-        <!-- Sustituye por tu logo -->
-        <img
-            src="logo.png"
-            alt="ROCHA"
-            class="logo-placeholder">
+        <h1 class="brand-title">
+            Rocha
+        </h1>
 
-    </div>
+        <div class="brand-divider"></div>
 
-    <h1 class="brand-title">
-        ROCHA
-    </h1>
+        <div class="subtitle">
+            Services
+        </div>
 
-    <div class="brand-divider"></div>
+        <input id="email" class="input" type="email" placeholder="Correo electrónico">
 
-    <div class="subtitle">
-        Banking Services
-    </div>
+        <input id="password" class="input" type="password" placeholder="Contraseña">
 
-    <input
-        id="email"
-        class="input"
-        type="email"
-        placeholder="Correo electrónico">
+        <button class="email-btn" onclick="loginWithEmail()">
 
-    <input
-        id="password"
-        class="input"
-        type="password"
-        placeholder="Contraseña">
+            Iniciar sesión
 
-    <button
-        class="email-btn"
-        onclick="loginWithEmail()">
+        </button>
 
-        Iniciar sesión
+        <button class="register-btn" onclick="registerWithEmail()">
 
-    </button>
+            Crear cuenta
 
-    <button
-        class="register-btn"
-        onclick="registerWithEmail()">
+        </button>
 
-        Crear cuenta
+        <div class="divider">
+            o
+        </div>
 
-    </button>
+        <button class="github-btn" onclick="loginWithGithub()">
 
-    <div class="divider">
-        o
-    </div>
+            <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor">
 
-    <button
-        class="github-btn"
-        onclick="loginWithGithub()">
-
-        <svg
-            width="20"
-            height="20"
-            viewBox="0 0 16 16"
-            fill="currentColor">
-
-            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54
+                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54
             2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
             0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49
             -2.69-.94-.09-.23-.48-.94-.82-1.13
@@ -393,112 +362,113 @@ body{
             .29.25.54.73.54 1.48
             0 1.07-.01 1.93-.01 2.2
             0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8
-            c0-4.42-3.58-8-8-8z"/>
+            c0-4.42-3.58-8-8-8z" />
 
-        </svg>
+            </svg>
 
-        Iniciar sesión con GitHub
+            Iniciar sesión con GitHub
 
-    </button>
+        </button>
 
-</div>
+    </div>
 
-<script type="module">
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+    <script type="module">
+        import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
-const SUPABASE_URL =
-    'https://lpmpqeibsrzvmmvjnmgf.supabase.co';
+        const SUPABASE_URL =
+            'https://lpmpqeibsrzvmmvjnmgf.supabase.co';
 
-const SUPABASE_ANON_KEY =
-    'TU_CLAVE';
+        const SUPABASE_ANON_KEY =
+            'TU_CLAVE';
 
-const supabase = createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
+        const supabase = createClient(
+            SUPABASE_URL,
+            SUPABASE_ANON_KEY
+        );
 
-window.loginWithGithub = async function () {
+        window.loginWithGithub = async function () {
 
-    const button = document.querySelector(".github-btn");
+            const button = document.querySelector(".github-btn");
 
-    button.classList.add("loading");
-    button.textContent = "Conectando con GitHub...";
+            button.classList.add("loading");
+            button.textContent = "Conectando con GitHub...";
 
-    const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
-        options: {
-            scopes: 'read:user user:email',
-            redirectTo:
-                window.location.origin + '/rocha/home.html'
-        }
-    });
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'github',
+                options: {
+                    scopes: 'read:user user:email',
+                    redirectTo:
+                        window.location.origin + '/rocha/home.html'
+                }
+            });
 
-    if (error) {
-        button.classList.remove("loading");
-        button.innerHTML = "Iniciar sesión con GitHub";
-        alert(error.message);
-    }
-};
-
-window.loginWithEmail = async function () {
-
-    const email =
-        document.getElementById("email").value.trim();
-
-    const password =
-        document.getElementById("password").value;
-
-    const { error } =
-        await supabase.auth.signInWithPassword({
-            email,
-            password
-        });
-
-    if (error) {
-        alert(error.message);
-        return;
-    }
-
-    window.location.replace("home.html");
-};
-
-window.registerWithEmail = async function () {
-
-    const email =
-        document.getElementById("email").value.trim();
-
-    const password =
-        document.getElementById("password").value;
-
-    const { error } =
-        await supabase.auth.signUp({
-            email,
-            password,
-            options: {
-                emailRedirectTo:
-                    window.location.origin +
-                    '/rocha/home.html'
+            if (error) {
+                button.classList.remove("loading");
+                button.innerHTML = "Iniciar sesión con GitHub";
+                alert(error.message);
             }
-        });
+        };
 
-    if (error) {
-        alert(error.message);
-        return;
-    }
+        window.loginWithEmail = async function () {
 
-    alert(
-        "Cuenta creada. Revisa tu correo para confirmar el registro."
-    );
-};
+            const email =
+                document.getElementById("email").value.trim();
 
-const {
-    data: { session }
-} = await supabase.auth.getSession();
+            const password =
+                document.getElementById("password").value;
 
-if (session) {
-    window.location.replace("home.html");
-}
-</script>
+            const { error } =
+                await supabase.auth.signInWithPassword({
+                    email,
+                    password
+                });
+
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            window.location.replace("home.html");
+        };
+
+        window.registerWithEmail = async function () {
+
+            const email =
+                document.getElementById("email").value.trim();
+
+            const password =
+                document.getElementById("password").value;
+
+            const { error } =
+                await supabase.auth.signUp({
+                    email,
+                    password,
+                    options: {
+                        emailRedirectTo:
+                            window.location.origin +
+                            '/rocha/home.html'
+                    }
+                });
+
+            if (error) {
+                alert(error.message);
+                return;
+            }
+
+            alert(
+                "Cuenta creada. Revisa tu correo para confirmar el registro."
+            );
+        };
+
+        const {
+            data: { session }
+        } = await supabase.auth.getSession();
+
+        if (session) {
+            window.location.replace("home.html");
+        }
+    </script>
 
 </body>
+
 </html>
