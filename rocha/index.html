@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ROCHA</title>
+
+<style>
+:root {
+    --primary: #4f7cff;
+    --secondary: #7a5cff;
+    --bg: #0f172a;
+    --card: rgba(255,255,255,.08);
+    --border: rgba(255,255,255,.12);
+    --text: #ffffff;
+    --muted: #b3b9c9;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Segoe UI, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background:
+        radial-gradient(circle at top left,#4f7cff55,transparent 35%),
+        radial-gradient(circle at bottom right,#7a5cff55,transparent 35%),
+        var(--bg);
+    color: var(--text);
+}
+
+.login-card {
+    width: 90%;
+    max-width: 450px;
+    padding: 40px;
+    border-radius: 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    backdrop-filter: blur(18px);
+    text-align: center;
+}
+
+.logo {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: 10px;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: var(--muted);
+    margin-bottom: 40px;
+}
+
+.github-btn {
+    width: 100%;
+    border: 0;
+    cursor: pointer;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg,#4f7cff,#7a5cff);
+    color: white;
+    transition: .2s;
+}
+
+.github-btn:hover {
+    transform: translateY(-2px);
+}
+
+.github-btn.loading {
+    opacity: .7;
+    pointer-events: none;
+}
+</style>
+</head>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const SUPABASE_URL = 'https://lpmpqeibsrzvmmvjnmgf.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_lLUzbn9nS3TkRmXIpz3m_g_a4ayzEmy';
+
+const supabase = createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+);
+
+window.loginWithGithub = async function () {
+
+    const button = document.querySelector(".github-btn");
+
+    button.classList.add("loading");
+    button.textContent = "Conectando con GitHub...";
+
+    const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+            redirectTo: window.location.origin + '/home.html'
+        }
+    });
+
+    if (error) {
+        button.classList.remove("loading");
+        button.textContent = "Iniciar sesión con GitHub";
+        alert(error.message);
+    }
+};
+
+const {
+    data: { session }
+} = await supabase.auth.getSession();
+
+if (session) {
+    window.location.replace("home.html");
+}
+</script>
+
+<body>
+
+<div class="login-card">
+
+    <div class="logo">R</div>
+
+    <div class="subtitle">
+        pp
+    </div>
+
+    <button class="github-btn"
+    onclick="loginWithGithub()">
+
+    <svg
+        width="20"
+        height="20"
+        viewBox="0 0 16 16"
+        fill="currentColor"
+        style="vertical-align:middle;margin-right:8px;">
+        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+        0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13
+        -.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66
+        .07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95
+        0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12
+        0 0 .67-.21 2.2.82a7.65 7.65 0 0 1 4 0
+        c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12
+        .51.56.82 1.27.82 2.15
+        0 3.07-1.87 3.75-3.65 3.95
+        .29.25.54.73.54 1.48
+        0 1.07-.01 1.93-.01 2.2
+        0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8
+        c0-4.42-3.58-8-8-8z"/>
+    </svg>
+
+    Iniciar sesión con GitHub
+</button>
+
+</div>
+
+</body>
+</html>
