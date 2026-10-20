@@ -318,50 +318,6 @@
             line-height: 1.65;
         }
 
-        .person-selector-wrapper {
-            min-width: 250px;
-        }
-
-        .person-selector-label {
-            display: block;
-
-            margin-bottom: 7px;
-
-            color: var(--rocha-muted);
-
-            font-size: .74rem;
-            font-weight: 700;
-            letter-spacing: .08em;
-            text-transform: uppercase;
-        }
-
-        .person-selector {
-            width: 100%;
-            height: 46px;
-
-            padding: 0 40px 0 15px;
-
-            color: var(--rocha-text);
-            font-weight: 650;
-
-            background: rgba(255, 255, 255, .92);
-
-            border: 1px solid var(--rocha-border);
-            border-radius: 14px;
-
-            box-shadow:
-                0 8px 24px rgba(22, 27, 36, .04);
-
-            outline: none;
-        }
-
-        .person-selector:focus {
-            border-color: var(--rocha-gold);
-
-            box-shadow:
-                0 0 0 4px rgba(185, 155, 104, .14);
-        }
-
         .summary-grid {
             display: grid;
 
@@ -1048,10 +1004,6 @@
                 flex-direction: column;
             }
 
-            .person-selector-wrapper {
-                width: 100%;
-            }
-
             .summary-grid {
                 grid-template-columns: 1fr 1fr;
             }
@@ -1231,22 +1183,6 @@
                     Consulta las entregas, los gastos, las devoluciones
                     y el saldo pendiente de cada cuenta.
                 </p>
-
-            </div>
-
-            <div class="person-selector-wrapper">
-
-                <label for="personSelector" class="person-selector-label">
-                    Cuenta seleccionada
-                </label>
-
-                <select id="personSelector" class="person-selector" aria-label="Seleccionar persona">
-
-                    <option value="">
-                        Cargando cuentas…
-                    </option>
-
-                </select>
 
             </div>
 
@@ -1570,35 +1506,27 @@
 
         const state = {
 
-            currentUser: null,
+    currentUser: null,
 
-            debts: [],
+    debt: null,
 
-            debtId: null,
+    debtId: null,
 
-            person: "",
+    person: "",
 
-            currency: "EUR",
+    currency: "EUR",
 
-            updated: "",
+    updated: "",
 
-            movements: []
+    movements: []
 
-        };
+};
 
-        const PERSON_FILTER =
-            new URLSearchParams(window.location.search)
-                .get("person")
-                ?.trim()
-                .toLocaleLowerCase("es");
 
         const elements = {
 
             userInfo:
                 document.getElementById("userInfo"),
-
-            personSelector:
-                document.getElementById("personSelector"),
 
             personName:
                 document.getElementById("personName"),
@@ -2619,138 +2547,89 @@
 
         }
 
-        function renderPersonSelector() {
+        async function loadMovements(debt) {
 
-            elements.personSelector.innerHTML =
-                state.debts.map(
-                    debt => `
+    showLoading();
 
-                        <option
-                            value="${escapeHtml(debt.id)}"
-                            ${String(debt.id) ===
-                            String(state.debtId)
-                            ? "selected"
-                            : ""
-                        }>
+    state.debt = debt;
+    state.debtId = debt.id;
 
-                            ${escapeHtml(
-                            debt.person ||
-                            debt.name ||
-                            "Persona sin nombre"
-                        )}
+    state.person =
+        debt.person ||
+        "Persona sin nombre";
 
-                        </option>
+    state.currency =
+        debt.currency ||
+        "EUR";
 
-                    `
-                ).join("");
+    state.updated =
+        getDebtUpdatedDate(debt);
 
-        }
-
-        async function loadMovements(
-            debt
-        ) {
-
-            showLoading();
-
-            state.debtId =
-                debt.id;
-
-            state.person =
-                debt.person ||
-                debt.name ||
-                "Persona sin nombre";
-
-            state.currency =
-                debt.currency ||
-                "EUR";
-
-            state.updated =
-                getDebtUpdatedDate(debt);
-
-            const {
-    data,
-    error
-} = await supabase
-    .from("debt_movements")
-    .select(
-        "id, debt_id, type, method, quantity, concept, movement_date, notes, created_at"
-    )
-    .eq(
-        "debt_id",
-        debt.id
-    )
-    .order(
-        "movement_date",
-        {
-            ascending: false
-        }
-    );
-
-            if (error) {
-
-                throw new Error(
-                    error.message
-                );
-
+    const {
+        data,
+        error
+    } = await supabase
+        .from("debt_movements")
+        .select(
+            "id, debt_id, type, method, quantity, concept, movement_date, notes, created_at"
+        )
+        .eq(
+            "debt_id",
+            debt.id
+        )
+        .order(
+            "movement_date",
+            {
+                ascending: false
             }
+        );
 
-            const ids =
-                new Set();
+    if (error) {
+        throw new Error(error.message);
+    }
 
-            state.movements =
-                (data || [])
-                    .map(
-                        (
+    const ids = new Set();
+
+    state.movements =
+        (data || [])
+            .map(
+                (movement, index) => {
+
+                    const normalized =
+                        normalizeMovement(
                             movement,
                             index
-                        ) => {
+                        );
 
-                            const normalized =
-                                normalizeMovement(
-                                    movement,
-                                    index
-                                );
+                    if (ids.has(normalized.id)) {
+                        throw new Error(
+                            `El identificador "${normalized.id}" está repetido.`
+                        );
+                    }
 
-                            if (
-                                ids.has(
-                                    normalized.id
-                                )
-                            ) {
+                    ids.add(normalized.id);
 
-                                throw new Error(
-                                    `El identificador "${normalized.id}" está repetido.`
-                                );
+                    return normalized;
 
-                            }
+                }
+            )
+            .sort(
+                (first, second) =>
+                    parseDate(second.date) -
+                    parseDate(first.date)
+            );
 
-                            ids.add(
-                                normalized.id
-                            );
+    render();
 
-                            return normalized;
-
-                        }
-                    )
-                    .sort(
-                        (
-                            first,
-                            second
-                        ) =>
-                            parseDate(
-                                second.date
-                            ) -
-                            parseDate(
-                                first.date
-                            )
-                    );
-
-            renderPersonSelector();
-
-            render();
-
-        }
+}
 
         async function loadDebts() {
+
+    if (!state.currentUser?.id) {
+        throw new Error(
+            "No se ha podido identificar al usuario autenticado."
+        );
+    }
 
     const {
         data,
@@ -2758,75 +2637,29 @@
     } = await supabase
         .from("debts")
         .select(
-            "id, person, currency, updated, created_at"
+            "id, user_id, person, currency, updated, created_at"
         )
         .eq(
             "user_id",
             state.currentUser.id
         )
-        .order(
-            "person",
-            {
-                ascending: true
-            }
+        .maybeSingle();
+
+    if (error) {
+        throw new Error(error.message);
+    }
+
+    if (!data) {
+        throw new Error(
+            "No existe ninguna cuenta de deuda asociada a este usuario."
         );
+    }
 
-            if (error) {
+    state.debt = data;
 
-                throw new Error(
-                    error.message
-                );
+    await loadMovements(data);
 
-            }
-
-            state.debts =
-                data || [];
-
-            if (!state.debts.length) {
-
-                throw new Error(
-                    "No existen cuentas de deuda disponibles para este usuario."
-                );
-
-            }
-
-            let selectedDebt = null;
-
-            if (PERSON_FILTER) {
-
-                selectedDebt =
-                    state.debts.find(
-                        debt =>
-                            String(
-                                debt.person ||
-                                debt.name ||
-                                ""
-                            )
-                                .trim()
-                                .toLocaleLowerCase("es") ===
-                            PERSON_FILTER
-                    );
-
-                if (!selectedDebt) {
-
-                    throw new Error(
-                        `No existe ningún contacto llamado "${PERSON_FILTER}".`
-                    );
-
-                }
-
-            } else {
-
-                selectedDebt =
-                    state.debts[0];
-
-            }
-
-            await loadMovements(
-                selectedDebt
-            );
-
-        }
+}
 
         async function initialize() {
 
@@ -2896,73 +2729,7 @@
             "change",
             renderMovements
         );
-
-        elements.personSelector.addEventListener(
-            "change",
-            async event => {
-
-                const selectedDebt =
-                    state.debts.find(
-                        debt =>
-                            String(debt.id) ===
-                            String(event.target.value)
-                    );
-
-                if (!selectedDebt) {
-
-                    return;
-
-                }
-
-                const url =
-                    new URL(
-                        window.location.href
-                    );
-
-                const person =
-                    selectedDebt.person ||
-                    selectedDebt.name ||
-                    "";
-
-                if (person) {
-
-                    url.searchParams.set(
-                        "person",
-                        person
-                    );
-
-                    window.history.replaceState(
-                        {},
-                        "",
-                        url
-                    );
-
-                }
-
-                try {
-
-                    await loadMovements(
-                        selectedDebt
-                    );
-
-                } catch (error) {
-
-                    console.error(
-                        "Error cargando los movimientos:",
-                        error
-                    );
-
-                    showError(
-                        error instanceof Error
-                            ? error.message
-                            : "No se han podido cargar los movimientos."
-                    );
-
-                }
-
-            }
-        );
-
+        
         initialize();
 
     </script>
