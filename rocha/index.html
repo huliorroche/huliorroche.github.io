@@ -391,7 +391,7 @@
                 options: {
                     scopes: 'read:user user:email',
                     redirectTo:
-                        window.location.origin + '/rocha/home.html'
+                        window.location.origin + '/rocha/home'
                 }
             });
 
@@ -421,7 +421,7 @@
                 return;
             }
 
-            window.location.replace("home.html");
+            window.location.replace("home");
         };
 
         window.registerWithEmail = async function () {
@@ -439,7 +439,7 @@
                     options: {
                         emailRedirectTo:
                             window.location.origin +
-                            '/rocha/home.html'
+                            '/rocha/home'
                     }
                 });
 
@@ -458,7 +458,7 @@
         } = await supabase.auth.getSession();
 
         if (session) {
-            window.location.replace("home.html");
+            window.location.replace("home");
         }
     </script>
 
