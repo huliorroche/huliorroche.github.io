@@ -54,8 +54,13 @@ export const user =
     session?.user ||
     tokenUser;
 
+const hiddenEmail =
+    user?.user_metadata?.hidden_email === true;
+
 const email =
-    user?.email || '';
+    hiddenEmail
+        ? ""
+        : (user?.email || '');
 
 const username =
     user?.user_metadata?.user_name ||
@@ -165,12 +170,17 @@ if (avatar) {
 
         <div style="text-align:right;">
             <div>${fullName}</div>
-            <div style="
-                font-size:.85rem;
-                color:#7f8691;
-            ">
-                ${email}
-            </div>
+            ${hiddenEmail
+    ? ""
+    : `
+        <div style="
+            font-size:.85rem;
+            color:#7f8691;
+        ">
+            ${email}
+        </div>
+    `
+}
         </div>
 
         <button
