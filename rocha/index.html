@@ -290,19 +290,33 @@
 </head>
 
 <script>
+window.loginWithGithub = async function () {
 
-document
-    .getElementById("logoutButton")
-    .addEventListener("click", async () => {
+    const {
+        error
+    } = await supabase.auth.signInWithOAuth({
 
-        await supabase.auth.signOut();
+        provider: "github",
 
-        window.location.replace(
-            "index.html"
-        );
+        options: {
+
+            scopes:
+                "read:user user:email",
+
+            redirectTo:
+                window.location.origin +
+                "/rocha/home"
+
+        }
+
     });
 
-    window.loginWithEmail = async function () {
+    if (error) {
+        alert(error.message);
+    }
+};
+
+window.loginWithEmail = async function () {
 
     const email =
         document
@@ -338,32 +352,6 @@ document
     }
 
     window.location.replace("home");
-};
-
-window.loginWithGithub = async function () {
-
-    const {
-        error
-    } = await supabase.auth.signInWithOAuth({
-
-        provider: "github",
-
-        options: {
-
-            scopes:
-                "read:user user:email",
-
-            redirectTo:
-                window.location.origin +
-                "/rocha/home"
-
-        }
-
-    });
-
-    if (error) {
-        alert(error.message);
-    }
 };
 </script>
 

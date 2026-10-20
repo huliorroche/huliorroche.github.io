@@ -200,3 +200,53 @@ if (avatar) {
     </div>
 `;
 }
+
+
+document
+    .getElementById("logoutButton")
+    .addEventListener("click", async () => {
+
+        await supabase.auth.signOut();
+
+        window.location.replace(
+            "index.html"
+        );
+    });
+
+    window.loginWithEmail = async function () {
+
+    const email =
+        document
+            .getElementById("email")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("password")
+            .value;
+
+    if (!email) {
+        alert("Introduce el correo electrónico.");
+        return;
+    }
+
+    if (!password) {
+        alert("Introduce la contraseña.");
+        return;
+    }
+
+    const {
+        error
+    } = await supabase.auth.signInWithPassword({
+        email,
+        password
+    });
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    window.location.replace("home");
+};
