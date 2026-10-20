@@ -944,10 +944,6 @@
                         0,00 €
                     </p>
 
-                    <div id="balanceStatus" class="balance-status">
-                        Calculando saldo
-                    </div>
-
                 </div>
 
             </article>
@@ -1248,9 +1244,6 @@
 
             balanceAmount:
                 document.getElementById("balanceAmount"),
-
-            balanceStatus:
-                document.getElementById("balanceStatus"),
 
             deliveredAmount:
                 document.getElementById("deliveredAmount"),
@@ -1749,44 +1742,6 @@
                 )
                 }`;
 
-            if (summary.balance < 0) {
-
-                elements.balanceStatus.innerHTML = `
-                    ${icons.pendiente}
-                    ${escapeHtml(state.person)}
-                    debe
-                    ${escapeHtml(
-                    formatCurrency(
-                        Math.abs(
-                            summary.balance
-                        )
-                    )
-                )}
-                `;
-
-            } else if (summary.balance > 0) {
-
-                elements.balanceStatus.innerHTML = `
-                    ${icons.info}
-                    Debes
-                    ${escapeHtml(
-                    formatCurrency(
-                        summary.balance
-                    )
-                )}
-                    a
-                    ${escapeHtml(state.person)}
-                `;
-
-            } else {
-
-                elements.balanceStatus.innerHTML = `
-                    ${icons.completado}
-                    Deuda completamente saldada
-                `;
-
-            }
-
             elements.progressDetail.textContent =
                 `${formatCurrency(
                     summary.returned
@@ -2098,11 +2053,7 @@
 
             elements.balanceAmount.textContent =
                 formatCurrency(0);
-
-            elements.balanceStatus.innerHTML = `
-                ${icons.error}
-                Error de carga
-            `;
+                
 
             elements.deliveredAmount.textContent =
                 formatCurrency(0);
