@@ -1686,7 +1686,7 @@
             };
 
         }
-        
+
         function calculateSummary() {
             const deliveries = state.movements.filter(m => m.type === "entrega");
             const expenses = state.movements.filter(m => m.type === "gasto");
@@ -2261,6 +2261,33 @@
                 );
             }
 
+            console.log(
+                "UUID del usuario autenticado:",
+                state.currentUser.id
+            );
+
+            console.log(
+                "Correo del usuario autenticado:",
+                state.currentUser.email
+            );
+
+            const allResult = await supabase
+                .from("debts")
+                .select(
+                    "id, user_id, person, currency, updated, created_at"
+                );
+
+            console.log(
+                "Cuentas visibles para el usuario según RLS:",
+                allResult
+            );
+
+            if (allResult.error) {
+                throw new Error(
+                    `Error consultando debts: ${allResult.error.message}`
+                );
+            }
+
             const {
                 data,
                 error
@@ -2275,20 +2302,43 @@
                 )
                 .maybeSingle();
 
+            console.log(
+                "Resultado filtrado por user_id:",
+                {
+                    requestedUserId: state.currentUser.id,
+                    data,
+                    error
+                }
+            );
+
             if (error) {
-                throw new Error(error.message);
+                throw new Error(
+                    `Error recuperando la cuenta: ${error.message}`
+                );
             }
 
             if (!data) {
+
+                const visibleRows =
+                    allResult.data || [];
+
+                if (visibleRows.length === 0) {
+                    throw new Error(
+                        `Supabase no devuelve ninguna cuenta visible. ` +
+                        `El UUID autenticado es ${state.currentUser.id}. ` +
+                        `Revisa debts.user_id y la política RLS de debts.`
+                    );
+                }
+
                 throw new Error(
-                    "No existe ninguna cuenta de deuda asociada a este usuario."
+                    `Existen cuentas visibles, pero ninguna tiene ` +
+                    `user_id = ${state.currentUser.id}.`
                 );
             }
 
             state.debt = data;
 
             await loadMovements(data);
-
         }
 
         elements.searchInput.addEventListener(
