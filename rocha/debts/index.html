@@ -1184,6 +1184,12 @@
     </div>
 
     <script type="module">
+        import {
+            supabase,
+            session,
+            user
+        } from "../login.js";
+
         const MOVEMENT_TYPES = Object.freeze({
 
             entrega: {
@@ -2300,7 +2306,15 @@
             renderMovements
         );
 
-        initialize();
+        if (!user) {
+            window.location.replace("../");
+
+            throw new Error(
+                "Usuario no autenticado"
+            );
+        }
+
+        state.currentUser = user;
 
         await loadDebts();
 

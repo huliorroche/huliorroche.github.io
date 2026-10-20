@@ -6,12 +6,12 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwbXBxZWlic3J6dm1tdmpubWdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0OTY1OTksImV4cCI6MjEwODA3MjU5OX0.onXwjCF71iu-yHR3yVYVhnEoARS2YWQWpKVftS99Stg';
 
-const supabase = createClient(
+export const supabase = createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
 
-const {
+export const {
     data: { session }
 } = await supabase.auth.getSession();
 
@@ -19,7 +19,7 @@ if (!session) {
     window.location.replace("../");
 }
 
-const user = session.user;
+export const user = session.user;
 
 const email = user.email || '';
 
