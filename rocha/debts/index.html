@@ -2655,23 +2655,23 @@
                 getDebtUpdatedDate(debt);
 
             const {
-                data,
-                error
-            } = await supabase
-                .from("debt_movements")
-                .select(
-                    "id, debt_id, type, method, quantity, concept, movement_date, notes, created_at"
-                )
-                .eq(
-                    "debt_id",
-                    debt.id
-                )
-                .order(
-                    "movement_date",
-                    {
-                        ascending: false
-                    }
-                );
+    data,
+    error
+} = await supabase
+    .from("debts")
+    .select(
+        "id, person, name, currency, updated, updated_at, created_at"
+    )
+    .eq(
+        "user_id",
+        state.currentUser.id
+    )
+    .order(
+        "person",
+        {
+            ascending: true
+        }
+    );
 
             if (error) {
 
