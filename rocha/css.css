@@ -93,9 +93,9 @@ header {
 }
 
 .container {
-    /* max-width: 1300px; */
-    margin: auto;
-    padding: 50px 20px;
+    width: min(1180px, calc(100% - 32px));
+    margin: 0 auto;
+    padding: 40px 0 64px;
 }
 
 .welcome {
