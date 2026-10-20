@@ -18,6 +18,8 @@
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
 
+    <link href="../css.css" rel="stylesheet">
+
     <style>
         .page-header {
             display: flex;
@@ -885,6 +887,8 @@
 
 </head>
 
+<script type="module" src="../login.js"></script>
+
 <body>
 
     <header>
@@ -1181,24 +1185,6 @@
     </div>
 
     <script type="module">
-
-        import {
-            createClient
-        } from 'https://esm.sh/@supabase/supabase-js@2';
-
-        "use strict";
-
-        const SUPABASE_URL =
-            'https://lpmpqeibsrzvmmvjnmgf.supabase.co';
-
-        const SUPABASE_ANON_KEY =
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwbXBxZWlic3J6dm1tdmpubWdmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0OTY1OTksImV4cCI6MjEwODA3MjU5OX0.onXwjCF71iu-yHR3yVYVhnEoARS2YWQWpKVftS99Stg';
-
-        const supabase = createClient(
-            SUPABASE_URL,
-            SUPABASE_ANON_KEY
-        );
-
         const MOVEMENT_TYPES = Object.freeze({
 
             entrega: {
@@ -1240,21 +1226,21 @@
 
         const state = {
 
-    currentUser: null,
+            currentUser: null,
 
-    debt: null,
+            debt: null,
 
-    debtId: null,
+            debtId: null,
 
-    person: "",
+            person: "",
 
-    currency: "EUR",
+            currency: "EUR",
 
-    updated: "",
+            updated: "",
 
-    movements: []
+            movements: []
 
-};
+        };
 
 
         const elements = {
@@ -1695,102 +1681,7 @@
             };
 
         }
-
-        function renderUser(user) {
-
-            const email =
-                user.email || "";
-
-            const username =
-                user.user_metadata?.user_name ||
-                user.user_metadata?.preferred_username ||
-                email.split("@")[0] ||
-                "usuario";
-
-            const fullName =
-                user.user_metadata?.full_name ||
-                username;
-
-            const avatar =
-                user.user_metadata?.avatar_url ||
-                null;
-
-            const avatarContent =
-                avatar
-                    ? `
-                        <img
-                            src="${escapeHtml(avatar)}"
-                            alt="">
-                    `
-                    : escapeHtml(
-                        fullName
-                            .charAt(0)
-                            .toUpperCase()
-                    );
-
-            elements.userInfo.innerHTML = `
-
-                <div class="user-avatar">
-                    ${avatarContent}
-                </div>
-
-                <div class="user-details">
-
-                    <div class="user-name">
-                        ${escapeHtml(fullName)}
-                    </div>
-
-                    <div class="user-email">
-                        ${escapeHtml(email)}
-                    </div>
-
-                </div>
-
-                <button
-                    id="logoutButton"
-                    class="logout-button"
-                    type="button">
-
-                    ${icons.logout}
-
-                    <span>
-                        Salir
-                    </span>
-
-                </button>
-
-            `;
-
-            document
-                .getElementById("logoutButton")
-                .addEventListener(
-                    "click",
-                    logout
-                );
-
-        }
-
-        async function logout() {
-
-            const button =
-                document.getElementById(
-                    "logoutButton"
-                );
-
-            if (button) {
-
-                button.disabled = true;
-
-            }
-
-            await supabase.auth.signOut();
-
-            window.location.replace(
-                "index.html"
-            );
-
-        }
-
+        
         function calculateSummary() {
             const deliveries = state.movements.filter(m => m.type === "entrega");
             const expenses = state.movements.filter(m => m.type === "gasto");
@@ -2283,169 +2174,115 @@
 
         async function loadMovements(debt) {
 
-    showLoading();
+            showLoading();
 
-    state.debt = debt;
-    state.debtId = debt.id;
+            state.debt = debt;
+            state.debtId = debt.id;
 
-    state.person =
-        debt.person ||
-        "Persona sin nombre";
+            state.person =
+                debt.person ||
+                "Persona sin nombre";
 
-    state.currency =
-        debt.currency ||
-        "EUR";
+            state.currency =
+                debt.currency ||
+                "EUR";
 
-    state.updated =
-        getDebtUpdatedDate(debt);
+            state.updated =
+                getDebtUpdatedDate(debt);
 
-    const {
-        data,
-        error
-    } = await supabase
-        .from("debt_movements")
-        .select(
-            "id, debt_id, type, method, quantity, concept, movement_date, notes, created_at"
-        )
-        .eq(
-            "debt_id",
-            debt.id
-        )
-        .order(
-            "movement_date",
-            {
-                ascending: false
-            }
-        );
-
-    if (error) {
-        throw new Error(error.message);
-    }
-
-    const ids = new Set();
-
-    state.movements =
-        (data || [])
-            .map(
-                (movement, index) => {
-
-                    const normalized =
-                        normalizeMovement(
-                            movement,
-                            index
-                        );
-
-                    if (ids.has(normalized.id)) {
-                        throw new Error(
-                            `El identificador "${normalized.id}" está repetido.`
-                        );
+            const {
+                data,
+                error
+            } = await supabase
+                .from("debt_movements")
+                .select(
+                    "id, debt_id, type, method, quantity, concept, movement_date, notes, created_at"
+                )
+                .eq(
+                    "debt_id",
+                    debt.id
+                )
+                .order(
+                    "movement_date",
+                    {
+                        ascending: false
                     }
+                );
 
-                    ids.add(normalized.id);
+            if (error) {
+                throw new Error(error.message);
+            }
 
-                    return normalized;
+            const ids = new Set();
 
-                }
-            )
-            .sort(
-                (first, second) =>
-                    parseDate(second.date) -
-                    parseDate(first.date)
-            );
+            state.movements =
+                (data || [])
+                    .map(
+                        (movement, index) => {
 
-    render();
+                            const normalized =
+                                normalizeMovement(
+                                    movement,
+                                    index
+                                );
 
-}
+                            if (ids.has(normalized.id)) {
+                                throw new Error(
+                                    `El identificador "${normalized.id}" está repetido.`
+                                );
+                            }
+
+                            ids.add(normalized.id);
+
+                            return normalized;
+
+                        }
+                    )
+                    .sort(
+                        (first, second) =>
+                            parseDate(second.date) -
+                            parseDate(first.date)
+                    );
+
+            render();
+
+        }
 
         async function loadDebts() {
 
-    if (!state.currentUser?.id) {
-        throw new Error(
-            "No se ha podido identificar al usuario autenticado."
-        );
-    }
-
-    const {
-        data,
-        error
-    } = await supabase
-        .from("debts")
-        .select(
-            "id, user_id, person, currency, updated, created_at"
-        )
-        .eq(
-            "user_id",
-            state.currentUser.id
-        )
-        .maybeSingle();
-
-    if (error) {
-        throw new Error(error.message);
-    }
-
-    if (!data) {
-        throw new Error(
-            "No existe ninguna cuenta de deuda asociada a este usuario."
-        );
-    }
-
-    state.debt = data;
-
-    await loadMovements(data);
-
-}
-
-        async function initialize() {
-
-            try {
-
-                const {
-                    data: {
-                        session
-                    },
-                    error
-                } =
-                    await supabase.auth.getSession();
-
-                if (error) {
-
-                    throw error;
-
-                }
-
-                if (!session) {
-
-                    window.location.replace(
-                        "index.html"
-                    );
-
-                    return;
-
-                }
-
-                state.currentUser =
-                    session.user;
-
-                renderUser(
-                    session.user
+            if (!state.currentUser?.id) {
+                throw new Error(
+                    "No se ha podido identificar al usuario autenticado."
                 );
-
-                await loadDebts();
-
-            } catch (error) {
-
-                console.error(
-                    "Error cargando los datos desde Supabase:",
-                    error
-                );
-
-                showError(
-                    error instanceof Error
-                        ? error.message
-                        : "No se han podido cargar los datos desde Supabase."
-                );
-
             }
+
+            const {
+                data,
+                error
+            } = await supabase
+                .from("debts")
+                .select(
+                    "id, user_id, person, currency, updated, created_at"
+                )
+                .eq(
+                    "user_id",
+                    state.currentUser.id
+                )
+                .maybeSingle();
+
+            if (error) {
+                throw new Error(error.message);
+            }
+
+            if (!data) {
+                throw new Error(
+                    "No existe ninguna cuenta de deuda asociada a este usuario."
+                );
+            }
+
+            state.debt = data;
+
+            await loadMovements(data);
 
         }
 
@@ -2463,8 +2300,10 @@
             "change",
             renderMovements
         );
-        
+
         initialize();
+
+        await loadDebts();
 
     </script>
 
