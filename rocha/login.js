@@ -38,13 +38,17 @@ const avatar =
 const provider =
     user.app_metadata?.provider || 'email';
 
-document.querySelector(".welcome h1").textContent =
-    `Bienvenido ${fullName}`;
 
-document.querySelector(".welcome p").textContent =
+if (document.querySelector(".welcome h1")){
+    document.querySelector(".welcome h1").textContent = `Bienvenido ${fullName}`;
+}
+
+if (document.querySelector(".welcome p")){
+    document.querySelector(".welcome p").textContent =
     provider === 'github'
         ? 'Has iniciado sesión correctamente con GitHub.'
         : 'Has iniciado sesión correctamente con correo electrónico.';
+}
 
 if (avatar) {
 
