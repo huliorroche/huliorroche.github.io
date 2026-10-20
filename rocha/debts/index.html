@@ -2659,18 +2659,18 @@
     data,
     error
 } = await supabase
-    .from("debts")
+    .from("debt_movements")
     .select(
-        "id, person, name, currency, updated, updated_at, created_at"
+        "id, debt_id, type, method, quantity, concept, movement_date, notes, created_at"
     )
     .eq(
-        "user_id",
-        state.currentUser.id
+        "debt_id",
+        debt.id
     )
     .order(
-        "person",
+        "movement_date",
         {
-            ascending: true
+            ascending: false
         }
     );
 
@@ -2740,20 +2740,24 @@
 
         async function loadDebts() {
 
-            const {
-                data,
-                error
-            } = await supabase
-                .from("debts")
-                .select(
-                    "id, person, name, currency, updated, updated_at, created_at"
-                )
-                .order(
-                    "person",
-                    {
-                        ascending: true
-                    }
-                );
+    const {
+        data,
+        error
+    } = await supabase
+        .from("debts")
+        .select(
+            "id, person, currency, updated, created_at"
+        )
+        .eq(
+            "user_id",
+            state.currentUser.id
+        )
+        .order(
+            "person",
+            {
+                ascending: true
+            }
+        );
 
             if (error) {
 
