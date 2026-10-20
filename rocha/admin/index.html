@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Home | Rocha Services</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="../css.css" rel="stylesheet">
+
+</head>
+
+
+<script type="module" src="../login.js"></script>
+
+<body>
+
+    <header>
+
+        <div class="logo">
+            <img src="../images/logo.png">
+        </div>
+
+        <div class="user" id="userInfo">
+            Cargando...
+        </div>
+
+    </header>
+
+    <div class="container">
+
+        <div class="welcome">
+
+            <h1>Bienvenido</h1>
+
+            <p>
+                Has iniciado sesión correctamente.
+            </p>
+
+        </div>
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h3>Proyectos</h3>
+
+                <p>
+                    Acceso a la información principal.
+                </p>
+
+            </div>
+
+            <div class="card">
+
+                <h3>Actividad</h3>
+
+                <p>
+                    Últimos movimientos del sistema.
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="card content">
+
+    <h2>
+        Gestión del perfil
+    </h2>
+
+    <p>
+        Actualiza tu nombre visible y tu dirección de correo electrónico.
+    </p>
+
+    <form id="profileForm">
+
+        <div class="mb-4">
+
+            <label class="form-label">
+                Nombre visible
+            </label>
+
+            <input
+                id="displayName"
+                class="form-control"
+                type="text"
+                maxlength="120">
+
+        </div>
+
+        <div class="mb-4">
+
+            <label class="form-label">
+                Correo electrónico
+            </label>
+
+            <input
+                id="email"
+                class="form-control"
+                type="email">
+
+        </div>
+
+        <button
+            id="saveButton"
+            class="btn btn-dark">
+
+            Guardar cambios
+
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h4>
+        Opciones avanzadas
+    </h4>
+
+    <p>
+        Puedes ocultar tu correo electrónico en la aplicación.
+    </p>
+
+    <button
+        id="hideEmailButton"
+        class="btn btn-outline-danger">
+
+        Ocultar email
+
+    </button>
+
+</div>
+
+    </div>
+
+    <script type="module">
+
+import {
+    supabase,
+    user
+} from "../login.js";
+
+const displayName =
+    document.getElementById(
+        "displayName"
+    );
+
+const email =
+    document.getElementById(
+        "email"
+    );
+
+displayName.value =
+    user.user_metadata?.full_name ||
+    "";
+
+email.value =
+    user.email || "";
+
+document
+    .getElementById(
+        "profileForm"
+    )
+    .addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabase
+                        .auth
+                        .updateUser({
+
+                            email:
+                                email.value.trim(),
+
+                            data: {
+
+                                full_name:
+                                    displayName.value.trim()
+
+                            }
+
+                        });
+
+                if (error) {
+                    throw error;
+                }
+
+                alert(
+                    "Perfil actualizado correctamente."
+                );
+
+            } catch (error) {
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
+    );
+
+document
+    .getElementById(
+        "hideEmailButton"
+    )
+    .addEventListener(
+        "click",
+        async () => {
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabase
+                        .auth
+                        .updateUser({
+                            data: {
+                                hidden_email: true
+                            }
+                        });
+
+                if (error) {
+                    throw error;
+                }
+
+                alert(
+                    "Correo ocultado correctamente."
+                );
+
+            } catch (error) {
+
+                alert(
+                    error.message
+                );
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>
