@@ -1687,9 +1687,6 @@
             const summary =
                 calculateSummary();
 
-            elements.personName.textContent =
-                `Cuenta con ${state.person}`;
-
             document.title =
                 `Deudas con ${state.person} | ROCHA`;
 
@@ -2035,9 +2032,6 @@
 
             state.person = "";
             state.movements = [];
-
-            elements.personName.textContent =
-                "No se han podido cargar los datos";
 
             elements.balanceAmount.textContent =
                 formatCurrency(0);
