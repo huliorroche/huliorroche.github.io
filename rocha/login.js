@@ -35,12 +35,44 @@ if (!session && accessToken) {
 
     if (data) {
 
-        tokenUser = {
-            id: data.user_id,
-            email: "access-token"
-        };
+    const {
+        data: profile
+    } = await supabase
+        .from("user_profiles")
+        .select(`
+            full_name,
+            user_name,
+            avatar_url
+        `)
+        .eq(
+            "id",
+            data.user_id
+        )
+        .maybeSingle();
 
-    }
+    tokenUser = {
+
+        id: data.user_id,
+
+        email: "access-token",
+
+        user_metadata: {
+
+            full_name:
+                profile?.full_name,
+
+            user_name:
+                profile?.user_name,
+
+            avatar_url:
+                profile?.avatar_url
+
+        }
+
+    };
+
+}
+
 
 }
 
@@ -65,6 +97,7 @@ const email =
 const username =
     user?.user_metadata?.user_name ||
     user?.user_metadata?.preferred_username ||
+    user?.user_metadata?.full_name ||
     (
         email.includes("@")
             ? email.split('@')[0]
@@ -73,6 +106,7 @@ const username =
 
 const fullName =
     user?.user_metadata?.full_name ||
+    user?.user_metadata?.user_name ||
     username;
 
 const avatar =
