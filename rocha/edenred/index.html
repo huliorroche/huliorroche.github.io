@@ -249,672 +249,621 @@
     </main>
 
     <script type="module">
+    import { authState } from "../login.js";
 
-        import { authState } from "../login.js";
+    const FUNCTION_URL =
+        "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/edenred-balance";
 
-        const FUNCTION_URL =
-            "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/edenred-balance";
+    let requestInProgress = false;
 
-        let otpPending = false;
-let requestInProgress = false;
-let initialLoadExecuted = false;
-        
+    const elements = {
+        totalBalance:
+            document.getElementById("totalBalance"),
 
-        const elements = {
-            totalBalance:
-                document.getElementById("totalBalance"),
+        lastUpdate:
+            document.getElementById("lastUpdate"),
 
-            lastUpdate:
-                document.getElementById("lastUpdate"),
+        statusBadge:
+            document.getElementById("statusBadge"),
 
-            statusBadge:
-                document.getElementById("statusBadge"),
+        cardCount:
+            document.getElementById("cardCount"),
 
-            cardCount:
-                document.getElementById("cardCount"),
+        refreshButton:
+            document.getElementById("refreshButton"),
 
-            refreshButton:
-                document.getElementById("refreshButton"),
+        loginButton:
+            document.getElementById("loginButton"),
 
-            loginButton:
-                document.getElementById("loginButton"),
+        messageContainer:
+            document.getElementById("messageContainer"),
 
-            messageContainer:
-                document.getElementById("messageContainer"),
+        loadingContainer:
+            document.getElementById("loadingContainer"),
 
-            loadingContainer:
-                document.getElementById("loadingContainer"),
+        loadingMessage:
+            document.getElementById("loadingMessage"),
 
-            loadingMessage:
-                document.getElementById("loadingMessage"),
+        tableContainer:
+            document.getElementById("tableContainer"),
 
-            tableContainer:
-                document.getElementById("tableContainer"),
+        emptyContainer:
+            document.getElementById("emptyContainer"),
 
-            emptyContainer:
-                document.getElementById("emptyContainer"),
+        cardsTable:
+            document.getElementById("cardsTable"),
 
-            cardsTable:
-                document.getElementById("cardsTable"),
+        bearerModal:
+            document.getElementById("bearerModal"),
 
-            otpModal:
-                document.getElementById("otpModal"),
+        bearerInput:
+            document.getElementById("bearerInput"),
 
-            otpInput:
-                document.getElementById("otpInput"),
+        bearerSubmitButton:
+            document.getElementById("bearerSubmitButton"),
 
-            otpSubmitButton:
-                document.getElementById("otpSubmitButton")
-        };
+        bearerCancelButton:
+            document.getElementById("bearerCancelButton")
+    };
 
-        function getSession() {
+    function getSession() {
+        const session = authState?.session;
 
-            const session = authState?.session;
-
-            if (!session?.access_token) {
-                throw new Error(
-                    "Esta operación requiere una sesión real de Supabase. " +
-                    "El acceso mediante ?access=TOKEN no dispone de un JWT de Supabase."
-                );
-            }
-
-            return session;
-        }
-
-        function showOtpModal(email) {
-
-            otpPending = true;
-
-            elements.otpModal.hidden = false;
-
-            const message =
-                document.getElementById("otpMessage");
-
-            if (message) {
-                message.textContent =
-                    `Se ha enviado un código a ${email}`;
-            }
-
-            elements.otpInput.value = "";
-
-            setTimeout(
-                () => elements.otpInput.focus(),
-                100
+        if (!session?.access_token) {
+            throw new Error(
+                "Esta operación requiere una sesión real de Supabase. " +
+                "El acceso mediante ?access=TOKEN no dispone de un JWT de Supabase."
             );
         }
 
-        function hideOtpModal() {
+        return session;
+    }
 
-            otpPending = false;
+    function normalizeBearer(value) {
+        return String(value || "")
+            .trim()
+            .replace(/^Bearer\s+/i, "")
+            .trim();
+    }
 
-            elements.otpModal.hidden = true;
+    function showBearerModal() {
+        if (requestInProgress) {
+            return;
         }
 
-        async function invokeEdenred(body = {}) {
+        elements.bearerInput.value = "";
+        elements.bearerModal.hidden = false;
 
-            if (requestInProgress) {
-                return {
-                    code: "REQUEST_ALREADY_RUNNING"
-                };
+        window.setTimeout(
+            () => elements.bearerInput.focus(),
+            100
+        );
+    }
+
+    function hideBearerModal() {
+        elements.bearerModal.hidden = true;
+        elements.bearerInput.value = "";
+    }
+
+    async function invokeEdenred(body = {}) {
+        if (requestInProgress) {
+            return {
+                code: "REQUEST_ALREADY_RUNNING"
+            };
+        }
+
+        requestInProgress = true;
+
+        try {
+            const session = getSession();
+
+            const response = await fetch(
+                FUNCTION_URL,
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization":
+                            `Bearer ${session.access_token}`
+                    },
+
+                    body: JSON.stringify(body)
+                }
+            );
+
+            const responseText =
+                await response.text();
+
+            console.log(
+                "Respuesta edenred-balance:",
+                response.status,
+                responseText
+            );
+
+            let data = {};
+
+            if (responseText) {
+                try {
+                    data =
+                        JSON.parse(responseText);
+                } catch {
+                    throw new Error(
+                        "La Edge Function no devolvió JSON válido. " +
+                        `HTTP ${response.status}.`
+                    );
+                }
             }
 
-            requestInProgress = true;
+            if (!response.ok) {
+                const error =
+                    new Error(
+                        data.error ||
+                        data.message ||
+                        `Error HTTP ${response.status}`
+                    );
 
-            try {
+                error.responseStatus =
+                    response.status;
 
-                const session = getSession();
+                error.responseCode =
+                    data.code;
 
-                const response = await fetch(
-                    FUNCTION_URL,
-                    {
-                        method: "POST",
+                error.responseDetails =
+                    data.details;
 
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization":
-                                `Bearer ${session.access_token}`
-                        },
-
-                        body: JSON.stringify(body)
-                    }
-                );
-
-                const responseText =
-                    await response.text();
-
-                console.log(
-                    "Respuesta edenred-balance:",
-                    response.status,
-                    responseText
-                );
-
-                let data = {};
-
-                if (responseText) {
-
-                    try {
-                        data =
-                            JSON.parse(responseText);
-                    } catch {
-
-                        throw new Error(
-                            "La Edge Function no devolvió JSON válido. " +
-                            `HTTP ${response.status}.`
-                        );
-
-                    }
-
-                }
-
-                if (
-                    response.status === 409 &&
-                    data.code === "OTP_REQUIRED"
-                ) {
-                    return data;
-                }
-
-                if (!response.ok) {
-
-                    const error =
-                        new Error(
-                            data.error ||
-                            data.message ||
-                            `Error HTTP ${response.status}`
-                        );
-
-                    error.responseStatus =
-                        response.status;
-
-                    error.responseCode =
-                        data.code;
-
-                    error.responseDetails =
-                        data.details;
-
-                    throw error;
-                }
-
-                return data;
-
-            } finally {
-
-                requestInProgress = false;
-
+                throw error;
             }
+
+            return data;
+        } finally {
+            requestInProgress = false;
+        }
+    }
+
+    function setStatus(type, text) {
+        elements.statusBadge.className =
+            `status-badge status-${type}`;
+
+        elements.statusBadge.textContent =
+            text;
+    }
+
+    function setBusy(
+        isBusy,
+        message = "Conectando con Edenred..."
+    ) {
+        elements.loadingContainer.hidden =
+            !isBusy;
+
+        elements.loadingMessage.textContent =
+            message;
+
+        elements.refreshButton.disabled =
+            isBusy;
+
+        elements.loginButton.disabled =
+            isBusy;
+
+        elements.bearerSubmitButton.disabled =
+            isBusy;
+
+        elements.bearerCancelButton.disabled =
+            isBusy;
+
+        elements.bearerInput.disabled =
+            isBusy;
+    }
+
+    function hideResults() {
+        elements.tableContainer.hidden =
+            true;
+
+        elements.emptyContainer.hidden =
+            true;
+    }
+
+    function showMessage(type, message) {
+        elements.messageContainer
+            .replaceChildren();
+
+        if (!message) {
+            return;
         }
 
-        function setStatus(type, text) {
+        const alert =
+            document.createElement("div");
 
-            elements.statusBadge.className =
-                `status-badge status-${type}`;
+        alert.className =
+            `alert alert-${type}`;
 
-            elements.statusBadge.textContent =
-                text;
+        alert.setAttribute(
+            "role",
+            "alert"
+        );
+
+        alert.textContent =
+            message;
+
+        elements.messageContainer
+            .appendChild(alert);
+    }
+
+    function formatCurrency(value) {
+        const amount =
+            Number(value);
+
+        if (!Number.isFinite(amount)) {
+            return "--";
         }
 
-        function setBusy(
-            isBusy,
-            message = "Conectando con Edenred..."
+        return new Intl.NumberFormat(
+            "es-ES",
+            {
+                style: "currency",
+                currency: "EUR"
+            }
+        ).format(amount);
+    }
+
+    function formatDate(value) {
+        const date = value
+            ? new Date(value)
+            : new Date();
+
+        if (
+            Number.isNaN(
+                date.getTime()
+            )
         ) {
-
-            elements.loadingContainer.hidden =
-                !isBusy;
-
-            elements.loadingMessage.textContent =
-                message;
-
-            elements.refreshButton.disabled =
-                isBusy;
-
-            elements.loginButton.disabled =
-                isBusy;
-
-            if (elements.otpSubmitButton) {
-                elements.otpSubmitButton.disabled =
-                    isBusy;
-            }
+            return "";
         }
 
-        function hideResults() {
+        return new Intl.DateTimeFormat(
+            "es-ES",
+            {
+                dateStyle: "short",
+                timeStyle: "medium"
+            }
+        ).format(date);
+    }
 
-            elements.tableContainer.hidden =
-                true;
+    function appendCell(
+        row,
+        value,
+        className = ""
+    ) {
+        const cell =
+            document.createElement("td");
 
+        cell.textContent =
+            value === null ||
+            value === undefined ||
+            value === ""
+                ? "-"
+                : String(value);
+
+        if (className) {
+            cell.className =
+                className;
+        }
+
+        row.appendChild(cell);
+    }
+
+    function renderCards(data) {
+        setBusy(false);
+        hideResults();
+        showMessage("", "");
+
+        const cards =
+            Array.isArray(data.cards)
+                ? data.cards
+                : [];
+
+        elements.cardsTable
+            .replaceChildren();
+
+        elements.totalBalance.textContent =
+            formatCurrency(
+                data.totalBalance
+            );
+
+        elements.cardCount.textContent =
+            cards.length === 1
+                ? "1 tarjeta activa"
+                : `${cards.length} tarjetas activas`;
+
+        const updateDate =
+            data.tokenUpdatedAt ||
+            new Date().toISOString();
+
+        elements.lastUpdate.textContent =
+            `Actualizado: ${formatDate(updateDate)}`;
+
+        if (cards.length === 0) {
             elements.emptyContainer.hidden =
-                true;
-        }
-
-        function showMessage(type, message) {
-
-            elements.messageContainer
-                .replaceChildren();
-
-            if (!message) {
-                return;
-            }
-
-            const alert =
-                document.createElement("div");
-
-            alert.className =
-                `alert alert-${type}`;
-
-            alert.setAttribute(
-                "role",
-                "alert"
-            );
-
-            alert.textContent =
-                message;
-
-            elements.messageContainer
-                .appendChild(alert);
-        }
-
-        function formatCurrency(value) {
-
-            const amount =
-                Number(value);
-
-            if (!Number.isFinite(amount)) {
-                return "--";
-            }
-
-            return new Intl.NumberFormat(
-                "es-ES",
-                {
-                    style: "currency",
-                    currency: "EUR"
-                }
-            ).format(amount);
-        }
-
-        function formatDate(value) {
-
-            const date = value
-                ? new Date(value)
-                : new Date();
-
-            if (
-                Number.isNaN(
-                    date.getTime()
-                )
-            ) {
-                return "";
-            }
-
-            return new Intl.DateTimeFormat(
-                "es-ES",
-                {
-                    dateStyle: "short",
-                    timeStyle: "medium"
-                }
-            ).format(date);
-        }
-
-        function appendCell(
-            row,
-            value,
-            className = ""
-        ) {
-
-            const cell =
-                document.createElement("td");
-
-            cell.textContent =
-                value === null ||
-                    value === undefined ||
-                    value === ""
-                    ? "-"
-                    : String(value);
-
-            if (className) {
-                cell.className =
-                    className;
-            }
-
-            row.appendChild(cell);
-        }
-
-        function renderCards(data) {
-
-            setBusy(false);
-
-            hideResults();
-
-            showMessage("", "");
-
-            const cards =
-                Array.isArray(data.cards)
-                    ? data.cards
-                    : [];
-
-            elements.cardsTable
-                .replaceChildren();
-
-            elements.totalBalance.textContent =
-                formatCurrency(
-                    data.totalBalance
-                );
-
-            elements.cardCount.textContent =
-                cards.length === 1
-                    ? "1 tarjeta activa"
-                    : `${cards.length} tarjetas activas`;
-
-            const updateDate =
-                data.tokenUpdatedAt ||
-                new Date().toISOString();
-
-            elements.lastUpdate.textContent =
-                `Actualizado: ${formatDate(updateDate)}`;
-
-            if (cards.length === 0) {
-
-                elements.emptyContainer.hidden =
-                    false;
-
-                setStatus(
-                    "success",
-                    "Consulta completada"
-                );
-
-                return;
-            }
-
-            for (const card of cards) {
-
-                const row =
-                    document.createElement("tr");
-
-                appendCell(
-                    row,
-                    card.cardName ||
-                    "Tarjeta Edenred"
-                );
-
-                appendCell(
-                    row,
-                    card.cardNumber || "-",
-                    "card-number"
-                );
-
-                appendCell(
-                    row,
-                    formatCurrency(
-                        card.balance
-                    ),
-                    "balance-value"
-                );
-
-                elements.cardsTable
-                    .appendChild(row);
-            }
-
-            elements.tableContainer.hidden =
                 false;
 
             setStatus(
                 "success",
-                data.cachedSession
-                    ? "Bearer reutilizado"
-                    : "Bearer renovado"
+                "Consulta completada"
             );
+
+            return;
         }
 
-        function showError(error) {
+        for (const card of cards) {
+            const row =
+                document.createElement("tr");
 
-            setBusy(false);
-
-            setStatus(
-                "error",
-                "Error"
+            appendCell(
+                row,
+                card.cardName ||
+                "Tarjeta Edenred"
             );
+
+            appendCell(
+                row,
+                card.cardNumber || "-",
+                "card-number"
+            );
+
+            appendCell(
+                row,
+                formatCurrency(
+                    card.balance
+                ),
+                "balance-value"
+            );
+
+            elements.cardsTable
+                .appendChild(row);
+        }
+
+        elements.tableContainer.hidden =
+            false;
+
+        setStatus(
+            "success",
+            data.cachedSession
+                ? "Bearer reutilizado"
+                : "Consulta completada"
+        );
+    }
+
+    function showError(error) {
+        setBusy(false);
+
+        setStatus(
+            "error",
+            "Error"
+        );
+
+        showMessage(
+            "danger",
+            error?.message ||
+            "No se pudo completar la operación."
+        );
+
+        console.error(
+            "Error consultando Edenred:",
+            error
+        );
+
+        if (error?.responseDetails) {
+            console.error(
+                "Detalles:",
+                error.responseDetails
+            );
+        }
+    }
+
+    async function consultBalance() {
+        if (requestInProgress) {
+            return;
+        }
+
+        hideResults();
+        showMessage("", "");
+
+        setStatus(
+            "loading",
+            "Consultando"
+        );
+
+        setBusy(
+            true,
+            "Consultando el saldo guardado..."
+        );
+
+        try {
+            const data =
+                await invokeEdenred({});
+
+            if (
+                data.code ===
+                "REQUEST_ALREADY_RUNNING"
+            ) {
+                setBusy(false);
+                return;
+            }
+
+            renderCards(data);
+        } catch (error) {
+            showError(error);
+        }
+    }
+
+    async function submitBearer() {
+        if (requestInProgress) {
+            return;
+        }
+
+        const bearer =
+            normalizeBearer(
+                elements.bearerInput.value
+            );
+
+        if (!bearer) {
+            elements.bearerInput.focus();
 
             showMessage(
-                "danger",
-                error?.message ||
-                "No se pudo completar la operación."
+                "warning",
+                "Introduce un bearer válido de Edenred."
             );
 
-            console.error(
-                "Error consultando Edenred:",
-                error
-            );
+            return;
+        }
+
+        hideResults();
+        showMessage("", "");
+
+        setStatus(
+            "loading",
+            "Validando bearer"
+        );
+
+        setBusy(
+            true,
+            "Validando el bearer y consultando Edenred..."
+        );
+
+        try {
+            const data =
+                await invokeEdenred({
+                    bearer
+                });
 
             if (
-                error?.responseDetails
+                data.code ===
+                "REQUEST_ALREADY_RUNNING"
             ) {
-                console.error(
-                    "Detalles:",
-                    error.responseDetails
-                );
-            }
-        }
-
-        async function consultBalance() {
-
-            if (otpPending) {
+                setBusy(false);
                 return;
             }
 
-            if (requestInProgress) {
-                return;
+            hideBearerModal();
+            renderCards(data);
+
+            showMessage(
+                "success",
+                "El bearer de Edenred se ha validado y guardado correctamente."
+            );
+        } catch (error) {
+            showError(error);
+
+            elements.bearerModal.hidden =
+                false;
+
+            elements.bearerInput.disabled =
+                false;
+
+            elements.bearerSubmitButton.disabled =
+                false;
+
+            elements.bearerCancelButton.disabled =
+                false;
+
+            elements.bearerInput.focus();
+        }
+    }
+
+    elements.refreshButton.addEventListener(
+        "click",
+        consultBalance
+    );
+
+    elements.loginButton.addEventListener(
+        "click",
+        showBearerModal
+    );
+
+    elements.bearerSubmitButton.addEventListener(
+        "click",
+        submitBearer
+    );
+
+    elements.bearerCancelButton.addEventListener(
+        "click",
+        hideBearerModal
+    );
+
+    elements.bearerInput.addEventListener(
+        "keydown",
+        (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                submitBearer();
             }
 
-            hideResults();
-
-            showMessage("", "");
-
-            setStatus(
-                "loading",
-                "Consultando"
-            );
-
-            setBusy(
-                true,
-                "Consultando el saldo guardado..."
-            );
-
-            try {
-
-                const data =
-                    await invokeEdenred({});
-
-                if (
-                    data.code ===
-                    "REQUEST_ALREADY_RUNNING"
-                ) {
-                    return;
-                }
-
-                if (
-                    data.code ===
-                    "OTP_REQUIRED"
-                ) {
-
-                    setBusy(false);
-
-                    showOtpModal(
-                        data.details?.otpEmail ||
-                        "tu correo"
-                    );
-
-                    return;
-                }
-
-                renderCards(data);
-
-            } catch (error) {
-
-                showError(error);
-
+            if (event.key === "Escape") {
+                hideBearerModal();
             }
         }
+    );
 
-        async function validateOtp() {
-
-            const otp =
-                elements.otpInput.value.trim();
-
+    elements.bearerModal.addEventListener(
+        "click",
+        (event) => {
             if (
-                !/^\d{6}$/.test(otp)
+                event.target ===
+                elements.bearerModal
             ) {
-                alert(
-                    "Código OTP no válido"
-                );
-                return;
-            }
-
-            try {
-
-                setBusy(
-                    true,
-                    "Validando código OTP..."
-                );
-
-                const data =
-                    await invokeEdenred({
-                        otp
-                    });
-
-                hideOtpModal();
-
-                renderCards(data);
-
-                showMessage(
-                    "success",
-                    "Sesión Edenred renovada correctamente."
-                );
-
-            } catch (error) {
-
-                showError(error);
-
+                hideBearerModal();
             }
         }
+    );
+</script>
 
-        async function renewEdenredToken() {
+<div
+    id="bearerModal"
+    class="otp-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="bearerModalTitle"
+    hidden
+>
+    <div class="otp-modal-content">
+        <h3 id="bearerModalTitle">
+            Bearer de Edenred
+        </h3>
 
-            if (otpPending) {
-                return;
-            }
+        <p>
+            Introduce el bearer obtenido de Edenred.
+            Puedes pegarlo con o sin el prefijo
+            <strong>Bearer</strong>.
+        </p>
 
-            if (requestInProgress) {
-                return;
-            }
+        <textarea
+            id="bearerInput"
+            class="form-control"
+            rows="6"
+            spellcheck="false"
+            autocomplete="off"
+            autocapitalize="off"
+            placeholder="eyJhbGciOi..."
+        ></textarea>
 
-            hideResults();
-
-            showMessage("", "");
-
-            setStatus(
-                "loading",
-                "Renovando bearer"
-            );
-
-            setBusy(
-                true,
-                "Iniciando sesión en Edenred..."
-            );
-
-            try {
-
-                const data =
-                    await invokeEdenred({
-                        forceLogin: true
-                    });
-
-                if (
-                    data.code ===
-                    "REQUEST_ALREADY_RUNNING"
-                ) {
-                    return;
-                }
-
-                if (
-                    data.code ===
-                    "OTP_REQUIRED"
-                ) {
-
-                    setBusy(false);
-
-                    showOtpModal(
-                        data.details?.otpEmail ||
-                        "tu correo"
-                    );
-
-                    return;
-                }
-
-                renderCards(data);
-
-                showMessage(
-                    "success",
-                    "El bearer de Edenred se ha renovado y guardado correctamente."
-                );
-
-            } catch (error) {
-
-                showError(error);
-
-            }
-        }
-
-        elements.refreshButton.addEventListener(
-            "click",
-            consultBalance
-        );
-
-        elements.loginButton.addEventListener(
-            "click",
-            renewEdenredToken
-        );
-
-        elements.otpSubmitButton.addEventListener(
-            "click",
-            validateOtp
-        );
-
-        elements.otpInput.addEventListener(
-            "keydown",
-            (event) => {
-
-                if (
-                    event.key === "Enter"
-                ) {
-                    validateOtp();
-                }
-
-            }
-        );
-
-        if (!initialLoadExecuted) {
-
-            initialLoadExecuted = true;
-
-            consultBalance();
-        }
-
-    </script>
-
-    <div id="otpModal" class="otp-modal" hidden>
-        <div class="otp-modal-content">
-
-            <h3>Verificación Edenred</h3>
-
-            <p id="otpMessage">
-                Introduce el código recibido por correo electrónico.
-            </p>
-
-            <input id="otpInput" type="text" maxlength="6" class="form-control" placeholder="000000">
-
-            <button id="otpSubmitButton" class="btn btn-dark mt-3 w-100">
-                Validar código
+        <div class="d-grid gap-2 mt-3">
+            <button
+                id="bearerSubmitButton"
+                type="button"
+                class="btn btn-dark"
+            >
+                Guardar bearer y consultar saldo
             </button>
 
+            <button
+                id="bearerCancelButton"
+                type="button"
+                class="btn btn-outline-secondary"
+            >
+                Cancelar
+            </button>
         </div>
     </div>
+</div>
 
 </body>
 
