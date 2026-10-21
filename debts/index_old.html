@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de deudas</title>
+    <style>
+        :root {
+            --background: #f4f6fb;
+            --surface: #fff;
+            --surface-secondary: #f8fafc;
+            --text-primary: #172033;
+            --text-secondary: #667085;
+            --border: #e4e7ec;
+            --primary: #5b5ce2;
+            --primary-light: #eeeeff;
+            --negative: #e5484d;
+            --negative-light: #fff1f1;
+            --positive: #17a673;
+            --positive-light: #eafbf4;
+            --expense: #d97706;
+            --expense-light: #fff7e6;
+            --neutral-light: #f2f4f7;
+            --shadow: 0 1px 2px rgba(16, 24, 40, .04), 0 8px 24px rgba(16, 24, 40, .06);
+            --radius-large: 24px;
+            --radius-medium: 16px;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            color: var(--text-primary);
+            background: radial-gradient(circle at top left, rgba(91, 92, 226, .10), transparent 34rem), var(--background)
+        }
+
+        input,
+        select {
+            font: inherit
+        }
+
+        svg {
+            display: block
+        }
+
+        .app {
+            width: min(1180px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 40px 0 64px
+        }
+
+        .page-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 28px
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 16px
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 52px;
+            height: 52px;
+            color: #fff;
+            background: linear-gradient(135deg, #6869ef, #494ac7);
+            border-radius: 16px;
+            box-shadow: 0 12px 24px rgba(91, 92, 226, .24)
+        }
+
+        .brand-icon svg {
+            width: 27px;
+            height: 27px
+        }
+
+        .page-title {
+            margin: 0;
+            font-size: clamp(1.55rem, 4vw, 2.15rem);
+            line-height: 1.1;
+            letter-spacing: -.04em
+        }
+
+        .page-subtitle {
+            margin: 7px 0 0;
+            color: var(--text-secondary);
+            font-size: .96rem
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 24px
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid rgba(228, 231, 236, .9);
+            border-radius: var(--radius-large);
+            box-shadow: var(--shadow)
+        }
+
+        .balance-card {
+            position: relative;
+            overflow: hidden;
+            min-height: 230px;
+            padding: 28px;
+            color: #fff;
+            background: linear-gradient(135deg, #6264e8 0%, #4e4fc6 58%, #393a9f 100%);
+            border: 0
+        }
+
+        .balance-card::before,
+        .balance-card::after {
+            position: absolute;
+            content: "";
+            border-radius: 50%;
+            pointer-events: none
+        }
+
+        .balance-card::before {
+            top: -80px;
+            right: -55px;
+            width: 210px;
+            height: 210px;
+            background: rgba(255, 255, 255, .08)
+        }
+
+        .balance-card::after {
+            right: 90px;
+            bottom: -105px;
+            width: 190px;
+            height: 190px;
+            background: rgba(255, 255, 255, .05)
+        }
+
+        .balance-content {
+            position: relative;
+            z-index: 1
+        }
+
+        .card-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+            font-size: .92rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, .76)
+        }
+
+        .card-label svg {
+            width: 19px;
+            height: 19px
+        }
+
+        .person-name {
+            margin: 0 0 6px;
+            color: rgba(255, 255, 255, .82);
+            font-size: 1rem;
+            font-weight: 600
+        }
+
+        .balance-amount {
+            margin: 0;
+            font-size: clamp(2.3rem, 6vw, 3.5rem);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -.06em
+        }
+
+        .balance-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 8px 12px;
+            font-size: .88rem;
+            font-weight: 700;
+            color: #fff;
+            background: rgba(255, 255, 255, .13);
+            border: 1px solid rgba(255, 255, 255, .16);
+            border-radius: 999px;
+            backdrop-filter: blur(8px)
+        }
+
+        .balance-status svg {
+            width: 17px;
+            height: 17px
+        }
+
+        .stat-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 230px;
+            padding: 24px
+        }
+
+        .stat-icon {
+            display: grid;
+            place-items: center;
+            width: 46px;
+            height: 46px;
+            margin-bottom: 24px;
+            border-radius: 14px
+        }
+
+        .stat-icon svg {
+            width: 23px;
+            height: 23px
+        }
+
+        .stat-icon.delivered {
+            color: var(--negative);
+            background: var(--negative-light)
+        }
+
+        .stat-icon.returned {
+            color: var(--positive);
+            background: var(--positive-light)
+        }
+
+        .stat-name {
+            margin: 0 0 8px;
+            color: var(--text-secondary);
+            font-size: .92rem;
+            font-weight: 650
+        }
+
+        .stat-value {
+            margin: 0;
+            font-size: clamp(1.65rem, 4vw, 2.2rem);
+            font-weight: 800;
+            letter-spacing: -.045em
+        }
+
+        .stat-detail {
+            margin: 12px 0 0;
+            color: var(--text-secondary);
+            font-size: .84rem
+        }
+
+        .progress-card {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 16px;
+            padding: 18px 22px;
+            margin-bottom: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-medium);
+            box-shadow: var(--shadow)
+        }
+
+        .progress-icon {
+            display: grid;
+            place-items: center;
+            width: 42px;
+            height: 42px;
+            color: var(--primary);
+            background: var(--primary-light);
+            border-radius: 13px
+        }
+
+        .progress-icon svg {
+            width: 21px;
+            height: 21px
+        }
+
+        .progress-content {
+            min-width: 0
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 9px;
+            font-size: .86rem;
+            font-weight: 700
+        }
+
+        .progress-track {
+            overflow: hidden;
+            height: 8px;
+            background: #eceef2;
+            border-radius: 999px
+        }
+
+        .progress-bar {
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, #6264e8, #17a673);
+            border-radius: inherit;
+            transition: width 400ms ease
+        }
+
+        .progress-percentage {
+            min-width: 58px;
+            color: var(--positive);
+            font-size: 1.05rem;
+            font-weight: 800;
+            text-align: right
+        }
+
+        .movements-card {
+            overflow: hidden
+        }
+
+        .movements-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            padding: 24px 24px 18px
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 1.18rem;
+            letter-spacing: -.025em
+        }
+
+        .movement-count {
+            margin: 5px 0 0;
+            color: var(--text-secondary);
+            font-size: .88rem
+        }
+
+        .filters {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .search-box {
+            position: relative
+        }
+
+        .search-box svg {
+            position: absolute;
+            top: 50%;
+            left: 13px;
+            width: 18px;
+            height: 18px;
+            color: var(--text-secondary);
+            transform: translateY(-50%);
+            pointer-events: none
+        }
+
+        .search-box input {
+            width: 220px;
+            height: 42px;
+            padding: 0 14px 0 40px;
+            color: var(--text-primary);
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            outline: none
+        }
+
+        .search-box input:focus,
+        .filter-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(91, 92, 226, .12)
+        }
+
+        .filter-select {
+            height: 42px;
+            padding: 0 36px 0 13px;
+            color: var(--text-primary);
+            font-weight: 650;
+            background: var(--surface-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            outline: none
+        }
+
+        .movements-list {
+            border-top: 1px solid var(--border)
+        }
+
+        .movement {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 16px;
+            padding: 19px 24px;
+            border-bottom: 1px solid var(--border);
+            transition: background 150ms ease
+        }
+
+        .movement:last-child {
+            border-bottom: 0
+        }
+
+        .movement:hover {
+            background: #fbfcfe
+        }
+
+        .movement-icon {
+            display: grid;
+            place-items: center;
+            width: 45px;
+            height: 45px;
+            border-radius: 14px
+        }
+
+        .movement-icon svg {
+            width: 22px;
+            height: 22px
+        }
+
+        .movement.entrega .movement-icon {
+            color: var(--negative);
+            background: var(--negative-light)
+        }
+
+        .movement.devolucion .movement-icon {
+            color: var(--positive);
+            background: var(--positive-light)
+        }
+
+        .movement.gasto .movement-icon {
+            color: var(--expense);
+            background: var(--expense-light)
+        }
+
+        .movement-info {
+            min-width: 0
+        }
+
+        .movement-concept {
+            overflow: hidden;
+            margin: 0;
+            font-size: .97rem;
+            font-weight: 750;
+            text-overflow: ellipsis;
+            white-space: nowrap
+        }
+
+        .movement-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 7px;
+            margin-top: 6px;
+            color: var(--text-secondary);
+            font-size: .82rem
+        }
+
+        .movement-type,
+        .movement-method {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 8px;
+            font-size: .74rem;
+            font-weight: 750;
+            border-radius: 999px
+        }
+
+        .movement.entrega .movement-type {
+            color: var(--negative);
+            background: var(--negative-light)
+        }
+
+        .movement.devolucion .movement-type {
+            color: var(--positive);
+            background: var(--positive-light)
+        }
+
+        .movement.gasto .movement-type {
+            color: #b45309;
+            background: var(--expense-light)
+        }
+
+        .movement-method {
+            color: var(--text-secondary);
+            background: var(--neutral-light)
+        }
+
+        .movement-method svg {
+            width: 13px;
+            height: 13px
+        }
+
+        .movement-amount {
+            font-size: 1.04rem;
+            font-weight: 800;
+            text-align: right;
+            white-space: nowrap
+        }
+
+        .movement.entrega .movement-amount {
+            color: var(--negative)
+        }
+
+        .movement.devolucion .movement-amount {
+            color: var(--positive)
+        }
+
+        .movement.gasto .movement-amount {
+            color: var(--expense)
+        }
+
+        .empty-state,
+        .loading-state,
+        .error-state {
+            display: grid;
+            place-items: center;
+            min-height: 240px;
+            padding: 40px 24px;
+            text-align: center
+        }
+
+        .state-icon {
+            display: grid;
+            place-items: center;
+            width: 58px;
+            height: 58px;
+            margin: 0 auto 16px;
+            color: var(--primary);
+            background: var(--primary-light);
+            border-radius: 18px
+        }
+
+        .state-icon svg {
+            width: 28px;
+            height: 28px
+        }
+
+        .error-state .state-icon {
+            color: var(--negative);
+            background: var(--negative-light)
+        }
+
+        .state-title {
+            margin: 0 0 7px;
+            font-size: 1.05rem
+        }
+
+        .state-description {
+            max-width: 480px;
+            margin: 0;
+            color: var(--text-secondary);
+            font-size: .9rem;
+            line-height: 1.55
+        }
+
+        .spinner {
+            width: 28px;
+            height: 28px;
+            border: 3px solid rgba(91, 92, 226, .18);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 800ms linear infinite
+        }
+
+        .last-update {
+            margin: 18px 0 0;
+            color: var(--text-secondary);
+            font-size: .79rem;
+            text-align: center
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg)
+            }
+        }
+
+        @media(max-width:850px) {
+            .summary-grid {
+                grid-template-columns: 1fr 1fr
+            }
+
+            .balance-card {
+                grid-column: 1/-1
+            }
+
+            .stat-card {
+                min-height: 190px
+            }
+
+            .movements-header {
+                align-items: stretch;
+                flex-direction: column
+            }
+
+            .filters {
+                width: 100%
+            }
+
+            .search-box {
+                flex: 1
+            }
+
+            .search-box input {
+                width: 100%
+            }
+        }
+
+        @media(max-width:600px) {
+            .app {
+                width: min(100% - 22px, 1180px);
+                padding: 22px 0 40px
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+                gap: 13px
+            }
+
+            .balance-card {
+                grid-column: auto;
+                min-height: 215px;
+                padding: 24px
+            }
+
+            .stat-card {
+                min-height: auto;
+                padding: 20px
+            }
+
+            .stat-icon {
+                margin-bottom: 18px
+            }
+
+            .progress-card {
+                grid-template-columns: auto 1fr;
+                padding: 16px
+            }
+
+            .progress-percentage {
+                grid-column: 2;
+                text-align: left
+            }
+
+            .filters {
+                align-items: stretch;
+                flex-direction: column
+            }
+
+            .filter-select {
+                width: 100%
+            }
+
+            .movements-header {
+                padding: 21px 18px 16px
+            }
+
+            .movement {
+                grid-template-columns: auto minmax(0, 1fr);
+                gap: 13px;
+                padding: 17px 18px
+            }
+
+            .movement-amount {
+                grid-column: 2;
+                text-align: left
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="app">
+        <header class="page-header">
+            <div class="brand">
+                <div class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="5" width="18" height="15" rx="3"></rect>
+                        <path d="M16 13h5"></path>
+                        <path d="M16 9h2"></path>
+                        <path d="M7 5V3"></path>
+                        <path d="M17 5V3"></path>
+                    </svg></div>
+                <div>
+                    <h1 class="page-title">Control de deudas</h1>
+                    <p class="page-subtitle">Consulta entregas, gastos, devoluciones y saldo pendiente.</p>
+                </div>
+            </div>
+        </header>
+
+        <section class="summary-grid">
+            <article class="card balance-card">
+                <div class="balance-content">
+                    <div class="card-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="9"></circle>
+                            <path d="M16 8.5a4 4 0 1 0 0 7"></path>
+                            <path d="M7.5 11h7"></path>
+                            <path d="M7.5 14h6"></path>
+                        </svg>Saldo total</div>
+                    <p id="personName" class="person-name">Cargando información…</p>
+                    <p id="balanceAmount" class="balance-amount">0,00 €</p>
+                    <div id="balanceStatus" class="balance-status">Calculando saldo</div>
+                </div>
+            </article>
+            <article class="card stat-card">
+                <div>
+                    <div class="stat-icon delivered"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 20V4"></path>
+                            <path d="m6 10 6-6 6 6"></path>
+                        </svg></div>
+                    <p class="stat-name">Total prestado y gastado</p>
+                    <p id="deliveredAmount" class="stat-value">0,00 €</p>
+                </div>
+                <p id="deliveredCount" class="stat-detail">0 entregas y 0 gastos</p>
+            </article>
+            <article class="card stat-card">
+                <div>
+                    <div class="stat-icon returned"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M12 4v16"></path>
+                            <path d="m18 14-6 6-6-6"></path>
+                        </svg></div>
+                    <p class="stat-name">Total devuelto</p>
+                    <p id="returnedAmount" class="stat-value">0,00 €</p>
+                </div>
+                <p id="returnedCount" class="stat-detail">0 devoluciones</p>
+            </article>
+        </section>
+
+        <section class="progress-card">
+            <div class="progress-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19V9"></path>
+                    <path d="M10 19V5"></path>
+                    <path d="M16 19v-7"></path>
+                    <path d="M22 19V3"></path>
+                </svg></div>
+            <div class="progress-content">
+                <div class="progress-header"><span>Saldo total</span><span id="progressDetail">0,00 € de 0,00
+                        €</span></div>
+                <div class="progress-track" role="progressbar" aria-label="Porcentaje de dinero recuperado"
+                    aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+                    <div id="progressBar" class="progress-bar"></div>
+                </div>
+            </div>
+            <div id="progressPercentage" class="progress-percentage">0 %</div>
+        </section>
+
+        <section class="card movements-card">
+            <div class="movements-header">
+                <div>
+                    <h2 class="section-title">Movimientos</h2>
+                    <p id="movementCount" class="movement-count">Cargando movimientos…</p>
+                </div>
+                <div class="filters">
+                    <div class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m20 20-4-4"></path>
+                        </svg><input id="searchInput" type="search" placeholder="Buscar concepto, método…"
+                            autocomplete="off"></div>
+                    <select id="typeFilter" class="filter-select" aria-label="Filtrar por tipo">
+                        <option value="all">Todos los tipos</option>
+                        <option value="entrega">Entregas</option>
+                        <option value="devolucion">Devoluciones</option>
+                        <option value="gasto">Gastos</option>
+                    </select>
+                    <select id="methodFilter" class="filter-select" aria-label="Filtrar por modalidad">
+                        <option value="all">Todas las modalidades</option>
+                        <option value="transferencia">Transferencia bancaria</option>
+                        <option value="bizum">Bizum</option>
+                        <option value="efectivo">Efectivo</option>
+                        <option value="edenred">Tarjeta Edenred</option>
+                    </select>
+                </div>
+            </div>
+            <div id="movementsList" class="movements-list">
+                <div class="loading-state">
+                    <div>
+                        <div class="state-icon">
+                            <div class="spinner"></div>
+                        </div>
+                        <h3 class="state-title">Cargando movimientos</h3>
+                        <p class="state-description">Leyendo /debts.xml.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <p id="lastUpdate" class="last-update"></p>
+    </main>
+
+    <script>
+        "use strict";
+        const MOVEMENT_TYPES = Object.freeze({
+            entrega: {
+                label: "Entrega",
+                sign: "negative"
+            },
+            devolucion: {
+                label: "Devolución",
+                sign: "positive"
+            },
+            gasto: {
+                label: "Gasto",
+                sign: "negative"
+            }
+        });
+        const MOVEMENT_METHODS = Object.freeze({
+            transferencia: {
+                label: "Transferencia bancaria"
+            },
+            bizum: {
+                label: "Bizum"
+            },
+            efectivo: {
+                label: "Efectivo"
+            },
+            edenred: {
+                label: "Tarjeta Edenred"
+            }
+        });
+        const state = {
+            person: "",
+            currency: "EUR",
+            updated: "",
+            movements: []
+        };
+        const PERSON_FILTER =
+            new URLSearchParams(window.location.search)
+                .get("person")
+                ?.trim()
+                .toLowerCase();
+
+        const elements = {
+            personName: document.getElementById("personName"),
+            balanceAmount: document.getElementById("balanceAmount"),
+            balanceStatus: document.getElementById("balanceStatus"),
+            deliveredAmount: document.getElementById("deliveredAmount"),
+            returnedAmount: document.getElementById("returnedAmount"),
+            deliveredCount: document.getElementById("deliveredCount"),
+            returnedCount: document.getElementById("returnedCount"),
+            progressDetail: document.getElementById("progressDetail"),
+            progressBar: document.getElementById("progressBar"),
+            progressPercentage: document.getElementById("progressPercentage"),
+            progressTrack: document.querySelector(".progress-track"),
+            movementCount: document.getElementById("movementCount"),
+            movementsList: document.getElementById("movementsList"),
+            searchInput: document.getElementById("searchInput"),
+            typeFilter: document.getElementById("typeFilter"),
+            methodFilter: document.getElementById("methodFilter"),
+            lastUpdate: document.getElementById("lastUpdate")
+        };
+        const svg = (body) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+        const icons = {
+            entrega: svg('<path d="M12 20V4"></path><path d="m6 10 6-6 6 6"></path>'),
+            devolucion: svg('<path d="M12 4v16"></path><path d="m18 14-6 6-6-6"></path>'),
+            gasto: svg('<path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path>'),
+            transferencia: svg('<path d="M3 10h18"></path><path d="M5 10v8M9 10v8M15 10v8M19 10v8"></path><path d="M3 18h18"></path><path d="m12 3 9 5H3l9-5Z"></path>'),
+            bizum: svg('<rect x="7" y="2" width="10" height="20" rx="2"></rect><path d="M11 18h2"></path><path d="m9 10 2 2 4-4"></path>'),
+            efectivo: svg('<rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle><path d="M6 9H4v2M18 15h2v-2"></path>'),
+            edenred: svg('<rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path><path d="M6 15h4"></path>'),
+            pendiente: svg('<circle cx="12" cy="12" r="9"></circle><path d="M12 7v5"></path><path d="m12 12 3 2"></path>'),
+            completado: svg('<circle cx="12" cy="12" r="9"></circle><path d="m8 12 2.5 2.5L16 9"></path>'),
+            info: svg('<circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 8h.01"></path>'),
+            vacio: svg('<path d="M4 7h16"></path><path d="M6 7l1 13h10l1-13"></path><path d="M9 7V4h6v3"></path>'),
+            error: svg('<path d="M12 3 2.5 20h19L12 3Z"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path>')
+        };
+
+        function getElementText(parent, selector, fallback = "") {
+            const el = parent.querySelector(selector);
+            return el ? el.textContent.trim() : fallback
+        }
+
+        function parseQuantity(value) {
+            const n = Number.parseFloat(String(value).trim().replace(/\s/g, "").replace(",", "."));
+            return Number.isFinite(n) ? n : null
+        }
+
+        function parseDate(value) {
+            const v = String(value || "").trim();
+            let y, m, d;
+            if (/^\d{4}-\d{2}-\d{2}$/.test(v)) {
+                [y, m, d] = v.split("-").map(Number)
+            } else if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
+                [d, m, y] = v.split("/").map(Number)
+            } else {
+                return null
+            }
+            const date = new Date(y, m - 1, d);
+            return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d ? date : null
+        }
+
+        function formatDate(v) {
+            const d = parseDate(v);
+            return d ? new Intl.DateTimeFormat("es-ES", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric"
+            }).format(d) : (v || "Fecha desconocida")
+        }
+
+        function normalizeZero(v) {
+            return Math.abs(v) < .000001 ? 0 : v
+        }
+
+        function formatCurrency(v, showSign = false) {
+            return new Intl.NumberFormat("es-ES", {
+                style: "currency",
+                currency: state.currency || "EUR",
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+                signDisplay: showSign ? "always" : "auto"
+            }).format(normalizeZero(v))
+        }
+
+        function escapeHtml(v) {
+            return String(v).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;")
+        }
+
+        function pluralize(n, s, p) {
+            return n === 1 ? s : p
+        }
+
+        function normalizeType(v) {
+            const type = String(v || "").trim().toLocaleLowerCase("es");
+            if (!Object.hasOwn(MOVEMENT_TYPES, type)) throw new Error(`Tipo no válido: "${v}".`);
+            return type
+        }
+
+        function normalizeMethod(v) {
+            const method = String(v || "").trim().toLocaleLowerCase("es");
+            if (!Object.hasOwn(MOVEMENT_METHODS, method)) throw new Error(`Modalidad no válida: "${v}".`);
+            return method
+        }
+
+        function validateSign(type, quantity, id) {
+            if ((type === "entrega" || type === "gasto") && quantity >= 0) throw new Error(`El movimiento "${id}" debe tener una cantidad negativa.`);
+            if (type === "devolucion" && quantity <= 0) throw new Error(`El movimiento "${id}" debe tener una cantidad positiva.`)
+        }
+
+        function parseXml(xmlText) {
+            const xml = new DOMParser().parseFromString(xmlText, "application/xml");
+            if (xml.querySelector("parsererror")) throw new Error("El fichero /debts.xml no contiene XML válido.");
+            let debts;
+
+            if (PERSON_FILTER) {
+
+                debts = [...xml.querySelectorAll("debts")]
+                    .find(node =>
+                        (node.getAttribute("person") || "")
+                            .trim()
+                            .toLowerCase() === PERSON_FILTER
+                    );
+
+                if (!debts) {
+                    throw new Error(
+                        `No existe ningún contacto llamado "${PERSON_FILTER}".`
+                    );
+                }
+
+            } else {
+
+                debts = xml.querySelector("debts");
+
+                if (!debts) {
+                    throw new Error(
+                        "No se ha encontrado ningún elemento <debts>."
+                    );
+                }
+
+            }
+            const ids = new Set();
+            const movements = [...debts.querySelectorAll(":scope > movement")].map((node, index) => {
+                const id = node.getAttribute("id") || `movement-${index + 1}`;
+                if (ids.has(id)) throw new Error(`El identificador "${id}" está repetido.`);
+                ids.add(id);
+                const type = normalizeType(node.getAttribute("type"));
+                const method = normalizeMethod(node.getAttribute("method"));
+                const quantity = parseQuantity(getElementText(node, "quantity"));
+                if (quantity === null) throw new Error(`Cantidad no válida en "${id}".`);
+                validateSign(type, quantity, id);
+                const date = getElementText(node, "date");
+                if (!parseDate(date)) throw new Error(`Fecha no válida en "${id}". Usa AAAA-MM-DD.`);
+                return {
+                    id,
+                    type,
+                    method,
+                    quantity: normalizeZero(quantity),
+                    concept: getElementText(node, "concept", "Sin concepto"),
+                    date,
+                    notes: getElementText(node, "notes", "")
+                }
+            }).sort((a, b) => parseDate(b.date) - parseDate(a.date));
+            state.person = debts.getAttribute("person") || debts.getAttribute("name") || "Persona sin nombre";
+            state.currency = debts.getAttribute("currency") || "EUR";
+            state.updated = debts.getAttribute("updated") || "";
+            state.movements = movements;
+            render()
+        }
+
+        function calculateSummary() {
+            const deliveries = state.movements.filter(m => m.type === "entrega");
+            const expenses = state.movements.filter(m => m.type === "gasto");
+            const returns = state.movements.filter(m => m.type === "devolucion");
+            const delivered = deliveries.reduce((s, m) => s + Math.abs(m.quantity), 0);
+            const spent = expenses.reduce((s, m) => s + Math.abs(m.quantity), 0);
+            const returned = returns.reduce((s, m) => s + m.quantity, 0);
+            const advanced = delivered + spent;
+            const balance = state.movements.reduce((s, m) => s + m.quantity, 0);
+            const recoveredPercentage = advanced > 0 ? Math.min(Math.max(returned / advanced * 100, 0), 100) : 0;
+            return {
+                delivered,
+                spent,
+                advanced,
+                returned,
+                balance: normalizeZero(balance),
+                deliveredCount: deliveries.length,
+                expenseCount: expenses.length,
+                returnedCount: returns.length,
+                recoveredPercentage
+            }
+        }
+
+        function renderSummary() {
+            const s = calculateSummary();
+            elements.personName.textContent =
+                `Cuenta con ${state.person}`;
+
+            document.title =
+                `Deudas con ${state.person}`;
+            elements.balanceAmount.textContent = formatCurrency(s.balance, true);
+            elements.deliveredAmount.textContent = formatCurrency(s.advanced);
+            elements.returnedAmount.textContent = formatCurrency(s.returned);
+            elements.deliveredCount.textContent = `${s.deliveredCount} ${pluralize(s.deliveredCount, "entrega", "entregas")} y ${s.expenseCount} ${pluralize(s.expenseCount, "gasto", "gastos")}`;
+            elements.returnedCount.textContent = `${s.returnedCount} ${pluralize(s.returnedCount, "devolución registrada", "devoluciones registradas")}`;
+            if (s.balance < 0) elements.balanceStatus.innerHTML = `${icons.pendiente} ${escapeHtml(state.person)} debe ${escapeHtml(formatCurrency(Math.abs(s.balance)))}`;
+            else if (s.balance > 0) elements.balanceStatus.innerHTML = `${icons.info} Debes ${escapeHtml(formatCurrency(s.balance))} a ${escapeHtml(state.person)}`;
+            else elements.balanceStatus.innerHTML = `${icons.completado} Deuda completamente saldada`;
+            elements.progressDetail.textContent = `${formatCurrency(s.returned)} de ${formatCurrency(s.advanced)}`;
+            const p = Math.round(s.recoveredPercentage);
+            elements.progressPercentage.textContent = `${p} %`;
+            elements.progressBar.style.width = `${s.recoveredPercentage}%`;
+            elements.progressTrack.setAttribute("aria-valuenow", String(p))
+        }
+
+        function getFilteredMovements() {
+            const q = elements.searchInput.value.trim().toLocaleLowerCase("es");
+            const type = elements.typeFilter.value;
+            const method = elements.methodFilter.value;
+            return state.movements.filter(m => {
+                const searchable = [m.concept, m.notes, m.date, m.quantity, m.type, m.method, MOVEMENT_TYPES[m.type].label, MOVEMENT_METHODS[m.method].label].join(" ").toLocaleLowerCase("es");
+                return (type === "all" || m.type === type) && (method === "all" || m.method === method) && (!q || searchable.includes(q))
+            })
+        }
+
+        function renderMovements() {
+            const list = getFilteredMovements(),
+                total = state.movements.length;
+            elements.movementCount.textContent = list.length === total ? `${total} ${pluralize(total, "movimiento registrado", "movimientos registrados")}` : `${list.length} de ${total} movimientos`;
+            if (!list.length) {
+                elements.movementsList.innerHTML = `<div class="empty-state"><div><div class="state-icon">${icons.vacio}</div><h3 class="state-title">No hay movimientos</h3><p class="state-description">No se han encontrado movimientos que coincidan con los filtros seleccionados.</p></div></div>`;
+                return
+            }
+            elements.movementsList.innerHTML = list.map(m => {
+                const typeLabel = MOVEMENT_TYPES[m.type].label;
+                const methodLabel = MOVEMENT_METHODS[m.method].label;
+                const notes = m.notes ? `<span aria-hidden="true">•</span><span title="${escapeHtml(m.notes)}">${escapeHtml(m.notes)}</span>` : "";
+                return `<article class="movement ${m.type}" data-id="${escapeHtml(m.id)}"><div class="movement-icon" aria-hidden="true">${icons[m.type]}</div><div class="movement-info"><h3 class="movement-concept">${escapeHtml(m.concept)}</h3><div class="movement-meta"><span class="movement-type">${escapeHtml(typeLabel)}</span><span class="movement-method">${icons[m.method]} ${escapeHtml(methodLabel)}</span><span>${escapeHtml(formatDate(m.date))}</span>${notes}</div></div><div class="movement-amount">${escapeHtml(formatCurrency(m.quantity, true))}</div></article>`
+            }).join("")
+        }
+
+        function renderLastUpdate() {
+            elements.lastUpdate.textContent = state.updated ? `Datos actualizados el ${formatDate(state.updated)}.` : ""
+        }
+
+        function render() {
+            renderSummary();
+            renderMovements();
+            renderLastUpdate()
+        }
+
+        function showError(message) {
+            elements.personName.textContent = "No se han podido cargar los datos";
+            elements.balanceAmount.textContent = formatCurrency(0);
+            elements.balanceStatus.innerHTML = `${icons.error} Error de carga`;
+            elements.movementCount.textContent = "Sin datos disponibles";
+            elements.movementsList.innerHTML = `<div class="error-state"><div><div class="state-icon">${icons.error}</div><h3 class="state-title">No se pudo leer /debts.xml</h3><p class="state-description">${escapeHtml(message)}</p></div></div>`
+        }
+        async function loadDebtsXml() {
+            try {
+                const response = await fetch(`debts.xml`, {
+                    headers: {
+                        Accept: "application/xml, text/xml"
+                    },
+                    cache: "no-store"
+                });
+                if (!response.ok) throw new Error(`El servidor respondió con el estado ${response.status}.`);
+                const text = await response.text();
+                if (!text.trim()) throw new Error("El fichero /debts.xml está vacío.");
+                parseXml(text)
+            } catch (error) {
+                console.error("Error cargando /debts.xml:", error);
+                showError(error instanceof Error ? error.message : "No se ha podido cargar /debts.xml.")
+            }
+        }
+        elements.searchInput.addEventListener("input", renderMovements);
+        elements.typeFilter.addEventListener("change", renderMovements);
+        elements.methodFilter.addEventListener("change", renderMovements);
+        loadDebtsXml();
+    </script>
+</body>
+
+</html>
