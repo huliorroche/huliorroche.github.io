@@ -4,41 +4,23 @@
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Edenred | Rocha Services</title>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.googleapis.com"
-    >
+    <link rel="preconnect" href="https://fonts.googleapis.com">
 
-    <link
-        rel="preconnect"
-        href="https://fonts.gstatic.com"
-        crossorigin
-    >
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
-    <link
-        href="../css.css"
-        rel="stylesheet"
-    >
+    <link href="../css.css" rel="stylesheet">
 
     <style>
-
         .balance-card {
             padding: 2rem;
             text-align: center;
@@ -129,7 +111,6 @@
                 font-size: 0.9rem;
             }
         }
-
     </style>
 
 </head>
@@ -141,11 +122,8 @@
         <div class="logo">
             <img src="../images/logo.png">
         </div>
-        
-        <div
-            class="user"
-            id="userInfo"
-        >
+
+        <div class="user" id="userInfo">
             Cargando...
         </div>
 
@@ -175,35 +153,21 @@
                     Saldo total disponible
                 </h3>
 
-                <div
-                    id="totalBalance"
-                    class="amount"
-                >
+                <div id="totalBalance" class="amount">
                     --
                 </div>
 
-                <div
-                    id="lastUpdate"
-                    class="edenred-status"
-                >
+                <div id="lastUpdate" class="edenred-status">
                     Saldo pendiente de consulta
                 </div>
 
                 <div class="edenred-actions">
 
-                    <button
-                        id="refreshButton"
-                        type="button"
-                        class="btn btn-dark"
-                    >
+                    <button id="refreshButton" type="button" class="btn btn-dark">
                         Consultar saldo
                     </button>
 
-                    <button
-                        id="loginButton"
-                        type="button"
-                        class="btn btn-outline-dark"
-                    >
+                    <button id="loginButton" type="button" class="btn btn-outline-dark">
                         Renovar bearer Edenred
                     </button>
 
@@ -216,10 +180,7 @@
                 <h3>Estado</h3>
 
                 <p>
-                    <span
-                        id="statusBadge"
-                        class="status-badge status-idle"
-                    >
+                    <span id="statusBadge" class="status-badge status-idle">
                         No consultado
                     </span>
                 </p>
@@ -242,38 +203,22 @@
                 Tarjetas Edenred
             </h3>
 
-            <div
-                id="messageContainer"
-                aria-live="polite"
-            ></div>
+            <div id="messageContainer" aria-live="polite"></div>
 
-            <div
-                id="loadingContainer"
-                class="loading-area"
-                hidden
-            >
-                <div
-                    class="spinner-border text-dark"
-                    role="status"
-                >
+            <div id="loadingContainer" class="loading-area" hidden>
+                <div class="spinner-border text-dark" role="status">
                     <span class="visually-hidden">
                         Cargando...
                     </span>
                 </div>
 
-                <p
-                    id="loadingMessage"
-                    class="mt-3 mb-0"
-                >
+                <p id="loadingMessage" class="mt-3 mb-0">
                     Conectando con Edenred...
                 </p>
 
             </div>
 
-            <div
-                id="tableContainer"
-                hidden
-            >
+            <div id="tableContainer" hidden>
 
                 <div class="table-responsive">
 
@@ -295,11 +240,7 @@
 
             </div>
 
-            <div
-                id="emptyContainer"
-                class="empty-state"
-                hidden
-            >
+            <div id="emptyContainer" class="empty-state" hidden>
                 No se encontraron tarjetas activas.
             </div>
 
@@ -349,7 +290,16 @@
                 document.getElementById("emptyContainer"),
 
             cardsTable:
-                document.getElementById("cardsTable")
+                document.getElementById("cardsTable"),
+
+            otpModal:
+                document.getElementById("otpModal"),
+
+            otpInput:
+                document.getElementById("otpInput"),
+
+            otpSubmitButton:
+                document.getElementById("otpSubmitButton")
         };
 
         function getSession() {
@@ -364,6 +314,25 @@
             }
 
             return session;
+        }
+
+        function showOtpModal(email) {
+
+            elements.otpModal.hidden = false;
+
+            document.getElementById("otpMessage").textContent =
+                `Se ha enviado un código a ${email}`;
+
+            elements.otpInput.value = "";
+
+            setTimeout(
+                () => elements.otpInput.focus(),
+                100
+            );
+        }
+
+        function hideOtpModal() {
+            elements.otpModal.hidden = true;
         }
 
         async function invokeEdenred(body = {}) {
@@ -410,27 +379,12 @@
 
             }
 
-            if (!response.ok) {
-
-                const error = new Error(
-                    data.error ||
-                    data.message ||
-                    `Error HTTP ${response.status}`
-                );
-
-                error.responseStatus =
-                    response.status;
-
-                error.responseCode =
-                    data.code;
-
-                error.responseDetails =
-                    data.details;
-
-                throw error;
+            if (
+                response.status === 409 &&
+                data.code === "OTP_REQUIRED"
+            ) {
+                return data;
             }
-
-            return data;
         }
 
         function setStatus(type, text) {
@@ -544,8 +498,8 @@
 
             cell.textContent =
                 value === null ||
-                value === undefined ||
-                value === ""
+                    value === undefined ||
+                    value === ""
                     ? "-"
                     : String(value);
 
@@ -683,7 +637,55 @@
                 const data =
                     await invokeEdenred({});
 
+                if (data.code === "OTP_REQUIRED") {
+
+                    showOtpModal(
+                        data.details?.otpEmail ||
+                        "tu correo"
+                    );
+
+                    return;
+                }
+
                 renderCards(data);
+
+            } catch (error) {
+
+                showError(error);
+
+            }
+        }
+
+        async function validateOtp() {
+
+            const otp =
+                elements.otpInput.value.trim();
+
+            if (!/^\d{6}$/.test(otp)) {
+                alert("Código OTP no válido");
+                return;
+            }
+
+            try {
+
+                setBusy(
+                    true,
+                    "Validando código OTP..."
+                );
+
+                const data =
+                    await invokeEdenred({
+                        otp
+                    });
+
+                hideOtpModal();
+
+                renderCards(data);
+
+                showMessage(
+                    "success",
+                    "Sesión Edenred renovada correctamente."
+                );
 
             } catch (error) {
 
@@ -739,9 +741,41 @@
             renewEdenredToken
         );
 
+        elements.otpSubmitButton.addEventListener(
+            "click",
+            validateOtp
+        );
+
+        elements.otpInput.addEventListener(
+            "keydown",
+            (event) => {
+                if (event.key === "Enter") {
+                    validateOtp();
+                }
+            }
+        );
+
         consultBalance();
 
     </script>
+
+    <div id="otpModal" class="otp-modal" hidden>
+        <div class="otp-modal-content">
+
+            <h3>Verificación Edenred</h3>
+
+            <p id="otpMessage">
+                Introduce el código recibido por correo electrónico.
+            </p>
+
+            <input id="otpInput" type="text" maxlength="6" class="form-control" placeholder="000000">
+
+            <button id="otpSubmitButton" class="btn btn-dark mt-3 w-100">
+                Validar código
+            </button>
+
+        </div>
+    </div>
 
 </body>
 

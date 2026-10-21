@@ -229,3 +229,28 @@ header {
         padding: 24px;
     }
 }
+
+.otp-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+}
+
+.otp-modal-content {
+    width: 100%;
+    max-width: 420px;
+    background: white;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 15px 40px rgba(0,0,0,.25);
+}
+
+.otp-modal-content input {
+    text-align: center;
+    font-size: 1.8rem;
+    letter-spacing: .4rem;
+}
