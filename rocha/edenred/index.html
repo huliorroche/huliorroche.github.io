@@ -440,34 +440,37 @@
             elements.loadingMessage.textContent = message;
 
             elements.refreshButton.disabled = isBusy;
-            elements.loginButton.disabled = isBusyContainer.hidden = true;
-            elements.emptyContainer.hidden = true;
+            elements.loginButton.disabled = isBusy;
+
+            if (elements.validateOtpButton) {
+                elements.validateOtpButton.disabled = isBusy;
+            }
         }
 
         function hideResults() {
-    elements.tableContainer.hidden = true;
-    elements.emptyContainer.hidden = true;
-}
+            elements.tableContainer.hidden = true;
+            elements.emptyContainer.hidden = true;
+        }
 
-function hideOtp() {
-    elements.otpContainer.hidden = true;
-    elements.otpInput.value = "";
-}
+        function hideOtp() {
+            elements.otpContainer.hidden = true;
+            elements.otpInput.value = "";
+        }
 
-function showMessage(type, message) {
-    elements.messageContainer.replaceChildren();
+        function showMessage(type, message) {
+            elements.messageContainer.replaceChildren();
 
-    if (!message) {
-        return;
-    }
+            if (!message) {
+                return;
+            }
 
-    const alert = document.createElement("div");
+            const alert = document.createElement("div");
 
-    alert.className = `alert alert-${type}`;
-    alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
 
-    elements.messageContainer.appendChild(alert);
-}
+            elements.messageContainer.appendChild(alert);
+        }
 
         function showOtp(message) {
             setBusy(false);
