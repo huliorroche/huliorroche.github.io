@@ -284,3 +284,10 @@ document
 
     window.location.replace("home");
 };
+
+export const authState = {
+    session,
+    user,
+    tokenUser,
+    supabase
+};

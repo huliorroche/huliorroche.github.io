@@ -177,14 +177,19 @@
 
     </div>
 
-    <script>
-
+    <script type="module">  
+        import { authState } from "../login.js";
+        
         async function invokeEdenred(body = {}) {
+            const session = authState.session;
 
-            const session = window.state?.session;
-
-            if (!session) {
-                throw new Error("No existe sesión activa");
+            console.log(authState.session);
+            console.log(authState.user);
+            
+            if (!authState.session) {
+                throw new Error(
+                    "Esta funcionalidad requiere una sesión Supabase real."
+                );
             }
 
             const response = await fetch(
@@ -205,7 +210,7 @@
             };
         }
 
-        async function loadBalance() {
+        window.loadBalance = async function() {
 
             document.getElementById("loading").style.display = "block";
             document.getElementById("otpBox").style.display = "none";
@@ -235,7 +240,7 @@
             }
         }
 
-        async function validateOtp() {
+        window.validateOtp = async function() {
 
             const otp = document.getElementById("otp").value.trim();
 
