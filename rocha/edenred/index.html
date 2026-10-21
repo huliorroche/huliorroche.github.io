@@ -349,79 +349,95 @@
 
         async function invokeEdenred(body = {}) {
 
-            const session = getSession();
-
-            const response = await fetch(
-                FUNCTION_URL,
-                {
-                    method: "POST",
-
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization":
-                            `Bearer ${session.access_token}`
-                    },
-
-                    body: JSON.stringify(body)
-                }
-            );
-
-            const responseText =
-                await response.text();
-
-            console.log(
-                "Respuesta edenred-balance:",
-                response.status,
-                responseText
-            );
-
-            let data = {};
-
-            if (responseText) {
-
-                try {
-                    data = JSON.parse(
-                        responseText
-                    );
-                } catch {
-
-                    throw new Error(
-                        "La Edge Function no devolvió JSON válido. " +
-                        `HTTP ${response.status}.`
-                    );
-
-                }
-
+            if (requestInProgress) {
+                return {
+                    code: "REQUEST_ALREADY_RUNNING"
+                };
             }
 
-            if (
-                response.status === 409 &&
-                data.code === "OTP_REQUIRED"
-            ) {
-                return data;
-            }
+            requestInProgress = true;
 
-            if (!response.ok) {
+            try {
 
-                const error = new Error(
-                    data.error ||
-                    data.message ||
-                    `Error HTTP ${response.status}`
+                const session = getSession();
+
+                const response = await fetch(
+                    FUNCTION_URL,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type": "application/json",
+                            "Authorization":
+                                `Bearer ${session.access_token}`
+                        },
+
+                        body: JSON.stringify(body)
+                    }
                 );
 
-                error.responseStatus =
-                    response.status;
+                const responseText =
+                    await response.text();
 
-                error.responseCode =
-                    data.code;
+                console.log(
+                    "Respuesta edenred-balance:",
+                    response.status,
+                    responseText
+                );
 
-                error.responseDetails =
-                    data.details;
+                let data = {};
 
-                throw error;
+                if (responseText) {
+
+                    try {
+                        data =
+                            JSON.parse(responseText);
+                    } catch {
+
+                        throw new Error(
+                            "La Edge Function no devolvió JSON válido. " +
+                            `HTTP ${response.status}.`
+                        );
+
+                    }
+
+                }
+
+                if (
+                    response.status === 409 &&
+                    data.code === "OTP_REQUIRED"
+                ) {
+                    return data;
+                }
+
+                if (!response.ok) {
+
+                    const error =
+                        new Error(
+                            data.error ||
+                            data.message ||
+                            `Error HTTP ${response.status}`
+                        );
+
+                    error.responseStatus =
+                        response.status;
+
+                    error.responseCode =
+                        data.code;
+
+                    error.responseDetails =
+                        data.details;
+
+                    throw error;
+                }
+
+                return data;
+
+            } finally {
+
+                requestInProgress = false;
+
             }
-
-            return data;
         }
 
         function setStatus(type, text) {
@@ -679,6 +695,10 @@
                 return;
             }
 
+            if (requestInProgress) {
+                return;
+            }
+
             hideResults();
 
             showMessage("", "");
@@ -697,6 +717,13 @@
 
                 const data =
                     await invokeEdenred({});
+
+                if (
+                    data.code ===
+                    "REQUEST_ALREADY_RUNNING"
+                ) {
+                    return;
+                }
 
                 if (
                     data.code ===
@@ -770,6 +797,10 @@
                 return;
             }
 
+            if (requestInProgress) {
+                return;
+            }
+
             hideResults();
 
             showMessage("", "");
@@ -790,6 +821,13 @@
                     await invokeEdenred({
                         forceLogin: true
                     });
+
+                if (
+                    data.code ===
+                    "REQUEST_ALREADY_RUNNING"
+                ) {
+                    return;
+                }
 
                 if (
                     data.code ===
@@ -848,7 +886,12 @@
             }
         );
 
-        consultBalance();
+        if (!initialLoadExecuted) {
+
+            initialLoadExecuted = true;
+
+            consultBalance();
+        }
 
     </script>
 
