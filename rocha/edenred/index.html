@@ -444,26 +444,30 @@
             elements.emptyContainer.hidden = true;
         }
 
-        function hideOtp() {
-            elements.otpContainer.hidden = true;
-            elements.otpInput.value = "";
-        }
+        function hideResults() {
+    elements.tableContainer.hidden = true;
+    elements.emptyContainer.hidden = true;
+}
 
-        function showMessage(type, message) {
-            elements.messageContainer.replaceChildren();
+function hideOtp() {
+    elements.otpContainer.hidden = true;
+    elements.otpInput.value = "";
+}
 
-            if (!message) {
-                return;
-            }
+function showMessage(type, message) {
+    elements.messageContainer.replaceChildren();
 
-            const alert = document.createElement("div");
+    if (!message) {
+        return;
+    }
 
-            alert.className = `alert alert-${type}`;
-            alert.setAttribute("role", "alert");
-            alert.textContent = message;
+    const alert = document.createElement("div");
 
-            elements.messageContainer.appendChild(alert);
-        }
+    alert.className = `alert alert-${type}`;
+    alert.textContent = message;
+
+    elements.messageContainer.appendChild(alert);
+}
 
         function showOtp(message) {
             setBusy(false);
