@@ -54,7 +54,7 @@ if (!session && accessToken) {
 
         id: data.user_id,
 
-        email: "access-token",
+        email: null,
 
         user_metadata: {
 
