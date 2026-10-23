@@ -372,54 +372,63 @@ function parseLines(x) {
                     }
 
                     return {
-                        station:
-                            s.getAttribute('station'),
+    station: s.getAttribute('station'),
+    serve,
 
-                        serve,
+    /*
+     * Desplazamiento físico opcional del nodo.
+     */
+    port: (
+        s.getAttribute('port') ||
+        'auto'
+    ).toLowerCase(),
 
-                        /*
-                         * Posición del nodo.
-                         * Se conserva para Los Corazones.
-                         */
-                        port: (
-                            s.getAttribute('port') ||
-                            'auto'
-                        ).toLowerCase(),
+    portDistance:
+        numberAttribute(
+            s,
+            'port-distance',
+            30
+        ),
 
-                        portDistance: numberAttribute(
-                            s,
-                            'port-distance',
-                            30
-                        ),
+    portLead:
+        numberAttribute(
+            s,
+            'port-lead',
+            38
+        ),
 
-                        /*
-                         * Dirección de aproximación al nodo.
-                         */
-                        entryPort: (
-                            s.getAttribute('entry-port') ||
-                            'auto'
-                        ).toLowerCase(),
+    /*
+     * Dirección del tramo inmediatamente anterior
+     * al nodo.
+     */
+    entryPort: (
+        s.getAttribute('entry-port') ||
+        'auto'
+    ).toLowerCase(),
 
-                        entryLead: numberAttribute(
-                            s,
-                            'entry-lead',
-                            38
-                        ),
+    entryLead:
+        numberAttribute(
+            s,
+            'entry-lead',
+            38
+        ),
 
-                        /*
-                         * Dirección de salida del nodo.
-                         */
-                        exitPort: (
-                            s.getAttribute('exit-port') ||
-                            'auto'
-                        ).toLowerCase(),
+    /*
+     * Dirección mantenida después del nodo.
+     */
+    exitPort: (
+        s.getAttribute('exit-port') ||
+        'auto'
+    ).toLowerCase(),
 
-                        exitLead: numberAttribute(
-                            s,
-                            'exit-lead',
-                            38
-                        )
-                    };
+    exitLead:
+        numberAttribute(
+            s,
+            'exit-lead',
+            38
+        )
+};
+
                 })
         }))
         .filter(line => line.stops.length > 1);
