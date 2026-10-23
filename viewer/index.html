@@ -64,17 +64,25 @@ function expandedRoutePoints(line){
     const availableIn=V.len(V.sub(station,previous));
     const availableOut=V.len(V.sub(next,station));
     const straight=Math.min(line.lead,availableIn*0.22,availableOut*0.22);
-    /* La línea atraviesa la estación manteniendo la dirección de llegada.
-       El cambio de dirección comienza después del tramo recto `lead`. */
-    const bendStart=V.add(station,V.mul(incoming,straight));
-    out.push(station);
-    if(V.len(V.sub(bendStart,station))>0.5)out.push(bendStart);
-    /* Si llegada y salida son casi opuestas, no añadimos un segundo punto
-       que pueda generar un lazo. La polilínea conecta desde bendStart. */
-    const dot=incoming.x*outgoing.x+incoming.y*outgoing.y;
-    if(dot>-0.85){
-      const bendEnd=V.add(bendStart,V.mul(outgoing,Math.min(straight*0.55,18)));
-      if(V.len(V.sub(bendEnd,bendStart))>0.5)out.push(bendEnd);
+    const previousId=line.stops[i-1].station;
+    const stationId=line.stops[i].station;
+    const nextId=line.stops[i+1].station;
+    const incomingCount=(groups.get(key(previousId,stationId))||[]).length;
+    const outgoingCount=(groups.get(key(stationId,nextId))||[]).length;
+
+    if(outgoingCount>incomingCount){
+      /* El corredor principal está después de la estación en el orden XML.
+         Visualmente la línea debe prolongar dicho corredor al otro lado de
+         la estación y hacer allí el giro hacia el ramal anterior. */
+      const beforeStation=V.add(station,V.mul(outgoing,-straight));
+      if(V.len(V.sub(beforeStation,out.at(-1)))>0.5)out.push(beforeStation);
+      out.push(station);
+    }else{
+      /* El corredor principal llega por el tramo anterior: se mantiene su
+         dirección más allá de la estación antes de iniciar el giro. */
+      out.push(station);
+      const afterStation=V.add(station,V.mul(incoming,straight));
+      if(V.len(V.sub(afterStation,station))>0.5)out.push(afterStation);
     }
   }
   out.push(nodes.at(-1));

@@ -8,4 +8,8 @@
   <station id="corazones" name="Los Corazones" x="760" y="300" label="bottom"/>
   <station id="este" name="Este" x="900" y="300" label="right"/>
   <station id="sur" name="Sur" x="760" y="650" label="bottom"/>
+
+  <station id="muelleheredia" name="Muelle Heredia" x="1000" y="0" label="bottom"/>
+  <station id="paseodeloscuras" name="Paseo de los Curas" x="1100" y="0" label="bottom"/>
+  <station id="paseodeloscuras" name="Parque San Antonio" x="1200" y="0" label="bottom"/>
 </stations>
