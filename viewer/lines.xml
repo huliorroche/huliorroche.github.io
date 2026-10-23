@@ -25,6 +25,34 @@
   </line> -->
 
   <line
+      id="M260"
+      name="M-260 Málaga - Rincón de la Victoria - Vélez"
+      color="#005c96"
+      width="11"
+      gap="9"
+      radius="14"
+      lead="36">
+      <stop station="1"/>
+      <stop station="1333" serve="none" entry-lead="50"/>
+      <stop station="2260"/>
+      <stop station="1417" serve="none"/>
+      <stop station="1418" serve="none"/>
+      <stop station="1419" serve="none"/>
+      <stop station="2108"/>
+      <stop station="1115" serve="none"/>
+      <stop station="1113" serve="none"/>
+      <stop station="2134"/>
+      <stop station="2208" serve="none"/>
+      <stop station="1112"/>
+      <stop station="1111" serve="none"/>
+      <stop station="1110"/>
+      <stop station="1420" serve="none"/>
+      <stop station="1109" serve="none"/>
+      <stop station="1108"/>
+
+  </line>
+
+   <line
       id="M160"
       name="M-160 Málaga - Rincón de la Victoria - Cotomar"
       color="#009640"
@@ -48,33 +76,7 @@
       <stop station="1110"/>
       <stop station="1420"/>
       <stop station="1109"/>
-
-  </line>
-
-  <line
-      id="M260"
-      name="M-260 Málaga - Rincón de la Victoria - Vélez"
-      color="#005c96"
-      width="11"
-      gap="9"
-      radius="14"
-      lead="36">
-      <stop station="1"/>
-      <stop station="1333" serve="none" entry-lead="50"/>
-      <stop station="2260"/>
-      <stop station="1417" serve="none"/>
-      <stop station="1418" serve="none"/>
-      <stop station="1419" serve="none"/>
-      <stop station="2108"/>
-      <stop station="1115" serve="none"/>
-      <stop station="1113" serve="none"/>
-      <stop station="2134"/>
-      <stop station="2208" serve="none"/>
-      <stop station="1112"/>
-      <stop station="1111" serve="none"/>
-      <stop station="1110"/>
-      <stop station="1420" serve="none"/>
-      <stop station="1109"/>
+      <stop station="1108"/>
 
   </line>
 </lines>
