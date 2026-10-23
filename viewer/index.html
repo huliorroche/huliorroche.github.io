@@ -301,125 +301,33 @@
                 }]))
             }
 
-            function numberAttribute(element, name, fallback) {
-    const value = element.getAttribute(name);
-
-    if (value === null || value.trim() === '') {
-        return fallback;
-    }
-
-    const parsed = Number(value);
-
-    return Number.isFinite(parsed)
-        ? parsed
-        : fallback;
-}
-
-function parseLines(xml) {
-    return [...xml.querySelectorAll('line')]
-        .map((lineElement, index) => ({
-            id:
-                lineElement.getAttribute('id') ||
-                `L${index}`,
-
-            name:
-                lineElement.getAttribute('name') ||
-                lineElement.getAttribute('id') ||
-                `Línea ${index + 1}`,
-
-            color:
-                lineElement.getAttribute('color') ||
-                '#64748b',
-
-            width: numberAttribute(
-                lineElement,
-                'width',
-                10
-            ),
-
-            gap: numberAttribute(
-                lineElement,
-                'gap',
-                8
-            ),
-
-            radius: numberAttribute(
-                lineElement,
-                'radius',
-                16
-            ),
-
-            lead: numberAttribute(
-                lineElement,
-                'lead',
-                32
-            ),
-
-            stops: [
-                ...lineElement.querySelectorAll('stop')
-            ].map(stopElement => {
-                let serve = (
-                    stopElement.getAttribute('serve') ||
-                    'both'
-                ).toLowerCase();
-
-                if (
-                    (
-                        stopElement.getAttribute('calls') ||
-                        ''
-                    ).toLowerCase() === 'false'
-                ) {
-                    serve = 'none';
-                }
-
-                return {
-                    station:
-                        stopElement.getAttribute('station'),
-
-                    serve,
-
-                    entryPort: (
-                        stopElement.getAttribute(
-                            'entry-port'
-                        ) ||
-                        'auto'
-                    ).toLowerCase(),
-
-                    entryDistance: numberAttribute(
-                        stopElement,
-                        'entry-distance',
-                        22
-                    ),
-
-                    entryLead: numberAttribute(
-                        stopElement,
-                        'entry-lead',
-                        38
-                    ),
-
-                    exitPort: (
-                        stopElement.getAttribute(
-                            'exit-port'
-                        ) ||
-                        'auto'
-                    ).toLowerCase(),
-
-                    exitDistance: numberAttribute(
-                        stopElement,
-                        'exit-distance',
-                        22
-                    ),
-
-                    exitLead: numberAttribute(
-                        stopElement,
-                        'exit-lead',
-                        38
-                    )
-                };
-            })
-        }))
-        .filter(line => line.stops.length > 1);
-}
+            function parseLines(x) {
+                return [...x.querySelectorAll('line')].map((n, i) => ({
+                    id: n.getAttribute('id') || `L${i}`,
+                    name: n.getAttribute('name') || n.getAttribute('id') || `Línea ${i + 1}`,
+                    color: n.getAttribute('color') || '#64748b',
+                    width: +n.getAttribute('width') || 10,
+                    gap: +n.getAttribute('gap') || 8,
+                    radius: +n.getAttribute('radius') || 16,
+                    lead: +n.getAttribute('lead') || 32,
+                    stops: [...n.querySelectorAll('stop')].map(s => {
+                        let serve = (s.getAttribute('serve') || 'both').toLowerCase();
+                        if ((s.getAttribute('calls') || '').toLowerCase() === 'false') serve = 'none';
+                        return {
+                            station: s.getAttribute('station'),
+                            serve,
+                            port: (
+                                s.getAttribute('port') ||
+                                'auto'
+                            ).toLowerCase(),
+                            portDistance:
+                                Number(s.getAttribute('port-distance')) || 30,
+                            portLead:
+                                Number(s.getAttribute('port-lead')) || 38
+                        };
+                    })
+                })).filter(l => l.stops.length > 1)
+            }
 
             function prepare() {
                 groups.clear();
@@ -467,13 +375,42 @@ function parseLines(xml) {
             }
 
             function routePoints(line) {
-    return line.stops.map(
-        (_, index) => nodePoint(
-            line,
-            index
-        )
-    );
-}
+                const points = [];
+
+                line.stops.forEach((stop, index) => {
+                    const node = nodePoint(line, index);
+                    const lead = explicitPortLeadPoint(line, index);
+
+                    const isFirst = index === 0;
+                    const isLast = index === line.stops.length - 1;
+
+                    if (lead && isFirst) {
+                        /*
+                         * La línea comienza en el nodo de la estación,
+                         * mantiene primero la dirección del puerto
+                         * y después continúa hacia el resto del recorrido.
+                         */
+                        points.push(node);
+                        points.push(lead);
+                        return;
+                    }
+
+                    if (lead && isLast) {
+                        /*
+                         * La línea llega primero al punto exterior
+                         * y después entra recta en la estación.
+                         */
+                        points.push(lead);
+                        points.push(node);
+                        return;
+                    }
+
+                    points.push(node);
+                });
+
+                return points;
+            }
+
 
             function edgeDirectionFromStation(stationId, otherId) {
                 const station = stations.get(stationId);
@@ -773,346 +710,127 @@ function parseLines(xml) {
                 return (groups.get(key(aId, bId)) || []).length;
             }
 
-            function portDirection(port) {
-    const diagonal = Math.SQRT1_2;
-
-    const directions = {
-        north: {
-            x: 0,
-            y: -1
-        },
-
-        northeast: {
-            x: diagonal,
-            y: -diagonal
-        },
-
-        east: {
-            x: 1,
-            y: 0
-        },
-
-        southeast: {
-            x: diagonal,
-            y: diagonal
-        },
-
-        south: {
-            x: 0,
-            y: 1
-        },
-
-        southwest: {
-            x: -diagonal,
-            y: diagonal
-        },
-
-        west: {
-            x: -1,
-            y: 0
-        },
-
-        northwest: {
-            x: -diagonal,
-            y: -diagonal
-        }
-    };
-
-    return directions[port] || null;
-}
-
-function entryPortPoint(line, index) {
-    const stop = line.stops[index];
-    const direction = portDirection(
-        stop.entryPort
-    );
-
-    if (!direction) {
-        return null;
-    }
-
-    const stationPoint = nodePoint(
-        line,
-        index
-    );
-
-    return V.add(
-        stationPoint,
-        V.mul(
-            direction,
-            stop.entryDistance
-        )
-    );
-}
-
-function entryLeadPoint(line, index) {
-    const stop = line.stops[index];
-    const direction = portDirection(
-        stop.entryPort
-    );
-
-    if (!direction) {
-        return null;
-    }
-
-    const stationPoint = nodePoint(
-        line,
-        index
-    );
-
-    return V.add(
-        stationPoint,
-        V.mul(
-            direction,
-            stop.entryDistance +
-                stop.entryLead
-        )
-    );
-}
-
-function exitPortPoint(line, index) {
-    const stop = line.stops[index];
-    const direction = portDirection(
-        stop.exitPort
-    );
-
-    if (!direction) {
-        return null;
-    }
-
-    const stationPoint = nodePoint(
-        line,
-        index
-    );
-
-    return V.add(
-        stationPoint,
-        V.mul(
-            direction,
-            stop.exitDistance
-        )
-    );
-}
-
-function exitLeadPoint(line, index) {
-    const stop = line.stops[index];
-    const direction = portDirection(
-        stop.exitPort
-    );
-
-    if (!direction) {
-        return null;
-    }
-
-    const stationPoint = nodePoint(
-        line,
-        index
-    );
-
-    return V.add(
-        stationPoint,
-        V.mul(
-            direction,
-            stop.exitDistance +
-                stop.exitLead
-        )
-    );
-}
-
-
             function expandedRoutePoints(line) {
-    const result = [];
+                const nodes = [];
 
-    for (
-        let index = 0;
-        index < line.stops.length;
-        index++
-    ) {
-        const stop = line.stops[index];
+                for (let index = 0; index < line.stops.length; index++) {
+                    const stop = line.stops[index];
+                    const stationPoint = nodePoint(line, index);
+                    const leadPoint = explicitPortLeadPoint(line, index);
 
-        const stationPoint = nodePoint(
-            line,
-            index
-        );
+                    const isFirst = index === 0;
+                    const isLast = index === line.stops.length - 1;
 
-        const entryLead = entryLeadPoint(
-            line,
-            index
-        );
+                    /*
+                     * Puerto explícito en el inicio de la línea.
+                     */
+                    if (leadPoint && isFirst) {
+                        nodes.push(stationPoint);
+                        nodes.push(leadPoint);
+                        continue;
+                    }
 
-        const entryPort = entryPortPoint(
-            line,
-            index
-        );
+                    /*
+                     * Puerto explícito al final de la línea.
+                     */
+                    if (leadPoint && isLast) {
+                        nodes.push(leadPoint);
+                        nodes.push(stationPoint);
+                        continue;
+                    }
 
-        const exitPort = exitPortPoint(
-            line,
-            index
-        );
+                    nodes.push(stationPoint);
 
-        const exitLead = exitLeadPoint(
-            line,
-            index
-        );
+                    /*
+                     * Las estaciones inicial y final no necesitan
+                     * prolongación automática.
+                     */
+                    if (isFirst || isLast) {
+                        continue;
+                    }
 
-        const isFirst = index === 0;
+                    const previousId = line.stops[index - 1].station;
+                    const stationId = stop.station;
+                    const nextId = line.stops[index + 1].station;
 
-        const isLast =
-            index === line.stops.length - 1;
+                    const previousPoint = nodePoint(line, index - 1);
+                    const nextPoint = nodePoint(line, index + 1);
 
-        /*
-         * Puntos de aproximación.
-         *
-         * El orden de circulación es:
-         *
-         * entryLead
-         * entryPort
-         * estación
-         * exitPort
-         * exitLead
-         */
+                    const incomingCount = edgeCount(
+                        previousId,
+                        stationId
+                    );
 
-        if (!isFirst && entryLead) {
-            result.push(entryLead);
-        }
+                    const outgoingCount = edgeCount(
+                        stationId,
+                        nextId
+                    );
 
-        if (!isFirst && entryPort) {
-            result.push(entryPort);
-        }
+                    const incomingDirection = V.unit(
+                        V.sub(
+                            stationPoint,
+                            previousPoint
+                        )
+                    );
 
-        result.push(stationPoint);
+                    const outgoingDirection = V.unit(
+                        V.sub(
+                            nextPoint,
+                            stationPoint
+                        )
+                    );
 
-        if (!isLast && exitPort) {
-            result.push(exitPort);
-        }
+                    const incomingLength = V.len(
+                        V.sub(
+                            stationPoint,
+                            previousPoint
+                        )
+                    );
 
-        if (!isLast && exitLead) {
-            result.push(exitLead);
-        }
+                    const outgoingLength = V.len(
+                        V.sub(
+                            nextPoint,
+                            stationPoint
+                        )
+                    );
 
-        /*
-         * Si no hay configuración explícita en una
-         * estación intermedia, se conserva la lógica
-         * automática del corredor dominante.
-         */
-        const hasExplicitEntry =
-            stop.entryPort !== 'auto';
+                    const straight = Math.min(
+                        line.lead,
+                        incomingLength * 0.22,
+                        outgoingLength * 0.22
+                    );
 
-        const hasExplicitExit =
-            stop.exitPort !== 'auto';
+                    /*
+                     * El corredor compartido por más líneas es el
+                     * que mantiene su dirección después de la estación.
+                     */
+                    const continuationDirection =
+                        incomingCount >= outgoingCount
+                            ? incomingDirection
+                            : outgoingDirection;
 
-        if (
-            isFirst ||
-            isLast ||
-            hasExplicitEntry ||
-            hasExplicitExit
-        ) {
-            continue;
-        }
+                    const continuation = V.add(
+                        stationPoint,
+                        V.mul(
+                            continuationDirection,
+                            straight
+                        )
+                    );
 
-        const previousId =
-            line.stops[index - 1].station;
+                    if (
+                        V.len(
+                            V.sub(
+                                continuation,
+                                stationPoint
+                            )
+                        ) > 0.5
+                    ) {
+                        nodes.push(continuation);
+                    }
+                }
 
-        const stationId =
-            stop.station;
-
-        const nextId =
-            line.stops[index + 1].station;
-
-        const previousPoint = nodePoint(
-            line,
-            index - 1
-        );
-
-        const nextPoint = nodePoint(
-            line,
-            index + 1
-        );
-
-        const incomingCount = edgeCount(
-            previousId,
-            stationId
-        );
-
-        const outgoingCount = edgeCount(
-            stationId,
-            nextId
-        );
-
-        const incomingDirection = V.unit(
-            V.sub(
-                stationPoint,
-                previousPoint
-            )
-        );
-
-        const outgoingDirection = V.unit(
-            V.sub(
-                nextPoint,
-                stationPoint
-            )
-        );
-
-        const incomingLength = V.len(
-            V.sub(
-                stationPoint,
-                previousPoint
-            )
-        );
-
-        const outgoingLength = V.len(
-            V.sub(
-                nextPoint,
-                stationPoint
-            )
-        );
-
-        const straight = Math.min(
-            line.lead,
-            incomingLength * 0.22,
-            outgoingLength * 0.22
-        );
-
-        const continuationDirection =
-            incomingCount >= outgoingCount
-                ? incomingDirection
-                : outgoingDirection;
-
-        const continuation = V.add(
-            stationPoint,
-            V.mul(
-                continuationDirection,
-                straight
-            )
-        );
-
-        if (
-            V.len(
-                V.sub(
-                    continuation,
-                    stationPoint
-                )
-            ) > 0.5
-        ) {
-            result.push(continuation);
-        }
-    }
-
-    return result.filter(
-        (point, index, points) => {
-            if (index === 0) {
-                return true;
+                return nodes;
             }
-
-            return V.len(
-                V.sub(
-                    point,
-                    points[index - 1]
-                )
-            ) > 0.5;
-        }
-    );
-}
 
             function roundedPolyline(points, radius) {
                 const pts = points.filter((p, i, a) => !i || V.len(V.sub(p, a[i - 1])) > 0.5);
