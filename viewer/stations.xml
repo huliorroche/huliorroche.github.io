@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stations>
-  <station id="1" name="Estación de Autobuses" x="900" y="500" label="top"/>
+  <station id="1" name="Estación de Autobuses" x="950" y="500" label="top"/>
 
   <station id="1333" name="C.A.R.E." x="1000" y="700" label="bottom"/>
   <station id="2260" name="Terminal Muelle Heredia" x="1150" y="700" label="bottom"/>
