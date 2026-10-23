@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stations>
-  <!-- x/y son coordenadas esquemáticas en el lienzo SVG. label: top, bottom, left, right o auto -->
-  <station id="central" name="Central" x="450" y="300" label="top"/>
-  <station id="norte" name="Norte" x="450" y="100" label="top"/>
-  <station id="museo" name="Museo" x="450" y="200" label="right"/>
-  <station id="rio" name="Río" x="450" y="410" label="right"/>
-  <station id="sur" name="Sur" x="450" y="540" label="bottom"/>
-  <station id="oeste" name="Oeste" x="180" y="300" label="left"/>
-  <station id="parque" name="Parque" x="300" y="300" label="top"/>
-  <station id="universidad" name="Universidad" x="600" y="300" label="top"/>
-  <station id="aeropuerto" name="Aeropuerto" x="760" y="300" label="right"/>
-  <station id="puerto" name="Puerto" x="650" y="450" label="bottom"/>
+  <station id="oeste" name="Oeste" x="130" y="310" label="left"/>
+  <station id="ctm" name="Marcelino Camacho - CTM" x="310" y="310" label="bottom"/>
+  <station id="metro" name="Marcelino Camacho - Metro" x="310" y="205" label="top"/>
+  <station id="central" name="Central" x="510" y="310" label="top"/>
+  <station id="asperones" name="Marcelino Camacho - Asperones" x="690" y="310" label="bottom"/>
+  <station id="este" name="Este" x="850" y="310" label="right"/>
+  <station id="norte" name="Norte" x="510" y="100" label="top"/>
+  <station id="sur" name="Sur" x="510" y="520" label="bottom"/>
 </stations>

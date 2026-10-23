@@ -1,31 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lines>
-  <!-- calls="false" significa que la línea pasa por la estación, pero no para -->
-  <line id="L1" name="Línea Azul" color="#2563eb" width="10">
-    <stop station="norte"/>
-    <stop station="museo"/>
-    <stop station="central"/>
-    <stop station="rio"/>
-    <stop station="sur"/>
+  <!-- serve: both (por defecto), forward, reverse o none -->
+  <line id="L15" name="Línea 15" color="#3f8f48" width="12">
+    <stop station="oeste"/><stop station="ctm"/><stop station="central"/><stop station="asperones"/><stop station="este"/>
   </line>
-  <line id="L2" name="Línea Roja" color="#ef4444" width="10">
-    <stop station="oeste"/>
-    <stop station="parque"/>
-    <stop station="central"/>
-    <stop station="universidad"/>
-    <stop station="aeropuerto"/>
+  <line id="L21" name="Línea 21" color="#4f7fca" width="12">
+    <stop station="oeste"/><stop station="ctm" serve="forward"/><stop station="central"/><stop station="asperones" serve="reverse"/><stop station="este"/>
   </line>
-  <line id="L3" name="Expreso Verde" color="#16a34a" width="10">
-    <stop station="oeste"/>
-    <stop station="parque" calls="false"/>
-    <stop station="central" calls="false"/>
-    <stop station="universidad"/>
-    <stop station="aeropuerto"/>
+  <line id="L8" name="Línea 8" color="#f5c45e" width="12">
+    <stop station="oeste"/><stop station="ctm" serve="none"/><stop station="central"/><stop station="asperones" serve="none"/><stop station="este"/>
   </line>
-  <line id="L4" name="Línea Violeta" color="#9333ea" width="10">
-    <stop station="norte"/>
-    <stop station="museo" calls="false"/>
-    <stop station="central"/>
-    <stop station="puerto"/>
+  <line id="LN" name="Línea Norte-Sur" color="#172f76" width="12">
+    <stop station="norte"/><stop station="metro"/><stop station="central"/><stop station="sur"/>
   </line>
 </lines>
