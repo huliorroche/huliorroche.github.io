@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <lines>
   <!-- serve="none": pasa sin parar; forward/reverse: servicio en un unico sentido -->
-  <line id="L4" name="Línea 4" color="#183272" width="11" gap="9" radius="14" lead="36">
+  <!-- <line id="L4" name="Línea 4" color="#183272" width="11" gap="9" radius="14" lead="36">
     <stop station="norte"/><stop station="metro"/><stop station="kafka"/><stop station="justicia"/><stop station="fycma"/><stop station="sur"/>
   </line>
   <line id="L11" name="Línea 11" color="#b7443c" width="11" gap="9" radius="14" lead="36">
@@ -9,9 +9,9 @@
   </line>
   <line id="L25" name="Línea 25" color="#78bf91" width="11" gap="9" radius="14" lead="36">
     <stop station="metro"/><stop station="kafka" serve="none"/><stop station="justicia"/><stop station="corazones" serve="forward"/><stop station="este"/>
-  </line>
+  </line> -->
 
-  <line id="C" name="Consorcio" color="#b97808" width="11" gap="9" radius="14" lead="36">
+  <!-- <line id="C" name="Consorcio" color="#b97808" width="11" gap="9" radius="14" lead="36">
     <stop station="corazones" exit-port="north" exit-lead="50" port="north" port-distance="30" />
     <stop
     station="muelleheredia"
@@ -22,5 +22,42 @@
 />
     <stop station="paseodeloscuras"/>
     <stop station="sanantonio"/>
+  </line> -->
+
+  <line
+      id="M160"
+      name="M-160 Málaga - Rincón de la Victoria - Cotomar"
+      color="#009640"
+      width="11"
+      gap="9"
+      radius="14"
+      lead="36">
+
+      <stop station="1333"/>
+      <stop station="2260"/>
+      <stop station="1417"/>
+      <stop station="1418"/>
+      <stop station="1419"/>
+      <stop station="2108"/>
+      <stop station="1115"/>
+      <stop station="1113"/>
+      <stop station="2134"/>
+      <stop station="2208"/>
+      <stop station="1112"/>
+      <stop station="1111"/>
+      <stop station="1110"/>
+      <stop station="1420"/>
+      <stop station="1109"/>
+      <stop station="1108"/>
+      <stop station="1106"/>
+      <stop station="2227"/>
+      <stop station="1105"/>
+      <stop station="1104"/>
+      <stop station="1107"/>
+      <stop station="1103"/>
+      <stop station="1102"/>
+      <stop station="1101"/>
+      <stop station="2188"/>
+
   </line>
 </lines>

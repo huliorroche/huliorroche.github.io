@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <stations>
-  <station id="norte" name="Norte" x="500" y="90" label="top"/>
-  <station id="metro" name="Gregorio Prieto - Metro" x="300" y="195" label="top"/>
-  <station id="kafka" name="Gregorio Prieto - Franz Kafka" x="300" y="300" label="right"/>
-  <station id="justicia" name="Ciudad de la Justicia" x="300" y="480" label="left"/>
-  <station id="fycma" name="FYCMA" x="520" y="650" label="bottom"/>
-  <station id="corazones" name="Los Corazones" x="760" y="300" label="bottom"/>
-  <station id="este" name="Este" x="900" y="300" label="right"/>
-  <station id="sur" name="Sur" x="760" y="650" label="bottom"/>
-
-  <station id="muelleheredia" name="Muelle Heredia" x="1000" y="0" label="bottom"/>
-  <station id="paseodeloscuras" name="Paseo de los Curas" x="1100" y="0" label="bottom"/>
-  <station id="sanantonio" name="Parque San Antonio" x="1200" y="0" label="bottom"/>
+  <station id="1333" name="C.A.R.E." x="1000" y="700" label="bottom"/>
+  <station id="2260" name="Terminal Muelle Heredia" x="1100" y="700" label="bottom"/>
+  <station id="1417" name="Parque San Antonio" x="1200" y="700" label="bottom"/>
+  <station id="1418" name="Baños del Carmen" x="1300" y="700" label="bottom"/>
+  <station id="1419" name="Las Acacias" x="1400" y="700" label="bottom"/>
+  <station id="2108" name="El Palo" x="1500" y="700" label="bottom"/>
+  <station id="1115" name="El Candado" x="1600" y="700" label="bottom"/>
+  <station id="1113" name="Gasolinera El Candado" x="1700" y="700" label="bottom"/>
+  <station id="2134" name="La Araña" x="1800" y="700" label="bottom"/>
+  <station id="2208" name="Don Miguel" x="1900" y="700" label="bottom"/>
+  <station id="1112" name="Iglesia La Cala" x="2000" y="700" label="bottom"/>
+  <station id="1111" name="Gasolinera La Cala" x="2100" y="700" label="bottom"/>
+  <station id="1110" name="Cantal Bajo" x="2200" y="700" label="bottom"/>
+  <station id="1420" name="Posada del Mar" x="2300" y="700" label="bottom"/>
+  <station id="1109" name="Iglesia" x="2400" y="700" label="bottom"/>
+  <station id="1108" name="Jardines de la Estación" x="2500" y="700" label="bottom"/>
+  <station id="1106" name="Instituto" x="2600" y="700" label="bottom"/>
+  <station id="2227" name="Gran Sol (Cotomar)" x="2700" y="700" label="bottom"/>
+  <station id="1105" name="El Rosal" x="2800" y="700" label="bottom"/>
+  <station id="1104" name="Tres Sietes" x="2900" y="700" label="bottom"/>
+  <station id="1107" name="Plaza Costa del Sol" x="3000" y="700" label="bottom"/>
+  <station id="1103" name="La Vaguada" x="3100" y="700" label="bottom"/>
+  <station id="1102" name="Lo Cea" x="3200" y="700" label="bottom"/>
+  <station id="1101" name="Ceuta y Melilla" x="3300" y="700" label="bottom"/>
+  <station id="2188" name="Rincón Sol" x="3400" y="700" label="bottom"/>
 </stations>
