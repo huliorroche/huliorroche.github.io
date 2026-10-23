@@ -11,5 +11,5 @@
 
   <station id="muelleheredia" name="Muelle Heredia" x="1000" y="0" label="bottom"/>
   <station id="paseodeloscuras" name="Paseo de los Curas" x="1100" y="0" label="bottom"/>
-  <station id="paseodeloscuras" name="Parque San Antonio" x="1200" y="0" label="bottom"/>
+  <station id="sanantonio" name="Parque San Antonio" x="1200" y="0" label="bottom"/>
 </stations>
