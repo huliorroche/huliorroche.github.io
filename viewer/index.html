@@ -1,23 +1,663 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RailMap</title><style>
-:root{--bg:#f5f7fb;--ink:#111827;--panel:#fffffff2;--border:#d6dbe5;--grid:#0f17240b}@media(prefers-color-scheme:dark){:root{--bg:#0c1220;--ink:#f8fafc;--panel:#111827f2;--border:#334155;--grid:#ffffff0b}}*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;font-family:Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg)}.app{height:100%;display:grid;grid-template-rows:60px 1fr}.bar{display:flex;align-items:center;gap:9px;padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--border);z-index:2}.brand{font-weight:850;font-size:20px;margin-right:auto}.brand span{color:#4f46e5}.bar input,.bar button{height:38px;border:1px solid var(--border);border-radius:10px;background:transparent;color:var(--ink);padding:0 12px}.bar input{width:min(290px,34vw)}.bar button{cursor:pointer}.bar .primary{background:var(--ink);color:var(--bg)}.stage{position:relative;overflow:hidden;background-image:radial-gradient(circle,var(--grid) 1px,transparent 1px);background-size:24px 24px}svg{width:100%;height:100%;display:block;touch-action:none;cursor:grab}svg.dragging{cursor:grabbing}.halo,.line{fill:none;stroke-linecap:round;stroke-linejoin:round}.halo{stroke:var(--bg)}.label{fill:var(--ink);font-size:16px;font-weight:750;paint-order:stroke;stroke:var(--bg);stroke-width:6px;stroke-linejoin:round}.ring{fill:var(--bg);stroke-width:6}.hit{fill:transparent}.route.dim,.station.dim{opacity:.12}.station.match .label{fill:#f59e0b}.legend{position:absolute;left:16px;bottom:16px;padding:10px;width:250px;max-height:38%;overflow:auto;border:1px solid var(--border);border-radius:14px;background:var(--panel);box-shadow:0 16px 40px #0f172426}.legend h2{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:2px 6px 7px}.legend button{display:flex;width:100%;gap:9px;align-items:center;border:0;border-radius:9px;background:transparent;color:var(--ink);padding:8px;cursor:pointer}.sw{width:28px;height:7px;border-radius:9px}.status,.tip{position:absolute;z-index:3;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:10px 13px;box-shadow:0 12px 36px #0f17242e;font-size:13px}.status{top:14px;left:50%;transform:translateX(-50%)}.tip{pointer-events:none;max-width:280px}.status[hidden],.tip[hidden]{display:none}@media(max-width:680px){.bar input{position:absolute;top:68px;left:12px;width:calc(100% - 24px);z-index:4;background:var(--panel)}}
-</style></head><body><main class="app"><header class="bar"><div class="brand"><span>Rail</span>Map</div><input id="search" placeholder="Buscar estación…"><button id="out">−</button><button id="in">+</button><button id="fit" class="primary">Centrar</button></header><section id="stage" class="stage"><svg id="map"><g id="view"></g></svg><div id="status" class="status">Cargando…</div><aside id="legend" class="legend"><h2>Líneas</h2></aside><div id="tip" class="tip" hidden></div></section></main><script>
-(()=>{'use strict';const NS='http://www.w3.org/2000/svg',$=s=>document.querySelector(s),svg=$('#map'),view=$('#view'),stage=$('#stage'),legend=$('#legend'),status=$('#status'),tip=$('#tip');let S=new Map,L=[],EMap=new Map,slots=new Map,stationAxes=new Map,bounds,cam={x:0,y:0,s:1},drag;
-const X=(n,a={},t='')=>{const e=document.createElementNS(NS,n);for(const[k,v]of Object.entries(a))e.setAttribute(k,v);if(t)e.textContent=t;return e},esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),K=(a,b)=>[a,b].sort().join('|'),U=(a,b)=>{const x=b.x-a.x,y=b.y-a.y,d=Math.hypot(x,y)||1;return{x:x/d,y:y/d}},N=u=>({x:-u.y,y:u.x}),P=(p,u,d)=>({x:p.x+u.x*d,y:p.y+u.y*d});
-async function xml(f){const r=await fetch(f,{cache:'no-store'});if(!r.ok)throw Error(`${f}: HTTP ${r.status}`);const x=new DOMParser().parseFromString(await r.text(),'application/xml');if(x.querySelector('parsererror'))throw Error(`${f}: XML no válido`);return x}
-function parseS(x){return new Map([...x.querySelectorAll('station')].map(n=>[n.getAttribute('id'),{id:n.getAttribute('id'),name:n.getAttribute('name')||n.getAttribute('id'),x:+n.getAttribute('x'),y:+n.getAttribute('y'),label:n.getAttribute('label')||'auto'}]))}
-function parseL(x){return[...x.querySelectorAll('line')].map((n,i)=>({id:n.getAttribute('id')||`L${i}`,name:n.getAttribute('name')||n.getAttribute('id'),color:n.getAttribute('color')||'#64748b',width:+n.getAttribute('width')||10,gap:+n.getAttribute('gap')||8,radius:+n.getAttribute('radius')||18,lead:+n.getAttribute('lead')||42,stops:[...n.querySelectorAll('stop')].map(s=>{let serve=(s.getAttribute('serve')||'both').toLowerCase();if((s.getAttribute('calls')||'').toLowerCase()==='false')serve='none';return{station:s.getAttribute('station'),serve}})})).filter(l=>l.stops.length>1)}
-function prepare(){EMap.clear();for(const l of L)l.stops.slice(0,-1).forEach((s,i)=>{const a=s.station,b=l.stops[i+1].station,k=K(a,b);if(!EMap.has(k))EMap.set(k,[]);EMap.get(k).push(l.id)});for(const ids of EMap.values())ids.sort();slots.clear();stationAxes.clear();for(const s of S.values()){const ids=L.filter(l=>l.stops.some(x=>x.station===s.id)).map(l=>l.id).sort();const maxW=Math.max(...ids.map(id=>L.find(l=>l.id===id).width),10),pitch=maxW+12;ids.forEach((id,i)=>slots.set(`${s.id}|${id}`,(i-(ids.length-1)/2)*pitch));const incident=[];for(const [k,edgeIds] of EMap){const [a,b]=k.split('|');if(a===s.id||b===s.id){const other=S.get(a===s.id?b:a);if(other)incident.push({count:edgeIds.length,length:Math.hypot(other.x-s.x,other.y-s.y),axis:N(U(s,other))})}}incident.sort((a,b)=>b.count-a.count||b.length-a.length);let axis=incident[0]?.axis||{x:1,y:0};if(axis.x<-.001||(Math.abs(axis.x)<.001&&axis.y<0))axis={x:-axis.x,y:-axis.y};stationAxes.set(s.id,axis)}}
-function edgeLane(l,a,b){const ids=EMap.get(K(a,b))||[l.id],A=S.get(a),B=S.get(b),u=U(A,B),n=N(u),pitch=Math.max(...ids.map(id=>L.find(x=>x.id===id)?.width||10))+12,d=(ids.indexOf(l.id)-(ids.length-1)/2)*pitch;return{x:n.x*d,y:n.y*d}}
-function stationLane(l,i){const s=S.get(l.stops[i].station),axis=stationAxes.get(s.id)||{x:1,y:0},d=slots.get(`${s.id}|${l.id}`)||0;return{x:s.x+axis.x*d,y:s.y+axis.y*d}}
-function segment(l,i){const A=S.get(l.stops[i].station),B=S.get(l.stops[i+1].station),a=stationLane(l,i),b=stationLane(l,i+1),o=edgeLane(l,A.id,B.id),ea={x:A.x+o.x,y:A.y+o.y},eb={x:B.x+o.x,y:B.y+o.y},u=U(A,B),lead=Math.min(l.lead,Math.hypot(B.x-A.x)*.25),a1=P(a,u,lead),b1=P(b,u,-lead),ea1=P(ea,u,lead),eb1=P(eb,u,-lead);/* Un único puerto por línea y estación evita saltos entre el tramo entrante y el saliente. */return[a,a1,ea1,eb1,b1,b].filter((p,i,v)=>!i||Math.hypot(p.x-v[i-1].x,p.y-v[i-1].y)>.5)}
-function roundPath(p,r){let d=`M${p[0].x} ${p[0].y}`;for(let i=1;i<p.length-1;i++){const a=p[i-1],b=p[i],c=p[i+1],ab=Math.hypot(b.x-a.x,b.y-a.y),bc=Math.hypot(c.x-b.x,c.y-b.y);if(ab<1||bc<1)continue;const rr=Math.min(r,ab*.38,bc*.38),q=P(b,U(b,a),rr),z=P(b,U(b,c),rr);d+=` L${q.x} ${q.y} Q${b.x} ${b.y} ${z.x} ${z.y}`}const z=p.at(-1);return d+` L${z.x} ${z.y}`}
-function linePath(l){let p=[];for(let i=0;i<l.stops.length-1;i++){const q=segment(l,i);p.push(...(i?q.slice(1):q))}return roundPath(p,l.radius)}
-function arrow(g,p,v,color,side){const u={x:v.x*side,y:v.y*side},n=N(u),b=P(p,u,-14);g.append(X('polygon',{points:`${p.x+u.x*15},${p.y+u.y*15} ${b.x+n.x*10},${b.y+n.y*10} ${b.x+n.x*4},${b.y+n.y*4} ${p.x-u.x*3},${p.y-u.y*3} ${b.x-n.x*4},${b.y-n.y*4} ${b.x-n.x*10},${b.y-n.y*10}`,fill:color}))}
-function marker(g,l,i){const st=l.stops[i];if(st.serve==='none')return;const p=stationLane(l,i),v=i<l.stops.length-1?U(p,segment(l,i)[1]):U(segment(l,i-1).at(-2),p);if(st.serve==='forward')arrow(g,p,v,l.color,1);if(st.serve==='reverse')arrow(g,p,v,l.color,-1);g.append(X('circle',{cx:p.x,cy:p.y,r:9,stroke:l.color,'class':'ring'}))}
-function render(){view.replaceChildren();prepare();const rg=X('g'),sg=X('g');view.append(rg,sg);for(const l of L){const d=linePath(l),g=X('g',{'class':'route','data-id':l.id});g.append(X('path',{d,'stroke-width':l.width+6,'class':'halo'}),X('path',{d,stroke:l.color,'stroke-width':l.width,'class':'line'}));l.stops.forEach((_,i)=>marker(g,l,i));rg.append(g)}for(const s of S.values()){const g=X('g',{'class':'station','data-id':s.id,'data-name':s.name.toLowerCase()}),side=s.label==='auto'?'top':s.label,pos={top:[s.x,s.y-34,'middle'],bottom:[s.x,s.y+46,'middle'],left:[s.x-34,s.y+6,'end'],right:[s.x+34,s.y+6,'start']}[side];g.append(X('text',{x:pos[0],y:pos[1],'text-anchor':pos[2],'class':'label'},s.name));const h=X('circle',{cx:s.x,cy:s.y,r:34,'class':'hit'});h.onpointermove=e=>showTip(e,s);h.onpointerleave=()=>tip.hidden=true;g.append(h);sg.append(g)}buildLegend()}
-function showTip(e,s){const u=L.flatMap(l=>l.stops.filter(x=>x.station===s.id).map(x=>({...x,line:l}))),n=t=>u.filter(x=>x.serve===t).map(x=>x.line.name);tip.innerHTML=`<b>${esc(s.name)}</b>${n('both').length?`<br><small>Ambos sentidos: ${esc(n('both').join(', '))}</small>`:''}${n('forward').length?`<br><small>Solo sentido de línea: ${esc(n('forward').join(', '))}</small>`:''}${n('reverse').length?`<br><small>Solo sentido contrario: ${esc(n('reverse').join(', '))}</small>`:''}${n('none').length?`<br><small>Pasan sin parar: ${esc(n('none').join(', '))}</small>`:''}`;const r=stage.getBoundingClientRect();tip.style.left=Math.min(e.clientX-r.left+12,r.width-290)+'px';tip.style.top=Math.min(e.clientY-r.top+12,r.height-135)+'px';tip.hidden=false}
-function buildLegend(){legend.querySelectorAll('button').forEach(x=>x.remove());for(const l of L){const b=document.createElement('button');b.innerHTML=`<i class="sw" style="background:${esc(l.color)}"></i>${esc(l.name)}`;b.onclick=()=>{const rs=[...document.querySelectorAll('.route')],clear=rs.some(x=>x.classList.contains('dim'))&&!rs.find(x=>x.dataset.id===l.id).classList.contains('dim');rs.forEach(x=>x.classList.toggle('dim',clear?false:x.dataset.id!==l.id))};legend.append(b)}}
-function calc(){const a=[...S.values()],xs=a.map(x=>x.x),ys=a.map(x=>x.y);bounds={minX:Math.min(...xs)-170,maxX:Math.max(...xs)+170,minY:Math.min(...ys)-130,maxY:Math.max(...ys)+130}}function transform(){view.setAttribute('transform',`translate(${cam.x} ${cam.y}) scale(${cam.s})`)}function fit(){const w=stage.clientWidth,h=stage.clientHeight,bw=bounds.maxX-bounds.minX,bh=bounds.maxY-bounds.minY;cam.s=Math.min((w-50)/bw,(h-50)/bh);cam.x=(w-bw*cam.s)/2-bounds.minX*cam.s;cam.y=(h-bh*cam.s)/2-bounds.minY*cam.s;transform()}function zoom(k,x=stage.clientWidth/2,y=stage.clientHeight/2){const ns=Math.max(.18,Math.min(5,cam.s*k)),wx=(x-cam.x)/cam.s,wy=(y-cam.y)/cam.s;cam.x=x-wx*ns;cam.y=y-wy*ns;cam.s=ns;transform()}
-svg.addEventListener('wheel',e=>{e.preventDefault();const r=svg.getBoundingClientRect();zoom(e.deltaY<0?1.12:.89,e.clientX-r.left,e.clientY-r.top)},{passive:false});svg.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y};svg.setPointerCapture(e.pointerId);svg.classList.add('dragging')};svg.onpointermove=e=>{if(drag){cam.x=drag.cx+e.clientX-drag.x;cam.y=drag.cy+e.clientY-drag.y;transform()}};svg.onpointerup=e=>{drag=null;svg.classList.remove('dragging')};$('#in').onclick=()=>zoom(1.25);$('#out').onclick=()=>zoom(.8);$('#fit').onclick=fit;$('#search').oninput=e=>{const q=e.target.value.trim().toLowerCase();document.querySelectorAll('.station').forEach(x=>x.classList.toggle('match',q&&x.dataset.name.includes(q)))};window.onresize=fit;
-(async()=>{try{const[a,b]=await Promise.all([xml('stations.xml'),xml('lines.xml')]);S=parseS(a);L=parseL(b);const bad=L.flatMap(l=>l.stops).filter(x=>!S.has(x.station));if(bad.length)throw Error('Hay estaciones no definidas');calc();render();requestAnimationFrame(fit);status.hidden=true}catch(e){status.innerHTML=`<b>No se pudo cargar</b><br>${esc(e.message)}`}})()})();
-</script></body></html>
+<!doctype html>
+<html lang="es">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>RailMap</title>
+    <style>
+      :root {
+        --bg: #f5f7fb;
+        --ink: #111827;
+        --panel: #fffffff2;
+        --border: #d6dbe5;
+        --grid: #0f17240b
+      }
+
+      @media(prefers-color-scheme:dark) {
+        :root {
+          --bg: #0c1220;
+          --ink: #f8fafc;
+          --panel: #111827f2;
+          --border: #334155;
+          --grid: #ffffff0b
+        }
+      }
+
+      * {
+        box-sizing: border-box
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family: Inter, system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--bg)
+      }
+
+      .app {
+        height: 100%;
+        display: grid;
+        grid-template-rows: 60px 1fr
+      }
+
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 10px 16px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        z-index: 2
+      }
+
+      .brand {
+        font-weight: 850;
+        font-size: 20px;
+        margin-right: auto
+      }
+
+      .brand span {
+        color: #4f46e5
+      }
+
+      .bar input,
+      .bar button {
+        height: 38px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: transparent;
+        color: var(--ink);
+        padding: 0 12px
+      }
+
+      .bar input {
+        width: min(290px, 34vw)
+      }
+
+      .bar button {
+        cursor: pointer
+      }
+
+      .bar .primary {
+        background: var(--ink);
+        color: var(--bg)
+      }
+
+      .stage {
+        position: relative;
+        overflow: hidden;
+        background-image: radial-gradient(circle, var(--grid) 1px, transparent 1px);
+        background-size: 24px 24px
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        touch-action: none;
+        cursor: grab
+      }
+
+      svg.dragging {
+        cursor: grabbing
+      }
+
+      .halo,
+      .line {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round
+      }
+
+      .halo {
+        stroke: var(--bg)
+      }
+
+      .label {
+        fill: var(--ink);
+        font-size: 16px;
+        font-weight: 750;
+        paint-order: stroke;
+        stroke: var(--bg);
+        stroke-width: 6px;
+        stroke-linejoin: round
+      }
+
+      .ring {
+        fill: var(--bg);
+        stroke-width: 6
+      }
+
+      .hit {
+        fill: transparent
+      }
+
+      .route.dim,
+      .station.dim {
+        opacity: .12
+      }
+
+      .station.match .label {
+        fill: #f59e0b
+      }
+
+      .legend {
+        position: absolute;
+        left: 16px;
+        bottom: 16px;
+        padding: 10px;
+        width: 250px;
+        max-height: 38%;
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--panel);
+        box-shadow: 0 16px 40px #0f172426
+      }
+
+      .legend h2 {
+        font-size: 11px;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #64748b;
+        margin: 2px 6px 7px
+      }
+
+      .legend button {
+        display: flex;
+        width: 100%;
+        gap: 9px;
+        align-items: center;
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--ink);
+        padding: 8px;
+        cursor: pointer
+      }
+
+      .sw {
+        width: 28px;
+        height: 7px;
+        border-radius: 9px
+      }
+
+      .status,
+      .tip {
+        position: absolute;
+        z-index: 3;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        padding: 10px 13px;
+        box-shadow: 0 12px 36px #0f17242e;
+        font-size: 13px
+      }
+
+      .status {
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%)
+      }
+
+      .tip {
+        pointer-events: none;
+        max-width: 280px
+      }
+
+      .status[hidden],
+      .tip[hidden] {
+        display: none
+      }
+
+      @media(max-width:680px) {
+        .bar input {
+          position: absolute;
+          top: 68px;
+          left: 12px;
+          width: calc(100% - 24px);
+          z-index: 4;
+          background: var(--panel)
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="app">
+      <header class="bar">
+        <div class="brand"><span>Rail</span>Map</div><input id="search" placeholder="Buscar estación…"><button id="out">−</button><button id="in">+</button><button id="fit" class="primary">Centrar</button>
+      </header>
+      <section id="stage" class="stage"><svg id="map">
+          <g id="view"></g>
+        </svg>
+        <div id="status" class="status">Cargando…</div>
+        <aside id="legend" class="legend">
+          <h2>Líneas</h2>
+        </aside>
+        <div id="tip" class="tip" hidden></div>
+      </section>
+    </main>
+    <script>
+      (() => {
+        'use strict';
+        const NS = 'http://www.w3.org/2000/svg',
+          $ = s => document.querySelector(s),
+          svg = $('#map'),
+          view = $('#view'),
+          stage = $('#stage'),
+          legend = $('#legend'),
+          status = $('#status'),
+          tip = $('#tip');
+        let S = new Map,
+          L = [],
+          EMap = new Map,
+          slots = new Map,
+          stationAxes = new Map,
+          bounds, cam = {
+            x: 0,
+            y: 0,
+            s: 1
+          },
+          drag;
+        const X = (n, a = {}, t = '') => {
+            const e = document.createElementNS(NS, n);
+            for (const [k, v] of Object.entries(a)) e.setAttribute(k, v);
+            if (t) e.textContent = t;
+            return e
+          },
+          esc = s => String(s).replace(/[&<>"']/g, c => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+          } [c])),
+          K = (a, b) => [a, b].sort().join('|'),
+          U = (a, b) => {
+            const x = b.x - a.x,
+              y = b.y - a.y,
+              d = Math.hypot(x, y) || 1;
+            return {
+              x: x / d,
+              y: y / d
+            }
+          },
+          N = u => ({
+            x: -u.y,
+            y: u.x
+          }),
+          P = (p, u, d) => ({
+            x: p.x + u.x * d,
+            y: p.y + u.y * d
+          });
+        async function xml(f) {
+          const r = await fetch(f, {
+            cache: 'no-store'
+          });
+          if (!r.ok) throw Error(`${f}: HTTP ${r.status}`);
+          const x = new DOMParser().parseFromString(await r.text(), 'application/xml');
+          if (x.querySelector('parsererror')) throw Error(`${f}: XML no válido`);
+          return x
+        }
+
+        function parseS(x) {
+          return new Map([...x.querySelectorAll('station')].map(n => [n.getAttribute('id'), {
+            id: n.getAttribute('id'),
+            name: n.getAttribute('name') || n.getAttribute('id'),
+            x: +n.getAttribute('x'),
+            y: +n.getAttribute('y'),
+            label: n.getAttribute('label') || 'auto'
+          }]))
+        }
+
+        function parseL(x) {
+          return [...x.querySelectorAll('line')].map((n, i) => ({
+            id: n.getAttribute('id') || `L${i}`,
+            name: n.getAttribute('name') || n.getAttribute('id'),
+            color: n.getAttribute('color') || '#64748b',
+            width: +n.getAttribute('width') || 10,
+            gap: +n.getAttribute('gap') || 8,
+            radius: +n.getAttribute('radius') || 18,
+            lead: +n.getAttribute('lead') || 42,
+            stops: [...n.querySelectorAll('stop')].map(s => {
+              let serve = (s.getAttribute('serve') || 'both').toLowerCase();
+              if ((s.getAttribute('calls') || '').toLowerCase() === 'false') serve = 'none';
+              return {
+                station: s.getAttribute('station'),
+                serve
+              }
+            })
+          })).filter(l => l.stops.length > 1)
+        }
+
+        function prepare() {
+          EMap.clear();
+          for (const l of L) l.stops.slice(0, -1).forEach((s, i) => {
+            const a = s.station,
+              b = l.stops[i + 1].station,
+              k = K(a, b);
+            if (!EMap.has(k)) EMap.set(k, []);
+            EMap.get(k).push(l.id)
+          });
+          for (const ids of EMap.values()) ids.sort();
+          slots.clear();
+          stationAxes.clear();
+          for (const s of S.values()) {
+            const ids = L.filter(l => l.stops.some(x => x.station === s.id)).map(l => l.id).sort();
+            const maxW = Math.max(...ids.map(id => L.find(l => l.id === id).width), 10),
+              pitch = maxW + 12;
+            ids.forEach((id, i) => slots.set(`${s.id}|${id}`, (i - (ids.length - 1) / 2) * pitch));
+            const incident = [];
+            for (const [k, edgeIds] of EMap) {
+              const [a, b] = k.split('|');
+              if (a === s.id || b === s.id) {
+                const other = S.get(a === s.id ? b : a);
+                if (other) incident.push({
+                  count: edgeIds.length,
+                  length: Math.hypot(other.x - s.x, other.y - s.y),
+                  axis: N(U(s, other))
+                })
+              }
+            }
+            incident.sort((a, b) => b.count - a.count || b.length - a.length);
+            let axis = incident[0]?.axis || {
+              x: 1,
+              y: 0
+            };
+            if (axis.x < -.001 || (Math.abs(axis.x) < .001 && axis.y < 0)) axis = {
+              x: -axis.x,
+              y: -axis.y
+            };
+            stationAxes.set(s.id, axis)
+          }
+        }
+
+        function edgeLane(l, a, b) {
+          const ids = EMap.get(K(a, b)) || [l.id],
+            A = S.get(a),
+            B = S.get(b),
+            u = U(A, B),
+            n = N(u),
+            pitch = Math.max(...ids.map(id => L.find(x => x.id === id)?.width || 10)) + 12,
+            d = (ids.indexOf(l.id) - (ids.length - 1) / 2) * pitch;
+          return {
+            x: n.x * d,
+            y: n.y * d
+          }
+        }
+
+        function stationLane(l, i) {
+          const s = S.get(l.stops[i].station),
+            axis = stationAxes.get(s.id) || {
+              x: 1,
+              y: 0
+            },
+            d = slots.get(`${s.id}|${l.id}`) || 0;
+          return {
+            x: s.x + axis.x * d,
+            y: s.y + axis.y * d
+          }
+        }
+
+        function segment(l, i) {
+          const A = S.get(l.stops[i].station),
+            B = S.get(l.stops[i + 1].station),
+            a = stationLane(l, i),
+            b = stationLane(l, i + 1),
+            o = edgeLane(l, A.id, B.id),
+            ea = {
+              x: A.x + o.x,
+              y: A.y + o.y
+            },
+            eb = {
+              x: B.x + o.x,
+              y: B.y + o.y
+            },
+            u = U(A, B),
+            lead = Math.min(l.lead, Math.hypot(B.x - A.x) * .25),
+            a1 = P(a, u, lead),
+            b1 = P(b, u, -lead),
+            ea1 = P(ea, u, lead),
+            eb1 = P(eb, u, -lead); /* Un único puerto por línea y estación evita saltos entre el tramo entrante y el saliente. */
+          return [a, a1, ea1, eb1, b1, b].filter((p, i, v) => !i || Math.hypot(p.x - v[i - 1].x, p.y - v[i - 1].y) > .5)
+        }
+
+        function roundPath(p, r) {
+          let d = `M${p[0].x} ${p[0].y}`;
+          for (let i = 1; i < p.length - 1; i++) {
+            const a = p[i - 1],
+              b = p[i],
+              c = p[i + 1],
+              ab = Math.hypot(b.x - a.x, b.y - a.y),
+              bc = Math.hypot(c.x - b.x, c.y - b.y);
+            if (ab < 1 || bc < 1) continue;
+            const rr = Math.min(r, ab * .38, bc * .38),
+              q = P(b, U(b, a), rr),
+              z = P(b, U(b, c), rr);
+            d += ` L${q.x} ${q.y} Q${b.x} ${b.y} ${z.x} ${z.y}`
+          }
+          const z = p.at(-1);
+          return d + ` L${z.x} ${z.y}`
+        }
+
+        function linePath(line) {
+  return line.stops
+    .slice(0, -1)
+    .map((_, index) => roundPath(
+      segment(line, index),
+      line.radius
+    ))
+    .join(" ");
+}
+
+        function arrow(g, p, v, color, side) {
+          const u = {
+              x: v.x * side,
+              y: v.y * side
+            },
+            n = N(u),
+            b = P(p, u, -14);
+          g.append(X('polygon', {
+            points: `${p.x+u.x*15},${p.y+u.y*15} ${b.x+n.x*10},${b.y+n.y*10} ${b.x+n.x*4},${b.y+n.y*4} ${p.x-u.x*3},${p.y-u.y*3} ${b.x-n.x*4},${b.y-n.y*4} ${b.x-n.x*10},${b.y-n.y*10}`,
+            fill: color
+          }))
+        }
+
+        function marker(g, l, i) {
+          const st = l.stops[i];
+          if (st.serve === 'none') return;
+          const p = stationLane(l, i),
+            v = i < l.stops.length - 1 ? U(p, segment(l, i)[1]) : U(segment(l, i - 1).at(-2), p);
+          if (st.serve === 'forward') arrow(g, p, v, l.color, 1);
+          if (st.serve === 'reverse') arrow(g, p, v, l.color, -1);
+          g.append(X('circle', {
+            cx: p.x,
+            cy: p.y,
+            r: 9,
+            stroke: l.color,
+            'class': 'ring'
+          }))
+        }
+
+        function render() {
+          view.replaceChildren();
+          prepare();
+          const rg = X('g'),
+            sg = X('g');
+          view.append(rg, sg);
+          for (const l of L) {
+            const d = linePath(l),
+              g = X('g', {
+                'class': 'route',
+                'data-id': l.id
+              });
+            g.append(X('path', {
+              d,
+              'stroke-width': l.width + 6,
+              'class': 'halo'
+            }), X('path', {
+              d,
+              stroke: l.color,
+              'stroke-width': l.width,
+              'class': 'line'
+            }));
+            l.stops.forEach((_, i) => marker(g, l, i));
+            rg.append(g)
+          }
+          for (const s of S.values()) {
+            const g = X('g', {
+                'class': 'station',
+                'data-id': s.id,
+                'data-name': s.name.toLowerCase()
+              }),
+              side = s.label === 'auto' ? 'top' : s.label,
+              pos = {
+                top: [s.x, s.y - 34, 'middle'],
+                bottom: [s.x, s.y + 46, 'middle'],
+                left: [s.x - 34, s.y + 6, 'end'],
+                right: [s.x + 34, s.y + 6, 'start']
+              } [side];
+            g.append(X('text', {
+              x: pos[0],
+              y: pos[1],
+              'text-anchor': pos[2],
+              'class': 'label'
+            }, s.name));
+            const h = X('circle', {
+              cx: s.x,
+              cy: s.y,
+              r: 34,
+              'class': 'hit'
+            });
+            h.onpointermove = e => showTip(e, s);
+            h.onpointerleave = () => tip.hidden = true;
+            g.append(h);
+            sg.append(g)
+          }
+          buildLegend()
+        }
+
+        function showTip(e, s) {
+          const u = L.flatMap(l => l.stops.filter(x => x.station === s.id).map(x => ({
+              ...x,
+              line: l
+            }))),
+            n = t => u.filter(x => x.serve === t).map(x => x.line.name);
+          tip.innerHTML = `<b>${esc(s.name)}</b>${n('both').length?`<br><small>Ambos sentidos: ${esc(n('both').join(', '))}</small>`:''}${n('forward').length?`<br><small>Solo sentido de línea: ${esc(n('forward').join(', '))}</small>`:''}${n('reverse').length?`<br><small>Solo sentido contrario: ${esc(n('reverse').join(', '))}</small>`:''}${n('none').length?`<br><small>Pasan sin parar: ${esc(n('none').join(', '))}</small>`:''}`;
+          const r = stage.getBoundingClientRect();
+          tip.style.left = Math.min(e.clientX - r.left + 12, r.width - 290) + 'px';
+          tip.style.top = Math.min(e.clientY - r.top + 12, r.height - 135) + 'px';
+          tip.hidden = false
+        }
+
+        function buildLegend() {
+          legend.querySelectorAll('button').forEach(x => x.remove());
+          for (const l of L) {
+            const b = document.createElement('button');
+            b.innerHTML = `<i class="sw" style="background:${esc(l.color)}"></i>${esc(l.name)}`;
+            b.onclick = () => {
+              const rs = [...document.querySelectorAll('.route')],
+                clear = rs.some(x => x.classList.contains('dim')) && !rs.find(x => x.dataset.id === l.id).classList.contains('dim');
+              rs.forEach(x => x.classList.toggle('dim', clear ? false : x.dataset.id !== l.id))
+            };
+            legend.append(b)
+          }
+        }
+
+        function calc() {
+          const a = [...S.values()],
+            xs = a.map(x => x.x),
+            ys = a.map(x => x.y);
+          bounds = {
+            minX: Math.min(...xs) - 170,
+            maxX: Math.max(...xs) + 170,
+            minY: Math.min(...ys) - 130,
+            maxY: Math.max(...ys) + 130
+          }
+        }
+
+        function transform() {
+          view.setAttribute('transform', `translate(${cam.x} ${cam.y}) scale(${cam.s})`)
+        }
+
+        function fit() {
+          const w = stage.clientWidth,
+            h = stage.clientHeight,
+            bw = bounds.maxX - bounds.minX,
+            bh = bounds.maxY - bounds.minY;
+          cam.s = Math.min((w - 50) / bw, (h - 50) / bh);
+          cam.x = (w - bw * cam.s) / 2 - bounds.minX * cam.s;
+          cam.y = (h - bh * cam.s) / 2 - bounds.minY * cam.s;
+          transform()
+        }
+
+        function zoom(k, x = stage.clientWidth / 2, y = stage.clientHeight / 2) {
+          const ns = Math.max(.18, Math.min(5, cam.s * k)),
+            wx = (x - cam.x) / cam.s,
+            wy = (y - cam.y) / cam.s;
+          cam.x = x - wx * ns;
+          cam.y = y - wy * ns;
+          cam.s = ns;
+          transform()
+        }
+        svg.addEventListener('wheel', e => {
+          e.preventDefault();
+          const r = svg.getBoundingClientRect();
+          zoom(e.deltaY < 0 ? 1.12 : .89, e.clientX - r.left, e.clientY - r.top)
+        }, {
+          passive: false
+        });
+        svg.onpointerdown = e => {
+          drag = {
+            x: e.clientX,
+            y: e.clientY,
+            cx: cam.x,
+            cy: cam.y
+          };
+          svg.setPointerCapture(e.pointerId);
+          svg.classList.add('dragging')
+        };
+        svg.onpointermove = e => {
+          if (drag) {
+            cam.x = drag.cx + e.clientX - drag.x;
+            cam.y = drag.cy + e.clientY - drag.y;
+            transform()
+          }
+        };
+        svg.onpointerup = e => {
+          drag = null;
+          svg.classList.remove('dragging')
+        };
+        $('#in').onclick = () => zoom(1.25);
+        $('#out').onclick = () => zoom(.8);
+        $('#fit').onclick = fit;
+        $('#search').oninput = e => {
+          const q = e.target.value.trim().toLowerCase();
+          document.querySelectorAll('.station').forEach(x => x.classList.toggle('match', q && x.dataset.name.includes(q)))
+        };
+        window.onresize = fit;
+        (async () => {
+          try {
+            const [a, b] = await Promise.all([xml('stations.xml'), xml('lines.xml')]);
+            S = parseS(a);
+            L = parseL(b);
+            const bad = L.flatMap(l => l.stops).filter(x => !S.has(x.station));
+            if (bad.length) throw Error('Hay estaciones no definidas');
+            calc();
+            render();
+            requestAnimationFrame(fit);
+            status.hidden = true
+          } catch (e) {
+            status.innerHTML = `<b>No se pudo cargar</b><br>${esc(e.message)}`
+          }
+        })()
+      })();
+    </script>
+  </body>
+
+</html>
