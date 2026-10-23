@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<stations>
+  <!-- x/y son coordenadas esquemáticas en el lienzo SVG. label: top, bottom, left, right o auto -->
+  <station id="central" name="Central" x="450" y="300" label="top"/>
+  <station id="norte" name="Norte" x="450" y="100" label="top"/>
+  <station id="museo" name="Museo" x="450" y="200" label="right"/>
+  <station id="rio" name="Río" x="450" y="410" label="right"/>
+  <station id="sur" name="Sur" x="450" y="540" label="bottom"/>
+  <station id="oeste" name="Oeste" x="180" y="300" label="left"/>
+  <station id="parque" name="Parque" x="300" y="300" label="top"/>
+  <station id="universidad" name="Universidad" x="600" y="300" label="top"/>
+  <station id="aeropuerto" name="Aeropuerto" x="760" y="300" label="right"/>
+  <station id="puerto" name="Puerto" x="650" y="450" label="bottom"/>
+</stations>

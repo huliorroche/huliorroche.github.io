@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lines>
+  <!-- calls="false" significa que la línea pasa por la estación, pero no para -->
+  <line id="L1" name="Línea Azul" color="#2563eb" width="10">
+    <stop station="norte"/>
+    <stop station="museo"/>
+    <stop station="central"/>
+    <stop station="rio"/>
+    <stop station="sur"/>
+  </line>
+  <line id="L2" name="Línea Roja" color="#ef4444" width="10">
+    <stop station="oeste"/>
+    <stop station="parque"/>
+    <stop station="central"/>
+    <stop station="universidad"/>
+    <stop station="aeropuerto"/>
+  </line>
+  <line id="L3" name="Expreso Verde" color="#16a34a" width="10">
+    <stop station="oeste"/>
+    <stop station="parque" calls="false"/>
+    <stop station="central" calls="false"/>
+    <stop station="universidad"/>
+    <stop station="aeropuerto"/>
+  </line>
+  <line id="L4" name="Línea Violeta" color="#9333ea" width="10">
+    <stop station="norte"/>
+    <stop station="museo" calls="false"/>
+    <stop station="central"/>
+    <stop station="puerto"/>
+  </line>
+</lines>
