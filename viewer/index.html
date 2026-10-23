@@ -394,61 +394,6 @@
           return hit;
         }
 
-        
-function expandedRoutePoints(line) {
-  const nodes = routePoints(line);
-  if (nodes.length < 3) return nodes;
-
-  const out = [nodes[0]];
-
-  for (let index = 1; index < nodes.length - 1; index++) {
-    const previous = nodes[index - 1];
-    const station = nodes[index];
-    const next = nodes[index + 1];
-    const incoming = V.unit(V.sub(station, previous));
-    const outgoing = V.unit(V.sub(next, station));
-    const availableIncoming = V.len(V.sub(station, previous));
-    const availableOutgoing = V.len(V.sub(next, station));
-    const straight = Math.min(
-      line.lead,
-      availableIncoming * 0.22,
-      availableOutgoing * 0.22
-    );
-
-    const approach = dominantApproach(line, index);
-    out.push(station);
-
-    if (!approach) continue;
-
-    /*
-     * El tramo recto posterior a la estacion sigue el eje del corredor
-     * dominante, no el vector artificial entre nodos de corredores distintos.
-     */
-    let continuation;
-    if (approach.side === 'incoming') {
-      continuation = V.mul(approach.vector, -straight);
-    } else {
-      continuation = V.mul(approach.vector, straight);
-    }
-
-    const bendStart = V.add(station, continuation);
-    if (V.len(V.sub(bendStart, station)) > 0.5) out.push(bendStart);
-
-    const dot = incoming.x * outgoing.x + incoming.y * outgoing.y;
-    if (dot > -0.85) {
-      const bendEnd = V.add(
-        bendStart,
-        V.mul(outgoing, Math.min(straight * 0.55, 18))
-      );
-      if (V.len(V.sub(bendEnd, bendStart)) > 0.5) out.push(bendEnd);
-    }
-  }
-
-  out.push(nodes.at(-1));
-  return out;
-}
-
-
         function roundedPolyline(points, radius) {
           const pts = points.filter((p, i, a) => !i || V.len(V.sub(p, a[i - 1])) > 0.5);
           if (pts.length < 2) return '';
