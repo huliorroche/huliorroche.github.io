@@ -69,7 +69,7 @@
       <stop station="almayate-entrada"/>
       <stop station="finca-poliester"/>
       <stop station="los-toscanos"/>
-      <stop station="estacion-torre-del-mar"/>
+      <stop station="estacion-torre-del-mar" exit-port="east"/>
       <stop station="el-tomillar" entry-port="south"/>
       <stop station="la-mata"/>
       <stop station="colegio-andalucia"/>
