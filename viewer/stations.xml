@@ -1,1 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?><stations><station id="norte" name="Norte" x="500" y="90" label="top"/><station id="metro" name="Gregorio Prieto - Metro" x="300" y="195" label="top"/><station id="kafka" name="Gregorio Prieto - Franz Kafka" x="300" y="300" label="right"/><station id="justicia" name="Ciudad de la Justicia" x="300" y="480" label="left"/><station id="fycma" name="FYCMA" x="520" y="650" label="bottom"/><station id="corazones" name="Los Corazones" x="760" y="300" label="bottom"/><station id="este" name="Este" x="900" y="300" label="right"/><station id="sur" name="Sur" x="760" y="650" label="bottom"/></stations>
+<?xml version="1.0" encoding="UTF-8"?>
+<stations>
+  <station id="norte" name="Norte" x="500" y="90" label="top"/>
+  <station id="metro" name="Gregorio Prieto - Metro" x="300" y="195" label="top"/>
+  <station id="kafka" name="Gregorio Prieto - Franz Kafka" x="300" y="300" label="right"/>
+  <station id="justicia" name="Ciudad de la Justicia" x="300" y="480" label="left"/>
+  <station id="fycma" name="FYCMA" x="520" y="650" label="bottom"/>
+  <station id="corazones" name="Los Corazones" x="760" y="300" label="bottom"/>
+  <station id="este" name="Este" x="900" y="300" label="right"/>
+  <station id="sur" name="Sur" x="760" y="650" label="bottom"/>
+</stations>
