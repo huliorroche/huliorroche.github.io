@@ -1,16 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<lines>
-  <!-- serve: both (por defecto), forward, reverse o none -->
-  <line id="L15" name="Línea 15" color="#3f8f48" width="12">
-    <stop station="oeste"/><stop station="ctm"/><stop station="central"/><stop station="asperones"/><stop station="este"/>
-  </line>
-  <line id="L21" name="Línea 21" color="#4f7fca" width="12">
-    <stop station="oeste"/><stop station="ctm" serve="forward"/><stop station="central"/><stop station="asperones" serve="reverse"/><stop station="este"/>
-  </line>
-  <line id="L8" name="Línea 8" color="#f5c45e" width="12">
-    <stop station="oeste"/><stop station="ctm" serve="none"/><stop station="central"/><stop station="asperones" serve="none"/><stop station="este"/>
-  </line>
-  <line id="LN" name="Línea Norte-Sur" color="#172f76" width="12">
-    <stop station="norte"/><stop station="metro"/><stop station="central"/><stop station="sur"/>
-  </line>
+<?xml version="1.0" encoding="UTF-8"?><lines>
+<!-- radius controla el redondeo de las esquinas; serve: both, forward, reverse o none -->
+<line id="L4" name="Línea 4" color="#183272" width="12" radius="22"><stop station="norte"/><stop station="metro"/><stop station="kafka"/><stop station="justicia"/><stop station="fycma"/><stop station="sur"/></line>
+<line id="L11" name="Línea 11" color="#b63a38" width="12" radius="22"><stop station="metro"/><stop station="kafka"/><stop station="justicia"/><stop station="corazones"/><stop station="este"/></line>
+<line id="L25" name="Línea 25" color="#63be89" width="12" radius="22"><stop station="metro"/><stop station="kafka" serve="none"/><stop station="justicia"/><stop station="corazones" serve="forward"/><stop station="este"/></line>
 </lines>
