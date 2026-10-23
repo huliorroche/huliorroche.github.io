@@ -49,6 +49,31 @@
       <stop station="1420" serve="none"/>
       <stop station="1109" serve="none"/>
       <stop station="1108"/>
+      <stop station="1334"/>
+      <stop station="1335"/>
+      <stop station="1338"/>
+      <stop station="2200"/>
+      <stop station="1336"/>
+      <stop station="2190"/>
+      <stop station="chilches-estacion"/>
+      <stop station="chilches-costa"/>
+      <stop station="el-canuelo"/>
+      <stop station="playa-malaya"/>
+      <stop station="benajarafe-centro"/>
+      <stop station="torre-vigia"/>
+      <stop station="vallemar"/>
+      <stop station="varadero"/>
+      <stop station="castillo-marques"/>
+      <stop station="la-tiendecilla"/>
+      <stop station="almayate-tanger"/>
+      <stop station="almayate-entrada"/>
+      <stop station="finca-poliester"/>
+      <stop station="los-toscanos"/>
+      <stop station="estacion-torre-del-mar"/>
+      <stop station="el-tomillar"/>
+      <stop station="la-mata"/>
+      <stop station="colegio-andalucia"/>
+      <stop station="estacion-velez"/>
 
   </line>
 
@@ -77,6 +102,13 @@
       <stop station="1420"/>
       <stop station="1109"/>
       <stop station="1108"/>
+      <stop station="1334"/>
+      <stop station="1335"/>
+      <stop station="1338"/>
+      <stop station="2200"/>
+      <stop station="1336"/>
+      <stop station="2190"/>
+
 
   </line>
 </lines>

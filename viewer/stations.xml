@@ -18,4 +18,124 @@
   <station id="1420" name="Posada del Mar" x="2950" y="700" label="bottom"/>
   <station id="1109" name="Iglesia" x="3100" y="700" label="bottom"/>
   <station id="1108" name="Jardines de la Estación" x="3250" y="700" label="bottom"/>
+  <station id="1334" name="Elimar" x="3400" y="700" label="bottom"/>
+  <station id="1335" name="C/ Villodres" x="3550" y="700" label="bottom"/>
+  <station id="1338" name="Pepa Flores" x="3700" y="700" label="bottom"/>
+  <station id="2200" name="La Marina" x="3850" y="700" label="bottom"/>
+  <station id="1336" name="Cruce de Macharaviaya" x="4000" y="700" label="bottom"/>
+  <station id="2190" name="Los Rubios" x="4150" y="700" label="bottom"/>
+
+  <station id="chilches-estacion"
+          name="Chilches Estación"
+          x="4300"
+          y="700"
+          label="bottom"/>
+
+  <station id="chilches-costa"
+          name="Chilches Costa / Mercadona"
+          x="4450"
+          y="700"
+          label="bottom"/>
+
+  <station id="el-canuelo"
+          name="El Cañuelo"
+          x="4600"
+          y="700"
+          label="bottom"/>
+
+  <station id="playa-malaya"
+          name="Playa Malaya"
+          x="4750"
+          y="700"
+          label="bottom"/>
+
+  <station id="benajarafe-centro"
+          name="Benajarafe Centro"
+          x="4900"
+          y="700"
+          label="bottom"/>
+
+  <station id="torre-vigia"
+          name="Torre Vigía"
+          x="5050"
+          y="700"
+          label="bottom"/>
+
+  <station id="vallemar"
+          name="Vallemar"
+          x="5200"
+          y="700"
+          label="bottom"/>
+
+  <station id="varadero"
+          name="Varadero"
+          x="5350"
+          y="700"
+          label="bottom"/>
+
+  <station id="castillo-marques"
+          name="Castillo del Marqués"
+          x="5500"
+          y="700"
+          label="bottom"/>
+
+  <station id="la-tiendecilla"
+          name="La Tiendecilla"
+          x="5650"
+          y="700"
+          label="bottom"/>
+
+  <station id="almayate-tanger"
+          name="Almayate Tanger"
+          x="5800"
+          y="700"
+          label="bottom"/>
+
+  <station id="almayate-entrada"
+          name="Almayate Entrada"
+          x="5950"
+          y="700"
+          label="bottom"/>
+
+  <station id="finca-poliester"
+          name="Finca Poliester"
+          x="6100"
+          y="700"
+          label="bottom"/>
+
+  <station id="los-toscanos"
+          name="Los Toscanos / Camping"
+          x="6250"
+          y="700"
+          label="bottom"/>
+
+  <station id="estacion-torre-del-mar"
+          name="Estación Torre del Mar"
+          x="6400"
+          y="700"
+          label="bottom"/>
+
+  <station id="el-tomillar"
+          name="El Tomillar"
+          x="6550"
+          y="700"
+          label="bottom"/>
+
+  <station id="la-mata"
+          name="La Mata"
+          x="6700"
+          y="700"
+          label="bottom"/>
+
+  <station id="colegio-andalucia"
+          name="Colegio Andalucía / Avda. de las Naciones"
+          x="6850"
+          y="700"
+          label="bottom"/>
+
+  <station id="estacion-velez"
+          name="Estación Vélez Málaga"
+          x="7000"
+          y="700"
+          label="bottom"/>
 </stations>
