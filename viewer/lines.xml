@@ -15,7 +15,7 @@
     <stop station="corazones" port="north" port-distance="30" port-lead="50"/>
     <stop
     station="muelleheredia"
-    entry-port="southwest"
+    entry-port="west"
     entry-lead="48"
     exit-port="east"
     exit-lead="42"
