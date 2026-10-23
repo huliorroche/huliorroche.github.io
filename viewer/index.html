@@ -593,6 +593,38 @@ function expandedRoutePoints(line) {
           }))
         }
 
+        function stopDisplayPoint(line, index) {
+  const routePoint = nodePoint(line, index);
+  const stationId = line.stops[index].station;
+  const vector = approachVector(line, index);
+  const axis = approachAxis(vector);
+
+  const axesAtStation = new Set();
+
+  for (const candidate of lines) {
+    const candidateIndex = candidate.stops.findIndex(stop => stop.station === stationId);
+    if (candidateIndex < 0) continue;
+    axesAtStation.add(approachAxis(approachVector(candidate, candidateIndex)));
+  }
+
+  // En una estacion de un unico corredor, el glifo queda exactamente sobre
+  // el trazado. Si convergen corredores distintos, cada glifo se desplaza
+  // ligeramente hacia su propio corredor. La ruta no cambia.
+  if (axesAtStation.size <= 1) return routePoint;
+
+  const station = stations.get(stationId);
+  const radialDistance = 13;
+  const candidate = V.add(station, V.mul(vector, radialDistance));
+
+  // Mantiene el desplazamiento lateral propio del carril, pero nunca cambia
+  // el orden de las lineas paralelas ni obliga a que se crucen.
+  const lateral = V.sub(routePoint, station);
+  const perpendicular = V.normal(vector);
+  const lateralAmount = lateral.x * perpendicular.x + lateral.y * perpendicular.y;
+
+  return V.add(candidate, V.mul(perpendicular, lateralAmount));
+}
+
         function stopGlyph(g, line, i) {
           let st = line.stops[i];
           if (st.serve === 'none') return;
