@@ -70,7 +70,7 @@
       <stop station="finca-poliester"/>
       <stop station="los-toscanos"/>
       <stop station="estacion-torre-del-mar"/>
-      <stop station="el-tomillar" entry-port="north"/>
+      <stop station="el-tomillar" entry-port="south"/>
       <stop station="la-mata"/>
       <stop station="colegio-andalucia"/>
       <stop station="estacion-velez"/>
