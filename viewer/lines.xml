@@ -123,7 +123,7 @@
     <stop station="almayate-entrada" serve="none"/>
     <stop station="finca-poliester" serve="none"/>
     <stop station="los-toscanos" serve="none"/>
-    <stop station="estacion-torre-del-mar"/>
+    <stop station="estacion-torre-del-mar" exit-port="east" exit-lead="55"/>
     <stop station="caleta-velez" serve="none"/>
     <stop station="mezquitilla" serve="none"/>
     <stop station="lagos" serve="none"/>
@@ -180,7 +180,7 @@
     <stop station="almayate-entrada" serve="none"/>
     <stop station="finca-poliester" serve="none"/>
     <stop station="los-toscanos" serve="none"/>
-    <stop station="estacion-torre-del-mar"/>
+    <stop station="estacion-torre-del-mar" exit-port="east" exit-lead="55"/>
     <stop station="caleta-velez"/>
     <stop station="mezquitilla"/>
     <stop station="lagos"/>
