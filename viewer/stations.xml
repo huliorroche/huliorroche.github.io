@@ -146,55 +146,55 @@
     id="caleta-velez"
     name="Comisaría"
     x="6550"
-    y="850"
+    y="700"
     label="bottom"/>
 
 <station
     id="caleta-velez"
     name="La Caleta de Vélez"
     x="6700"
-    y="850"
+    y="700"
     label="bottom"/>
 
 <station
     id="mezquitilla"
     name="Mezquitilla"
     x="6850"
-    y="850"
+    y="700"
     label="bottom"/>
 
 <station
     id="lagos"
     name="Lagos"
     x="7000"
-    y="850"
+    y="700"
     label="bottom"/>
 
 <station
     id="el-morche"
     name="El Morche"
     x="7150"
-    y="850"
+    y="700"
     label="bottom"/>
 
 <station
     id="torrox"
     name="Torrox"
     x="7300"
-    y="850"
+    y="700"
     label="bottom"/>
 
 <station
     id="km46"
     name="Km. 46"
     x="7450"
-    y="850"
+    y="700"
     label="bottom"/>
 
 <station
     id="nerja"
     name="Nerja"
     x="7600"
-    y="850"
+    y="700"
     label="bottom"/>
 </stations>

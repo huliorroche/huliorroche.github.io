@@ -86,9 +86,51 @@
     radius="14"
     lead="36">
 
-    <stop station="nerja"/>
+        <stop station="1"/>
+    <stop station="1333" serve="none" entry-lead="50"/>
+    <stop station="2260"/>
+    <stop station="1417" serve="none"/>
+    <stop station="1418" serve="none"/>
+    <stop station="1419" serve="none"/>
+    <stop station="2108"/>
+    <stop station="1115" serve="none"/>
+    <stop station="1113" serve="none"/>
+    <stop station="2134" serve="none"/>
+    <stop station="2208" serve="none"/>
+    <stop station="1112" serve="none"/>
+    <stop station="1111" serve="none"/>
+    <stop station="1110" serve="none"/>
+    <stop station="1420" serve="none"/>
+    <stop station="1109" serve="none"/>
+    <stop station="1108" serve="none"/>
+    <stop station="1334" serve="none"/>
+    <stop station="1335" serve="none"/>
+    <stop station="1338" serve="none"/>
+    <stop station="2200" serve="none"/>
+    <stop station="1336" serve="none"/>
+    <stop station="2190" serve="none"/>
+    <stop station="chilches-estacion" serve="none"/>
+    <stop station="chilches-costa" serve="none"/>
+    <stop station="el-canuelo" serve="none"/>
+    <stop station="playa-malaya" serve="none"/>
+    <stop station="benajarafe-centro" serve="none"/>
+    <stop station="torre-vigia" serve="none"/>
+    <stop station="vallemar" serve="none"/>
+    <stop station="varadero" serve="none"/>
+    <stop station="castillo-marques" serve="none"/>
+    <stop station="la-tiendecilla" serve="none"/>
+    <stop station="almayate-tanger" serve="none"/>
+    <stop station="almayate-entrada" serve="none"/>
+    <stop station="finca-poliester" serve="none"/>
+    <stop station="los-toscanos" serve="none"/>
     <stop station="estacion-torre-del-mar"/>
-    <stop station="1"/>
+    <stop station="caleta-velez" serve="none"/>
+    <stop station="mezquitilla" serve="none"/>
+    <stop station="lagos" serve="none"/>
+    <stop station="el-morche" serve="none"/>
+    <stop station="torrox" serve="none"/>
+    <stop station="km46" serve="none"/>
+    <stop station="nerja"/>
 
 </line>
 
@@ -101,16 +143,51 @@
     radius="14"
     lead="36">
 
-    <stop station="nerja"/>
-    <stop station="km46"/>
-    <stop station="torrox"/>
-    <stop station="el-morche"/>
-    <stop station="lagos"/>
-    <stop station="mezquitilla"/>
-    <stop station="caleta-velez"/>
-    <stop station="estacion-torre-del-mar"/>
-    <stop station="2108"/>
+    <stop station="1"/>
+    <stop station="1333" serve="none" entry-lead="50"/>
     <stop station="2260"/>
+    <stop station="1417" serve="none"/>
+    <stop station="1418" serve="none"/>
+    <stop station="1419" serve="none"/>
+    <stop station="2108"/>
+    <stop station="1115" serve="none"/>
+    <stop station="1113" serve="none"/>
+    <stop station="2134" serve="none"/>
+    <stop station="2208" serve="none"/>
+    <stop station="1112" serve="none"/>
+    <stop station="1111" serve="none"/>
+    <stop station="1110" serve="none"/>
+    <stop station="1420" serve="none"/>
+    <stop station="1109" serve="none"/>
+    <stop station="1108" serve="none"/>
+    <stop station="1334" serve="none"/>
+    <stop station="1335" serve="none"/>
+    <stop station="1338" serve="none"/>
+    <stop station="2200" serve="none"/>
+    <stop station="1336" serve="none"/>
+    <stop station="2190" serve="none"/>
+    <stop station="chilches-estacion" serve="none"/>
+    <stop station="chilches-costa" serve="none"/>
+    <stop station="el-canuelo" serve="none"/>
+    <stop station="playa-malaya" serve="none"/>
+    <stop station="benajarafe-centro" serve="none"/>
+    <stop station="torre-vigia" serve="none"/>
+    <stop station="vallemar" serve="none"/>
+    <stop station="varadero" serve="none"/>
+    <stop station="castillo-marques" serve="none"/>
+    <stop station="la-tiendecilla" serve="none"/>
+    <stop station="almayate-tanger" serve="none"/>
+    <stop station="almayate-entrada" serve="none"/>
+    <stop station="finca-poliester" serve="none"/>
+    <stop station="los-toscanos" serve="none"/>
+    <stop station="estacion-torre-del-mar"/>
+    <stop station="caleta-velez"/>
+    <stop station="mezquitilla"/>
+    <stop station="lagos"/>
+    <stop station="el-morche"/>
+    <stop station="torrox"/>
+    <stop station="km46"/>
+    <stop station="nerja"/>
 
 </line>
 
