@@ -11,7 +11,7 @@
     <stop station="metro"/><stop station="kafka" serve="none"/><stop station="justicia"/><stop station="corazones" serve="forward"/><stop station="este"/>
   </line>
 
-  <line id="C" name="Consorcio" color="#78bf91" width="11" gap="9" radius="14" lead="36">
+  <line id="C" name="Consorcio" color="#b97808" width="11" gap="9" radius="14" lead="36">
     <stop station="corazones" />
     <stop station="muelleheredia"/>
     <stop station="paseodeloscuras"/>
