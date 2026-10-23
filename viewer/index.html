@@ -53,6 +53,33 @@ function nodePoint(line,i){
 function routePoints(line){
   return line.stops.map((_,i)=>nodePoint(line,i));
 }
+function expandedRoutePoints(line){
+  const nodes=routePoints(line);
+  if(nodes.length<3)return nodes;
+  const out=[nodes[0]];
+  for(let i=1;i<nodes.length-1;i++){
+    const previous=nodes[i-1],station=nodes[i],next=nodes[i+1];
+    const incoming=V.unit(V.sub(station,previous));
+    const outgoing=V.unit(V.sub(next,station));
+    const availableIn=V.len(V.sub(station,previous));
+    const availableOut=V.len(V.sub(next,station));
+    const straight=Math.min(line.lead,availableIn*0.22,availableOut*0.22);
+    /* La línea atraviesa la estación manteniendo la dirección de llegada.
+       El cambio de dirección comienza después del tramo recto `lead`. */
+    const bendStart=V.add(station,V.mul(incoming,straight));
+    out.push(station);
+    if(V.len(V.sub(bendStart,station))>0.5)out.push(bendStart);
+    /* Si llegada y salida son casi opuestas, no añadimos un segundo punto
+       que pueda generar un lazo. La polilínea conecta desde bendStart. */
+    const dot=incoming.x*outgoing.x+incoming.y*outgoing.y;
+    if(dot>-0.85){
+      const bendEnd=V.add(bendStart,V.mul(outgoing,Math.min(straight*0.55,18)));
+      if(V.len(V.sub(bendEnd,bendStart))>0.5)out.push(bendEnd);
+    }
+  }
+  out.push(nodes.at(-1));
+  return out;
+}
 function roundedPolyline(points,radius){
   const pts=points.filter((p,i,a)=>!i||V.len(V.sub(p,a[i-1]))>0.5);
   if(pts.length<2)return '';
@@ -72,11 +99,15 @@ function roundedPolyline(points,radius){
   return d+` L${last.x} ${last.y}`;
 }
 function linePath(line){
-  /* Un único trazado por línea sobre carriles dirigidos. Esto impide que
-     dos líneas paralelas intercambien su posición al cambiar de tramo. */
-  return roundedPolyline(routePoints(line),line.radius);
+  /* El nodo de estación nunca es un vértice de giro. Primero se prolonga
+     el tramo entrante y sólo después se redondea el cambio de dirección. */
+  return roundedPolyline(expandedRoutePoints(line),line.radius);
 }
-function tangent(line,i){const points=routePoints(line),p=points[i];if(i<points.length-1)return V.unit(V.sub(points[i+1],p));return V.unit(V.sub(p,points[i-1]))}
+function tangent(line,i){
+  const points=routePoints(line),p=points[i];
+  if(i>0)return V.unit(V.sub(p,points[i-1]));
+  return V.unit(V.sub(points[1],p));
+}
 function arrow(g,p,v,color,side){let u=V.mul(v,side),n=V.normal(u),tip=V.add(p,V.mul(u,14)),back=V.add(p,V.mul(u,-10)),a=V.add(back,V.mul(n,9)),b=V.add(back,V.mul(n,-9));g.append(el('polygon',{points:`${tip.x},${tip.y} ${a.x},${a.y} ${p.x},${p.y} ${b.x},${b.y}`,fill:color,'class':'oneway'}))}
 function stopGlyph(g,line,i){let st=line.stops[i];if(st.serve==='none')return;let p=nodePoint(line,i),v=tangent(line,i);if(st.serve==='forward')arrow(g,p,v,line.color,1);if(st.serve==='reverse')arrow(g,p,v,line.color,-1);g.append(el('circle',{cx:p.x,cy:p.y,r:8.5,stroke:line.color,'class':'stop'}))}
 function render(){view.replaceChildren();prepare();let paths=el('g'),marks=el('g'),labels=el('g');view.append(paths,marks,labels);for(const l of lines){let g=el('g',{'class':'route','data-id':l.id}),d=linePath(l);g.append(el('path',{d,'stroke-width':l.width+5,'class':'routeHalo'}),el('path',{d,stroke:l.color,'stroke-width':l.width,'class':'routeLine'}));paths.append(g);let mg=el('g',{'class':'route','data-id':l.id});l.stops.forEach((_,i)=>stopGlyph(mg,l,i));marks.append(mg)}for(const s of stations.values()){let g=el('g',{'class':'station','data-name':s.name.toLowerCase()}),side=s.label==='auto'?'top':s.label,pos={top:[s.x,s.y-32,'middle'],bottom:[s.x,s.y+43,'middle'],left:[s.x-32,s.y+5,'end'],right:[s.x+32,s.y+5,'start']}[side];g.append(el('text',{x:pos[0],y:pos[1],'text-anchor':pos[2],'class':'stationLabel'},s.name));let h=el('circle',{cx:s.x,cy:s.y,r:30,'class':'hit'});h.onpointermove=e=>showTip(e,s);h.onpointerleave=()=>tip.hidden=true;g.append(h);labels.append(g)}makeLegend()}
