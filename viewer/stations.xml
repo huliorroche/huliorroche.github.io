@@ -118,24 +118,24 @@
   <station id="el-tomillar"
           name="El Tomillar"
           x="6550"
-          y="700"
+          y="850"
           label="bottom"/>
 
   <station id="la-mata"
           name="La Mata"
-          x="6700"
-          y="700"
+          x="6550"
+          y="1000"
           label="bottom"/>
 
   <station id="colegio-andalucia"
           name="Colegio Andalucía / Avda. de las Naciones"
-          x="6850"
-          y="700"
+          x="6550"
+          y="1150"
           label="bottom"/>
 
   <station id="estacion-velez"
           name="Estación Vélez Málaga"
-          x="7000"
-          y="700"
+          x="6550"
+          y="1300"
           label="bottom"/>
 </stations>
