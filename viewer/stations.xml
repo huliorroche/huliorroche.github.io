@@ -18,13 +18,4 @@
   <station id="1420" name="Posada del Mar" x="2950" y="700" label="bottom"/>
   <station id="1109" name="Iglesia" x="3100" y="700" label="bottom"/>
   <station id="1108" name="Jardines de la Estación" x="3250" y="700" label="bottom"/>
-  <station id="1106" name="Instituto" x="3400" y="700" label="bottom"/>
-  <station id="2227" name="Gran Sol (Cotomar)" x="3550" y="700" label="bottom"/>
-  <station id="1105" name="El Rosal" x="3700" y="700" label="bottom"/>
-  <station id="1104" name="Tres Sietes" x="3850" y="700" label="bottom"/>
-  <station id="1107" name="Plaza Costa del Sol" x="4000" y="700" label="bottom"/>
-  <station id="1103" name="La Vaguada" x="4150" y="700" label="bottom"/>
-  <station id="1102" name="Lo Cea" x="4300" y="700" label="bottom"/>
-  <station id="1101" name="Ceuta y Melilla" x="4450" y="700" label="bottom"/>
-  <station id="2188" name="Rincón Sol" x="4600" y="700" label="bottom"/>
 </stations>
