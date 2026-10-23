@@ -13,10 +13,13 @@
 
   <line id="C" name="Consorcio" color="#b97808" width="11" gap="9" radius="14" lead="36">
     <stop station="corazones" port="north" port-distance="30" port-lead="50"/>
-    <stop station="muelleheredia"
-      entry-port="southwest" entry-distance="20" entry-lead="50"
-        exit-port="east" exit-distance="20" exit-lead="45"
-    />
+    <stop
+    station="muelleheredia"
+    entry-port="southwest"
+    entry-lead="48"
+    exit-port="east"
+    exit-lead="42"
+/>
     <stop station="paseodeloscuras"/>
     <stop station="sanantonio"/>
   </line>
