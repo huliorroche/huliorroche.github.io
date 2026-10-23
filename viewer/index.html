@@ -457,19 +457,79 @@ function parseLines(x) {
             }
 
             function directedLane(line, aId, bId) {
-                const A = stations.get(aId),
-                    B = stations.get(bId);
-                const u = V.unit(V.sub(B, A));
-                const n = V.normal(u);
-                const info = lineIndexOnEdge(line, aId, bId);
-                const d = (info.index - (info.ids.length - 1) / 2) * info.pitch;
-                return {
-                    u,
-                    n,
-                    d,
-                    off: V.mul(n, d)
-                };
+    const A = stations.get(aId);
+    const B = stations.get(bId);
+
+    const u = V.unit(
+        V.sub(B, A)
+    );
+
+    const n = V.normal(u);
+
+    const info = lineIndexOnEdge(
+        line,
+        aId,
+        bId
+    );
+
+    let d;
+
+    /*
+     * Caso normal: varias líneas comparten este tramo.
+     */
+    if (info.ids.length > 1) {
+        d =
+            (
+                info.index -
+                (info.ids.length - 1) / 2
+            ) * info.pitch;
+    } else {
+        /*
+         * La línea continúa sola.
+         *
+         * Intentamos conservar el desplazamiento lateral
+         * del corredor inmediatamente anterior.
+         */
+        const stopIndex = line.stops.findIndex(
+            stop => stop.station === aId
+        );
+
+        if (stopIndex > 0) {
+            const previousId =
+                line.stops[stopIndex - 1].station;
+
+            const previousInfo =
+                lineIndexOnEdge(
+                    line,
+                    previousId,
+                    aId
+                );
+
+            if (previousInfo.ids.length > 1) {
+                d =
+                    (
+                        previousInfo.index -
+                        (previousInfo.ids.length - 1) / 2
+                    ) * previousInfo.pitch;
             }
+        }
+
+        /*
+         * Si tampoco existe un corredor compartido
+         * anteriormente, la línea queda centrada.
+         */
+        if (d === undefined) {
+            d = 0;
+        }
+    }
+
+    return {
+        u,
+        n,
+        d,
+        off: V.mul(n, d)
+    };
+}
 
             function intersection(p, u, q, v) {
                 const cross = u.x * v.y - u.y * v.x;
