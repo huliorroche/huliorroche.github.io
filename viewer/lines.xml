@@ -12,7 +12,12 @@
   </line>
 
   <line id="C" name="Consorcio" color="#b97808" width="11" gap="9" radius="14" lead="36">
-    <stop station="corazones" />
+    <stop
+    station="corazones"
+    port="north"
+    port-distance="30"
+    port-lead="38"
+/>
     <stop station="muelleheredia"/>
     <stop station="paseodeloscuras"/>
     <stop station="sanantonio"/>
