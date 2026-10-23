@@ -60,4 +60,41 @@
       <stop station="2188"/>
 
   </line>
+
+  <line
+      id="M260"
+      name="M-260 Málaga - Rincón de la Victoria - Vélez"
+      color="#005c96"
+      width="11"
+      gap="9"
+      radius="14"
+      lead="36">
+      <stop station="1"/>
+      <stop station="1333" serve="none"/>
+      <stop station="2260"/>
+      <stop station="1417"/>
+      <stop station="1418"/>
+      <stop station="1419"/>
+      <stop station="2108"/>
+      <stop station="1115"/>
+      <stop station="1113"/>
+      <stop station="2134"/>
+      <stop station="2208"/>
+      <stop station="1112"/>
+      <stop station="1111"/>
+      <stop station="1110"/>
+      <stop station="1420"/>
+      <stop station="1109"/>
+      <stop station="1108"/>
+      <stop station="1106"/>
+      <stop station="2227"/>
+      <stop station="1105"/>
+      <stop station="1104"/>
+      <stop station="1107"/>
+      <stop station="1103"/>
+      <stop station="1102"/>
+      <stop station="1101"/>
+      <stop station="2188"/>
+
+  </line>
 </lines>
