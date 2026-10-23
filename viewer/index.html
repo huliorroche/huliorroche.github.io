@@ -314,17 +314,17 @@
                         let serve = (s.getAttribute('serve') || 'both').toLowerCase();
                         if ((s.getAttribute('calls') || '').toLowerCase() === 'false') serve = 'none';
                         return {
-    station: s.getAttribute('station'),
-    serve,
-    port: (
-        s.getAttribute('port') ||
-        'auto'
-    ).toLowerCase(),
-    portDistance:
-        Number(s.getAttribute('port-distance')) || 30,
-    portLead:
-        Number(s.getAttribute('port-lead')) || 38
-};
+                            station: s.getAttribute('station'),
+                            serve,
+                            port: (
+                                s.getAttribute('port') ||
+                                'auto'
+                            ).toLowerCase(),
+                            portDistance:
+                                Number(s.getAttribute('port-distance')) || 30,
+                            portLead:
+                                Number(s.getAttribute('port-lead')) || 38
+                        };
                     })
                 })).filter(l => l.stops.length > 1)
             }
@@ -375,462 +375,462 @@
             }
 
             function routePoints(line) {
-    const points = [];
+                const points = [];
 
-    line.stops.forEach((stop, index) => {
-        const node = nodePoint(line, index);
-        const lead = explicitPortLeadPoint(line, index);
+                line.stops.forEach((stop, index) => {
+                    const node = nodePoint(line, index);
+                    const lead = explicitPortLeadPoint(line, index);
 
-        const isFirst = index === 0;
-        const isLast = index === line.stops.length - 1;
+                    const isFirst = index === 0;
+                    const isLast = index === line.stops.length - 1;
 
-        if (lead && isFirst) {
-            /*
-             * La línea comienza en el nodo de la estación,
-             * mantiene primero la dirección del puerto
-             * y después continúa hacia el resto del recorrido.
-             */
-            points.push(node);
-            points.push(lead);
-            return;
-        }
+                    if (lead && isFirst) {
+                        /*
+                         * La línea comienza en el nodo de la estación,
+                         * mantiene primero la dirección del puerto
+                         * y después continúa hacia el resto del recorrido.
+                         */
+                        points.push(node);
+                        points.push(lead);
+                        return;
+                    }
 
-        if (lead && isLast) {
-            /*
-             * La línea llega primero al punto exterior
-             * y después entra recta en la estación.
-             */
-            points.push(lead);
-            points.push(node);
-            return;
-        }
+                    if (lead && isLast) {
+                        /*
+                         * La línea llega primero al punto exterior
+                         * y después entra recta en la estación.
+                         */
+                        points.push(lead);
+                        points.push(node);
+                        return;
+                    }
 
-        points.push(node);
-    });
+                    points.push(node);
+                });
 
-    return points;
-}
+                return points;
+            }
 
 
             function edgeDirectionFromStation(stationId, otherId) {
-    const station = stations.get(stationId);
-    const other = stations.get(otherId);
+                const station = stations.get(stationId);
+                const other = stations.get(otherId);
 
-    return V.unit(
-        V.sub(other, station)
-    );
-}
-
-function edgeAxis(stationId, otherId) {
-    const direction = edgeDirectionFromStation(
-        stationId,
-        otherId
-    );
-
-    let angle = Math.atan2(
-        direction.y,
-        direction.x
-    );
-
-    /*
-     * Un eje no tiene sentido.
-     *
-     * 0° y 180° son el mismo corredor.
-     * 45° y 225° también.
-     */
-    angle %= Math.PI;
-
-    if (angle < 0) {
-        angle += Math.PI;
-    }
-
-    /*
-     * Agrupamos por intervalos de 15°.
-     */
-    return Math.round(
-        angle / (Math.PI / 12)
-    );
-}
-
-function stationEdgeAxes(stationId) {
-    const axes = new Map();
-
-    for (const line of lines) {
-        const index = line.stops.findIndex(
-            stop => stop.station === stationId
-        );
-
-        if (index < 0) {
-            continue;
-        }
-
-        if (index > 0) {
-            const otherId =
-                line.stops[index - 1].station;
-
-            const axis = edgeAxis(
-                stationId,
-                otherId
-            );
-
-            if (!axes.has(axis)) {
-                axes.set(axis, new Set());
+                return V.unit(
+                    V.sub(other, station)
+                );
             }
 
-            axes.get(axis).add(line.id);
-        }
+            function edgeAxis(stationId, otherId) {
+                const direction = edgeDirectionFromStation(
+                    stationId,
+                    otherId
+                );
 
-        if (index < line.stops.length - 1) {
-            const otherId =
-                line.stops[index + 1].station;
+                let angle = Math.atan2(
+                    direction.y,
+                    direction.x
+                );
 
-            const axis = edgeAxis(
-                stationId,
-                otherId
-            );
+                /*
+                 * Un eje no tiene sentido.
+                 *
+                 * 0° y 180° son el mismo corredor.
+                 * 45° y 225° también.
+                 */
+                angle %= Math.PI;
 
-            if (!axes.has(axis)) {
-                axes.set(axis, new Set());
+                if (angle < 0) {
+                    angle += Math.PI;
+                }
+
+                /*
+                 * Agrupamos por intervalos de 15°.
+                 */
+                return Math.round(
+                    angle / (Math.PI / 12)
+                );
             }
 
-            axes.get(axis).add(line.id);
-        }
-    }
+            function stationEdgeAxes(stationId) {
+                const axes = new Map();
 
-    return axes;
-}
+                for (const line of lines) {
+                    const index = line.stops.findIndex(
+                        stop => stop.station === stationId
+                    );
 
-function terminalStationPoint(line, index) {
-    const stop = line.stops[index];
-    const station = stations.get(stop.station);
+                    if (index < 0) {
+                        continue;
+                    }
 
-    const isFirst = index === 0;
-    const isLast =
-        index === line.stops.length - 1;
+                    if (index > 0) {
+                        const otherId =
+                            line.stops[index - 1].station;
 
-    if (!isFirst && !isLast) {
-        return null;
-    }
+                        const axis = edgeAxis(
+                            stationId,
+                            otherId
+                        );
 
-    const otherId = isFirst
-        ? line.stops[1].station
-        : line.stops[index - 1].station;
+                        if (!axes.has(axis)) {
+                            axes.set(axis, new Set());
+                        }
 
-    const axes = stationEdgeAxes(
-        station.id
-    );
+                        axes.get(axis).add(line.id);
+                    }
 
-    /*
-     * Si sólo existe un corredor en la estación,
-     * no hacemos absolutamente nada.
-     */
-    if (axes.size <= 1) {
-        return null;
-    }
+                    if (index < line.stops.length - 1) {
+                        const otherId =
+                            line.stops[index + 1].station;
 
-    const thisAxis = edgeAxis(
-        station.id,
-        otherId
-    );
+                        const axis = edgeAxis(
+                            stationId,
+                            otherId
+                        );
 
-    const members =
-        axes.get(thisAxis) || new Set();
+                        if (!axes.has(axis)) {
+                            axes.set(axis, new Set());
+                        }
 
-    /*
-     * Si este corredor lo comparten varias líneas,
-     * dejamos que directedLane/nodePoint haga
-     * el trabajo normal.
-     */
-    if (members.size > 1) {
-        return null;
-    }
+                        axes.get(axis).add(line.id);
+                    }
+                }
 
-    /*
-     * Tenemos una línea terminal procedente de
-     * un corredor independiente.
-     *
-     * La alejamos ligeramente del centro del
-     * intercambiador siguiendo SU PROPIO corredor.
-     */
-    const direction =
-        edgeDirectionFromStation(
-            station.id,
-            otherId
-        );
+                return axes;
+            }
 
-    const distance = 18;
+            function terminalStationPoint(line, index) {
+                const stop = line.stops[index];
+                const station = stations.get(stop.station);
 
-    return V.add(
-        station,
-        V.mul(direction, distance)
-    );
-}
+                const isFirst = index === 0;
+                const isLast =
+                    index === line.stops.length - 1;
 
-function portDirection(port) {
-    const directions = {
-        north: { x: 0, y: -1 },
-        northeast: {
-            x: Math.SQRT1_2,
-            y: -Math.SQRT1_2
-        },
-        east: { x: 1, y: 0 },
-        southeast: {
-            x: Math.SQRT1_2,
-            y: Math.SQRT1_2
-        },
-        south: { x: 0, y: 1 },
-        southwest: {
-            x: -Math.SQRT1_2,
-            y: Math.SQRT1_2
-        },
-        west: { x: -1, y: 0 },
-        northwest: {
-            x: -Math.SQRT1_2,
-            y: -Math.SQRT1_2
-        }
-    };
+                if (!isFirst && !isLast) {
+                    return null;
+                }
 
-    return directions[port] || null;
-}
+                const otherId = isFirst
+                    ? line.stops[1].station
+                    : line.stops[index - 1].station;
 
-function explicitPortPoint(line, index) {
-    const stop = line.stops[index];
-    const direction = portDirection(stop.port);
+                const axes = stationEdgeAxes(
+                    station.id
+                );
 
-    if (!direction) {
-        return null;
-    }
+                /*
+                 * Si sólo existe un corredor en la estación,
+                 * no hacemos absolutamente nada.
+                 */
+                if (axes.size <= 1) {
+                    return null;
+                }
 
-    const station = stations.get(stop.station);
+                const thisAxis = edgeAxis(
+                    station.id,
+                    otherId
+                );
 
-    return V.add(
-        station,
-        V.mul(direction, stop.portDistance)
-    );
-}
+                const members =
+                    axes.get(thisAxis) || new Set();
 
-function explicitPortLeadPoint(line, index) {
-    const stop = line.stops[index];
-    const direction = portDirection(stop.port);
+                /*
+                 * Si este corredor lo comparten varias líneas,
+                 * dejamos que directedLane/nodePoint haga
+                 * el trabajo normal.
+                 */
+                if (members.size > 1) {
+                    return null;
+                }
 
-    if (!direction) {
-        return null;
-    }
+                /*
+                 * Tenemos una línea terminal procedente de
+                 * un corredor independiente.
+                 *
+                 * La alejamos ligeramente del centro del
+                 * intercambiador siguiendo SU PROPIO corredor.
+                 */
+                const direction =
+                    edgeDirectionFromStation(
+                        station.id,
+                        otherId
+                    );
 
-    const station = stations.get(stop.station);
+                const distance = 18;
 
-    /*
-     * El punto de aproximación queda más alejado del centro
-     * en el mismo eje que el puerto.
-     */
-    return V.add(
-        station,
-        V.mul(
-            direction,
-            stop.portDistance + stop.portLead
-        )
-    );
-}
+                return V.add(
+                    station,
+                    V.mul(direction, distance)
+                );
+            }
+
+            function portDirection(port) {
+                const directions = {
+                    north: { x: 0, y: -1 },
+                    northeast: {
+                        x: Math.SQRT1_2,
+                        y: -Math.SQRT1_2
+                    },
+                    east: { x: 1, y: 0 },
+                    southeast: {
+                        x: Math.SQRT1_2,
+                        y: Math.SQRT1_2
+                    },
+                    south: { x: 0, y: 1 },
+                    southwest: {
+                        x: -Math.SQRT1_2,
+                        y: Math.SQRT1_2
+                    },
+                    west: { x: -1, y: 0 },
+                    northwest: {
+                        x: -Math.SQRT1_2,
+                        y: -Math.SQRT1_2
+                    }
+                };
+
+                return directions[port] || null;
+            }
+
+            function explicitPortPoint(line, index) {
+                const stop = line.stops[index];
+                const direction = portDirection(stop.port);
+
+                if (!direction) {
+                    return null;
+                }
+
+                const station = stations.get(stop.station);
+
+                return V.add(
+                    station,
+                    V.mul(direction, stop.portDistance)
+                );
+            }
+
+            function explicitPortLeadPoint(line, index) {
+                const stop = line.stops[index];
+                const direction = portDirection(stop.port);
+
+                if (!direction) {
+                    return null;
+                }
+
+                const station = stations.get(stop.station);
+
+                /*
+                 * El punto de aproximación queda más alejado del centro
+                 * en el mismo eje que el puerto.
+                 */
+                return V.add(
+                    station,
+                    V.mul(
+                        direction,
+                        stop.portDistance + stop.portLead
+                    )
+                );
+            }
 
             function nodePoint(line, i) {
-    const stop = line.stops[i];
-    const S = stations.get(stop.station);
+                const stop = line.stops[i];
+                const S = stations.get(stop.station);
 
-    const portPoint = explicitPortPoint(line, i);
+                const portPoint = explicitPortPoint(line, i);
 
-    if (portPoint) {
-        return portPoint;
-    }
+                if (portPoint) {
+                    return portPoint;
+                }
 
-    if (i === 0) {
-        const next = line.stops[1].station;
+                if (i === 0) {
+                    const next = line.stops[1].station;
 
-        return V.add(
-            S,
-            directedLane(
-                line,
-                S.id,
-                next
-            ).off
-        );
-    }
+                    return V.add(
+                        S,
+                        directedLane(
+                            line,
+                            S.id,
+                            next
+                        ).off
+                    );
+                }
 
-    if (i === line.stops.length - 1) {
-        const prev = line.stops[i - 1].station;
+                if (i === line.stops.length - 1) {
+                    const prev = line.stops[i - 1].station;
 
-        return V.add(
-            S,
-            directedLane(
-                line,
-                prev,
-                S.id
-            ).off
-        );
-    }
+                    return V.add(
+                        S,
+                        directedLane(
+                            line,
+                            prev,
+                            S.id
+                        ).off
+                    );
+                }
 
-    const prev = line.stops[i - 1].station;
-    const next = line.stops[i + 1].station;
+                const prev = line.stops[i - 1].station;
+                const next = line.stops[i + 1].station;
 
-    const incoming = directedLane(
-        line,
-        prev,
-        S.id
-    );
+                const incoming = directedLane(
+                    line,
+                    prev,
+                    S.id
+                );
 
-    const outgoing = directedLane(
-        line,
-        S.id,
-        next
-    );
+                const outgoing = directedLane(
+                    line,
+                    S.id,
+                    next
+                );
 
-    const p = V.add(S, incoming.off);
-    const q = V.add(S, outgoing.off);
+                const p = V.add(S, incoming.off);
+                const q = V.add(S, outgoing.off);
 
-    const hit = intersection(
-        p,
-        incoming.u,
-        q,
-        outgoing.u
-    );
+                const hit = intersection(
+                    p,
+                    incoming.u,
+                    q,
+                    outgoing.u
+                );
 
-    if (
-        !hit ||
-        V.len(V.sub(hit, S)) > 80
-    ) {
-        return V.mul(
-            V.add(p, q),
-            0.5
-        );
-    }
+                if (
+                    !hit ||
+                    V.len(V.sub(hit, S)) > 80
+                ) {
+                    return V.mul(
+                        V.add(p, q),
+                        0.5
+                    );
+                }
 
-    return hit;
-}
+                return hit;
+            }
 
             function edgeCount(aId, bId) {
                 return (groups.get(key(aId, bId)) || []).length;
             }
 
             function expandedRoutePoints(line) {
-    const nodes = [];
+                const nodes = [];
 
-    for (let index = 0; index < line.stops.length; index++) {
-        const stop = line.stops[index];
-        const stationPoint = nodePoint(line, index);
-        const leadPoint = explicitPortLeadPoint(line, index);
+                for (let index = 0; index < line.stops.length; index++) {
+                    const stop = line.stops[index];
+                    const stationPoint = nodePoint(line, index);
+                    const leadPoint = explicitPortLeadPoint(line, index);
 
-        const isFirst = index === 0;
-        const isLast = index === line.stops.length - 1;
+                    const isFirst = index === 0;
+                    const isLast = index === line.stops.length - 1;
 
-        /*
-         * Puerto explícito en el inicio de la línea.
-         */
-        if (leadPoint && isFirst) {
-            nodes.push(stationPoint);
-            nodes.push(leadPoint);
-            continue;
-        }
+                    /*
+                     * Puerto explícito en el inicio de la línea.
+                     */
+                    if (leadPoint && isFirst) {
+                        nodes.push(stationPoint);
+                        nodes.push(leadPoint);
+                        continue;
+                    }
 
-        /*
-         * Puerto explícito al final de la línea.
-         */
-        if (leadPoint && isLast) {
-            nodes.push(leadPoint);
-            nodes.push(stationPoint);
-            continue;
-        }
+                    /*
+                     * Puerto explícito al final de la línea.
+                     */
+                    if (leadPoint && isLast) {
+                        nodes.push(leadPoint);
+                        nodes.push(stationPoint);
+                        continue;
+                    }
 
-        nodes.push(stationPoint);
+                    nodes.push(stationPoint);
 
-        /*
-         * Las estaciones inicial y final no necesitan
-         * prolongación automática.
-         */
-        if (isFirst || isLast) {
-            continue;
-        }
+                    /*
+                     * Las estaciones inicial y final no necesitan
+                     * prolongación automática.
+                     */
+                    if (isFirst || isLast) {
+                        continue;
+                    }
 
-        const previousId = line.stops[index - 1].station;
-        const stationId = stop.station;
-        const nextId = line.stops[index + 1].station;
+                    const previousId = line.stops[index - 1].station;
+                    const stationId = stop.station;
+                    const nextId = line.stops[index + 1].station;
 
-        const previousPoint = nodePoint(line, index - 1);
-        const nextPoint = nodePoint(line, index + 1);
+                    const previousPoint = nodePoint(line, index - 1);
+                    const nextPoint = nodePoint(line, index + 1);
 
-        const incomingCount = edgeCount(
-            previousId,
-            stationId
-        );
+                    const incomingCount = edgeCount(
+                        previousId,
+                        stationId
+                    );
 
-        const outgoingCount = edgeCount(
-            stationId,
-            nextId
-        );
+                    const outgoingCount = edgeCount(
+                        stationId,
+                        nextId
+                    );
 
-        const incomingDirection = V.unit(
-            V.sub(
-                stationPoint,
-                previousPoint
-            )
-        );
+                    const incomingDirection = V.unit(
+                        V.sub(
+                            stationPoint,
+                            previousPoint
+                        )
+                    );
 
-        const outgoingDirection = V.unit(
-            V.sub(
-                nextPoint,
-                stationPoint
-            )
-        );
+                    const outgoingDirection = V.unit(
+                        V.sub(
+                            nextPoint,
+                            stationPoint
+                        )
+                    );
 
-        const incomingLength = V.len(
-            V.sub(
-                stationPoint,
-                previousPoint
-            )
-        );
+                    const incomingLength = V.len(
+                        V.sub(
+                            stationPoint,
+                            previousPoint
+                        )
+                    );
 
-        const outgoingLength = V.len(
-            V.sub(
-                nextPoint,
-                stationPoint
-            )
-        );
+                    const outgoingLength = V.len(
+                        V.sub(
+                            nextPoint,
+                            stationPoint
+                        )
+                    );
 
-        const straight = Math.min(
-            line.lead,
-            incomingLength * 0.22,
-            outgoingLength * 0.22
-        );
+                    const straight = Math.min(
+                        line.lead,
+                        incomingLength * 0.22,
+                        outgoingLength * 0.22
+                    );
 
-        /*
-         * El corredor compartido por más líneas es el
-         * que mantiene su dirección después de la estación.
-         */
-        const continuationDirection =
-            incomingCount >= outgoingCount
-                ? incomingDirection
-                : outgoingDirection;
+                    /*
+                     * El corredor compartido por más líneas es el
+                     * que mantiene su dirección después de la estación.
+                     */
+                    const continuationDirection =
+                        incomingCount >= outgoingCount
+                            ? incomingDirection
+                            : outgoingDirection;
 
-        const continuation = V.add(
-            stationPoint,
-            V.mul(
-                continuationDirection,
-                straight
-            )
-        );
+                    const continuation = V.add(
+                        stationPoint,
+                        V.mul(
+                            continuationDirection,
+                            straight
+                        )
+                    );
 
-        if (
-            V.len(
-                V.sub(
-                    continuation,
-                    stationPoint
-                )
-            ) > 0.5
-        ) {
-            nodes.push(continuation);
-        }
-    }
+                    if (
+                        V.len(
+                            V.sub(
+                                continuation,
+                                stationPoint
+                            )
+                        ) > 0.5
+                    ) {
+                        nodes.push(continuation);
+                    }
+                }
 
-    return nodes;
-}
+                return nodes;
+            }
 
             function roundedPolyline(points, radius) {
                 const pts = points.filter((p, i, a) => !i || V.len(V.sub(p, a[i - 1])) > 0.5);
