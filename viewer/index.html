@@ -9,9 +9,30 @@ function parseLines(x){return[...x.querySelectorAll('line')].map((n,i)=>({id:n.g
 function prepare(){edgeLines.clear();for(const l of lines)for(let i=0;i<l.stops.length-1;i++){const k=edgeKey(l.stops[i].station,l.stops[i+1].station);if(!edgeLines.has(k))edgeLines.set(k,[]);edgeLines.get(k).push(l.id)}for(const ids of edgeLines.values())ids.sort();ports.clear();for(const s of stations.values()){const ids=lines.filter(l=>l.stops.some(p=>p.station===s.id)).map(l=>l.id).sort();const maxW=Math.max(10,...ids.map(id=>lines.find(l=>l.id===id).width));const pitch=maxW+14;ids.forEach((id,i)=>ports.set(`${s.id}|${id}`,{x:s.x+(i-(ids.length-1)/2)*pitch,y:s.y}))}}
 function laneOffset(line,a,b){const ids=edgeLines.get(edgeKey(a,b))||[line.id],A=stations.get(a),B=stations.get(b),n=normal(unit(A,B)),maxW=Math.max(...ids.map(id=>lines.find(l=>l.id===id).width)),pitch=maxW+14,d=(ids.indexOf(line.id)-(ids.length-1)/2)*pitch;return{x:n.x*d,y:n.y*d}}
 function clean(points){const out=[];for(const p of points){const q=out.at(-1);if(!q||dist(q,p)>.8)out.push(p)}return out}
-function edgePoints(line,i){const sa=stations.get(line.stops[i].station),sb=stations.get(line.stops[i+1].station),a=ports.get(`${sa.id}|${line.id}`),b=ports.get(`${sb.id}|${line.id}`),off=laneOffset(line,sa.id,sb.id),ca={x:sa.x+off.x,y:sa.y+off.y},cb={x:sb.x+off.x,y:sb.y+off.y},u=unit(sa,sb),lead=Math.min(32,dist(sa,sb)*.18),aOut=move(a,u,lead),bIn=move(b,u,-lead),caOut=move(ca,u,lead),cbIn=move(cb,u,-lead);/* Sin curvas en la estación. Los conectores terminan antes del corredor central. */return clean([a,aOut,caOut,cbIn,bIn,b])}
-function roundedPath(points,r){if(points.length<2)return'';let d=`M${points[0].x} ${points[0].y}`;for(let i=1;i<points.length-1;i++){const a=points[i-1],b=points[i],c=points[i+1],ab=dist(a,b),bc=dist(b,c);if(ab<2||bc<2){d+=` L${b.x} ${b.y}`;continue}const u1=unit(b,a),u2=unit(b,c),cross=Math.abs(u1.x*u2.y-u1.y*u2.x);if(cross<.03){d+=` L${b.x} ${b.y}`;continue}const rr=Math.min(r,ab*.25,bc*.25),p=move(b,u1,rr),q=move(b,u2,rr);d+=` L${p.x} ${p.y} Q${b.x} ${b.y} ${q.x} ${q.y}`}const z=points.at(-1);return d+` L${z.x} ${z.y}`}
-function linePath(line){return line.stops.slice(0,-1).map((_,i)=>roundedPath(edgePoints(line,i),line.radius)).join(' ')}
+function edgePoints(line,i){
+  const sa=stations.get(line.stops[i].station);
+  const sb=stations.get(line.stops[i+1].station);
+  const a=ports.get(`${sa.id}|${line.id}`);
+  const b=ports.get(`${sb.id}|${line.id}`);
+  const off=laneOffset(line,sa.id,sb.id);
+  const u=unit(sa,sb);
+  const lead=Math.min(38,dist(sa,sb)*.20);
+  const corridorStart={x:sa.x+off.x+u.x*lead,y:sa.y+off.y+u.y*lead};
+  const corridorEnd={x:sb.x+off.x-u.x*lead,y:sb.y+off.y-u.y*lead};
+  return clean([a,corridorStart,corridorEnd,b]);
+}
+function polylinePath(points){
+  if(points.length<2)return'';
+  return `M${points.map((p,i)=>`${i?'L':''}${p.x} ${p.y}`).join(' ')}`;
+}
+function linePath(line){
+  /* Geometría deliberadamente estable: cada enlace tiene dos conectores
+     rectos y un corredor central. No se aplican Bézier ni redondeos
+     automáticos cerca de las estaciones. */
+  return line.stops.slice(0,-1)
+    .map((_,i)=>polylinePath(edgePoints(line,i)))
+    .join(' ');
+}
 function directionAt(line,i){if(i<line.stops.length-1){const p=edgePoints(line,i);return unit(p[0],p[1])}const p=edgePoints(line,i-1);return unit(p.at(-2),p.at(-1))}
 function arrow(g,p,v,color,side){const u={x:v.x*side,y:v.y*side},n=normal(u),b=move(p,u,-14);g.append(el('polygon',{points:`${p.x+u.x*15},${p.y+u.y*15} ${b.x+n.x*10},${b.y+n.y*10} ${b.x+n.x*4},${b.y+n.y*4} ${p.x-u.x*3},${p.y-u.y*3} ${b.x-n.x*4},${b.y-n.y*4} ${b.x-n.x*10},${b.y-n.y*10}`,fill:color}))}
 function marker(g,line,i){const stop=line.stops[i];if(stop.serve==='none')return;const p=ports.get(`${stop.station}|${line.id}`),v=directionAt(line,i);if(stop.serve==='forward')arrow(g,p,v,line.color,1);if(stop.serve==='reverse')arrow(g,p,v,line.color,-1);g.append(el('circle',{cx:p.x,cy:p.y,r:9,stroke:line.color,'class':'ring'}))}
