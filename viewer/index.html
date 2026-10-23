@@ -793,14 +793,22 @@ function entryLeadPoint(line, index) {
 
 function exitLeadPoint(line, index) {
     const stop = line.stops[index];
-    const direction = portDirection(
-        stop.exitPort
-    );
+
+    if (stop.exitPort === 'auto') {
+        return null;
+    }
+
+    const direction = portDirection(stop.exitPort);
 
     if (!direction) {
         return null;
     }
 
+    /*
+     * nodePoint() ya contiene el desplazamiento del carril.
+     * Por tanto, exitLead prolonga la línea desde ese mismo
+     * carril sin recentrarla.
+     */
     const node = nodePoint(line, index);
 
     return V.add(
@@ -821,6 +829,33 @@ function exitLeadPoint(line, index) {
                 if (portPoint) {
                     return portPoint;
                 }
+
+                /*
+ * Si se ha especificado manualmente una salida,
+ * el nodo conserva exactamente el carril de entrada.
+ *
+ * El cambio de dirección ocurrirá DESPUÉS,
+ * mediante exitLeadPoint().
+ */
+if (
+    i > 0 &&
+    stop.exitPort !== 'auto'
+) {
+    const prev =
+        line.stops[i - 1].station;
+
+    const incoming =
+        directedLane(
+            line,
+            prev,
+            S.id
+        );
+
+    return V.add(
+        S,
+        incoming.off
+    );
+}
 
                 if (i === 0) {
                     const next = line.stops[1].station;
