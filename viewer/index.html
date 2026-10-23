@@ -368,93 +368,6 @@
         function routePoints(line) {
           return line.stops.map((_, i) => nodePoint(line, i));
         }
-        
-        /*
- * Sustituye en index.html las funciones nodePoint() y expandedRoutePoints()
- * por este bloque. Mantiene separados los nodos que llegan desde corredores
- * distintos, sin obligarlos a compartir la alineacion del corredor principal.
- */
-
-function corridorSignature(vector) {
-  let angle = Math.atan2(vector.y, vector.x);
-  if (angle < 0) angle += Math.PI * 2;
-
-  // Un corredor no tiene sentido: 0 grados y 180 grados son el mismo eje.
-  angle %= Math.PI;
-
-  // Agrupacion estable en ejes esquematicos de 15 grados.
-  return Math.round(angle / (Math.PI / 12));
-}
-
-function stationApproaches(line, index) {
-  const stationId = line.stops[index].station;
-  const station = stations.get(stationId);
-  const result = [];
-
-  if (index > 0) {
-    const previousId = line.stops[index - 1].station;
-    const previous = stations.get(previousId);
-    const vector = V.unit(V.sub(previous, station)); // desde la estacion hacia el corredor
-    const edgeGroup = groups.get(key(previousId, stationId)) || [line.id];
-
-    result.push({
-      side: 'incoming',
-      vector,
-      signature: corridorSignature(vector),
-      count: edgeGroup.length,
-      edgeGroup,
-      adjacentId: previousId
-    });
-  }
-
-  if (index < line.stops.length - 1) {
-    const nextId = line.stops[index + 1].station;
-    const next = stations.get(nextId);
-    const vector = V.unit(V.sub(next, station));
-    const edgeGroup = groups.get(key(stationId, nextId)) || [line.id];
-
-    result.push({
-      side: 'outgoing',
-      vector,
-      signature: corridorSignature(vector),
-      count: edgeGroup.length,
-      edgeGroup,
-      adjacentId: nextId
-    });
-  }
-
-  return result;
-}
-
-function dominantApproach(line, index) {
-  const approaches = stationApproaches(line, index);
-  if (approaches.length === 1) return approaches[0];
-
-  /*
-   * Se conserva el corredor compartido por mas lineas.
-   * En empate se conserva el corredor de llegada, que visualmente produce
-   * una continuacion natural antes de la curva.
-   */
-  return approaches.reduce((best, current) => {
-    if (!best) return current;
-    if (current.count > best.count) return current;
-    if (current.count === best.count && current.side === 'incoming') return current;
-    return best;
-  }, null);
-}
-
-function corridorPeersAtStation(line, index, approach) {
-  const stationId = line.stops[index].station;
-
-  return lines
-    .filter(candidate => {
-      const candidateIndex = candidate.stops.findIndex(stop => stop.station === stationId);
-      if (candidateIndex < 0) return false;
-      const candidateApproach = dominantApproach(candidate, candidateIndex);
-      return candidateApproach && candidateApproach.signature === approach.signature;
-    })
-    .sort((a, b) => a.id.localeCompare(b.id));
-}
 
 
         function nodePoint(line, i) {
@@ -626,20 +539,31 @@ function expandedRoutePoints(line) {
 }
 
         function stopGlyph(g, line, i) {
-          let st = line.stops[i];
-          if (st.serve === 'none') return;
-          let p = stopDisplayPoint(line, i);
-            v = tangent(line, i);
-          if (st.serve === 'forward') arrow(g, p, v, line.color, 1);
-          if (st.serve === 'reverse') arrow(g, p, v, line.color, -1);
-          g.append(el('circle', {
-            cx: p.x,
-            cy: p.y,
-            r: 8.5,
-            stroke: line.color,
-            'class': 'stop'
-          }))
-        }
+  const st = line.stops[i];
+
+  if (st.serve === 'none') {
+    return;
+  }
+
+  const p = stopDisplayPoint(line, i);
+  const v = tangent(line, i);
+
+  if (st.serve === 'forward') {
+    arrow(g, p, v, line.color, 1);
+  }
+
+  if (st.serve === 'reverse') {
+    arrow(g, p, v, line.color, -1);
+  }
+
+  g.append(el('circle', {
+    cx: p.x,
+    cy: p.y,
+    r: 8.5,
+    stroke: line.color,
+    'class': 'stop'
+  }));
+}
 
         function render() {
           view.replaceChildren();
