@@ -1,127 +1,801 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>RailMap</title><style>
-:root{--bg:#f6f7fb;--ink:#111827;--panel:#fffffff2;--border:#d9deea;--grid:#1e293b0b}*{box-sizing:border-box}html,body{height:100%;margin:0;overflow:hidden;font:14px Inter,system-ui,sans-serif;color:var(--ink);background:var(--bg)}.app{height:100%;display:grid;grid-template-rows:58px 1fr}.bar{display:flex;align-items:center;gap:8px;padding:9px 15px;background:var(--panel);border-bottom:1px solid var(--border);z-index:2}.brand{font-size:20px;font-weight:850;margin-right:auto}.brand b{color:#4f46e5}.bar input,.bar button{height:38px;border:1px solid var(--border);border-radius:10px;background:#fff;color:#111827;padding:0 12px}.bar input{width:min(300px,36vw)}.bar button{cursor:pointer}.bar .primary{background:#111827;color:#fff}.stage{position:relative;overflow:hidden;background-image:radial-gradient(circle,var(--grid) 1px,transparent 1px);background-size:24px 24px}svg{width:100%;height:100%;display:block;touch-action:none;cursor:grab}.routeHalo,.routeLine{fill:none;stroke-linecap:round;stroke-linejoin:round}.routeHalo{stroke:var(--bg)}.stationLabel{font-size:16px;font-weight:760;fill:#111827;paint-order:stroke;stroke:var(--bg);stroke-width:6px;stroke-linejoin:round}.stop{fill:var(--bg);stroke-width:5}.oneway{fill:var(--bg)}.hit{fill:transparent}.route.dim,.station.dim{opacity:.12}.station.match .stationLabel{fill:#f59e0b}.legend{position:absolute;left:15px;bottom:15px;width:250px;max-height:40%;overflow:auto;padding:10px;background:var(--panel);border:1px solid var(--border);border-radius:14px;box-shadow:0 15px 42px #0f172426}.legend h2{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin:2px 6px 7px}.legend button{display:flex;align-items:center;gap:9px;width:100%;border:0;border-radius:9px;background:transparent;padding:8px;cursor:pointer;text-align:left}.sw{width:28px;height:7px;border-radius:8px}.status,.tip{position:absolute;z-index:3;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:10px 13px;box-shadow:0 12px 36px #0f17242e}.status{top:14px;left:50%;transform:translateX(-50%)}.tip{pointer-events:none;max-width:290px}.status[hidden],.tip[hidden]{display:none}
-</style></head><body><main class="app"><header class="bar"><div class="brand"><b>Rail</b>Map</div><input id="search" placeholder="Buscar estación…"><button id="minus">−</button><button id="plus">+</button><button class="primary" id="fit">Centrar</button></header><section class="stage" id="stage"><svg id="map"><g id="view"></g></svg><div class="status" id="status">Cargando mapa…</div><aside class="legend" id="legend"><h2>Líneas</h2></aside><div class="tip" id="tip" hidden></div></section></main><script>
-(()=>{'use strict';
-const NS='http://www.w3.org/2000/svg',$=q=>document.querySelector(q),svg=$('#map'),view=$('#view'),stage=$('#stage'),legend=$('#legend'),status=$('#status'),tip=$('#tip');let stations=new Map,lines=[],groups=new Map,cam={x:0,y:0,s:1},bounds,drag;
-const V={add:(a,b)=>({x:a.x+b.x,y:a.y+b.y}),sub:(a,b)=>({x:a.x-b.x,y:a.y-b.y}),mul:(a,k)=>({x:a.x*k,y:a.y*k}),len:a=>Math.hypot(a.x,a.y),unit:a=>{let d=Math.hypot(a.x,a.y)||1;return{x:a.x/d,y:a.y/d}},normal:a=>({x:-a.y,y:a.x})};
-const el=(n,a={},t='')=>{let e=document.createElementNS(NS,n);Object.entries(a).forEach(([k,v])=>e.setAttribute(k,v));if(t)e.textContent=t;return e},esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),key=(a,b)=>[a,b].sort().join('|');
-async function getXml(f){let r=await fetch(f,{cache:'no-store'});if(!r.ok)throw Error(`${f}: HTTP ${r.status}`);let x=new DOMParser().parseFromString(await r.text(),'application/xml');if(x.querySelector('parsererror'))throw Error(`${f}: XML no válido`);return x}
-function parseStations(x){return new Map([...x.querySelectorAll('station')].map(n=>[n.getAttribute('id'),{id:n.getAttribute('id'),name:n.getAttribute('name')||n.getAttribute('id'),x:+n.getAttribute('x'),y:+n.getAttribute('y'),label:n.getAttribute('label')||'auto'}]))}
-function parseLines(x){return [...x.querySelectorAll('line')].map((n,i)=>({id:n.getAttribute('id')||`L${i}`,name:n.getAttribute('name')||n.getAttribute('id')||`Línea ${i+1}`,color:n.getAttribute('color')||'#64748b',width:+n.getAttribute('width')||10,gap:+n.getAttribute('gap')||8,radius:+n.getAttribute('radius')||16,lead:+n.getAttribute('lead')||32,stops:[...n.querySelectorAll('stop')].map(s=>{let serve=(s.getAttribute('serve')||'both').toLowerCase();if((s.getAttribute('calls')||'').toLowerCase()==='false')serve='none';return{station:s.getAttribute('station'),serve}})})).filter(l=>l.stops.length>1)}
-function prepare(){groups.clear();for(const l of lines)for(let i=0;i<l.stops.length-1;i++){let k=key(l.stops[i].station,l.stops[i+1].station);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(l.id)}for(const a of groups.values())a.sort()}
-function lineIndexOnEdge(line,aId,bId){
-  const ids=groups.get(key(aId,bId))||[line.id];
-  const maxWidth=Math.max(...ids.map(id=>lines.find(l=>l.id===id).width));
-  const pitch=maxWidth+Math.max(line.gap,8);
-  return {ids,pitch,index:ids.indexOf(line.id)};
-}
-function directedLane(line,aId,bId){
-  const A=stations.get(aId),B=stations.get(bId);
-  const u=V.unit(V.sub(B,A));
-  const n=V.normal(u);
-  const info=lineIndexOnEdge(line,aId,bId);
-  const d=(info.index-(info.ids.length-1)/2)*info.pitch;
-  return {u,n,d,off:V.mul(n,d)};
-}
-function intersection(p,u,q,v){
-  const cross=u.x*v.y-u.y*v.x;
-  if(Math.abs(cross)<0.0001)return null;
-  const qp=V.sub(q,p);
-  const t=(qp.x*v.y-qp.y*v.x)/cross;
-  return V.add(p,V.mul(u,t));
-}
-function nodePoint(line,i){
-  const stop=line.stops[i],S=stations.get(stop.station);
-  if(i===0){
-    const next=line.stops[1].station;
-    return V.add(S,directedLane(line,S.id,next).off);
-  }
-  if(i===line.stops.length-1){
-    const prev=line.stops[i-1].station;
-    return V.add(S,directedLane(line,prev,S.id).off);
-  }
-  const prev=line.stops[i-1].station,next=line.stops[i+1].station;
-  const incoming=directedLane(line,prev,S.id);
-  const outgoing=directedLane(line,S.id,next);
-  const p=V.add(S,incoming.off),q=V.add(S,outgoing.off);
-  /* Intersección de los dos carriles desplazados. Mantiene el mismo orden
-     de líneas antes y después del giro, sin cruces ni intercambio de lado. */
-  const hit=intersection(p,incoming.u,q,outgoing.u);
-  if(!hit||V.len(V.sub(hit,S))>80)return V.mul(V.add(p,q),0.5);
-  return hit;
-}
-function routePoints(line){
-  return line.stops.map((_,i)=>nodePoint(line,i));
-}
-function expandedRoutePoints(line){
-  const nodes=routePoints(line);
-  if(nodes.length<3)return nodes;
-  const out=[nodes[0]];
-  for(let i=1;i<nodes.length-1;i++){
-    const previous=nodes[i-1],station=nodes[i],next=nodes[i+1];
-    const incoming=V.unit(V.sub(station,previous));
-    const outgoing=V.unit(V.sub(next,station));
-    const availableIn=V.len(V.sub(station,previous));
-    const availableOut=V.len(V.sub(next,station));
-    const straight=Math.min(line.lead,availableIn*0.22,availableOut*0.22);
-    const previousId=line.stops[i-1].station;
-    const stationId=line.stops[i].station;
-    const nextId=line.stops[i+1].station;
-    const incomingCount=(groups.get(key(previousId,stationId))||[]).length;
-    const outgoingCount=(groups.get(key(stationId,nextId))||[]).length;
+<!doctype html>
+<html lang="es">
 
-    if(outgoingCount>incomingCount){
-      /* El corredor principal está después de la estación en el orden XML.
-         Visualmente la línea debe prolongar dicho corredor al otro lado de
-         la estación y hacer allí el giro hacia el ramal anterior. */
-      const beforeStation=V.add(station,V.mul(outgoing,-straight));
-      if(V.len(V.sub(beforeStation,out.at(-1)))>0.5)out.push(beforeStation);
-      out.push(station);
-    }else{
-      /* El corredor principal llega por el tramo anterior: se mantiene su
-         dirección más allá de la estación antes de iniciar el giro. */
-      out.push(station);
-      const afterStation=V.add(station,V.mul(incoming,straight));
-      if(V.len(V.sub(afterStation,station))>0.5)out.push(afterStation);
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>RailMap</title>
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --ink: #111827;
+        --panel: #fffffff2;
+        --border: #d9deea;
+        --grid: #1e293b0b
+      }
+
+      * {
+        box-sizing: border-box
+      }
+
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font: 14px Inter, system-ui, sans-serif;
+        color: var(--ink);
+        background: var(--bg)
+      }
+
+      .app {
+        height: 100%;
+        display: grid;
+        grid-template-rows: 58px 1fr
+      }
+
+      .bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 15px;
+        background: var(--panel);
+        border-bottom: 1px solid var(--border);
+        z-index: 2
+      }
+
+      .brand {
+        font-size: 20px;
+        font-weight: 850;
+        margin-right: auto
+      }
+
+      .brand b {
+        color: #4f46e5
+      }
+
+      .bar input,
+      .bar button {
+        height: 38px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+        color: #111827;
+        padding: 0 12px
+      }
+
+      .bar input {
+        width: min(300px, 36vw)
+      }
+
+      .bar button {
+        cursor: pointer
+      }
+
+      .bar .primary {
+        background: #111827;
+        color: #fff
+      }
+
+      .stage {
+        position: relative;
+        overflow: hidden;
+        background-image: radial-gradient(circle, var(--grid) 1px, transparent 1px);
+        background-size: 24px 24px
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+        touch-action: none;
+        cursor: grab
+      }
+
+      .routeHalo,
+      .routeLine {
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round
+      }
+
+      .routeHalo {
+        stroke: var(--bg)
+      }
+
+      .stationLabel {
+        font-size: 16px;
+        font-weight: 760;
+        fill: #111827;
+        paint-order: stroke;
+        stroke: var(--bg);
+        stroke-width: 6px;
+        stroke-linejoin: round
+      }
+
+      .stop {
+        fill: var(--bg);
+        stroke-width: 5
+      }
+
+      .oneway {
+        fill: var(--bg)
+      }
+
+      .hit {
+        fill: transparent
+      }
+
+      .route.dim,
+      .station.dim {
+        opacity: .12
+      }
+
+      .station.match .stationLabel {
+        fill: #f59e0b
+      }
+
+      .legend {
+        position: absolute;
+        left: 15px;
+        bottom: 15px;
+        width: 250px;
+        max-height: 40%;
+        overflow: auto;
+        padding: 10px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: 0 15px 42px #0f172426
+      }
+
+      .legend h2 {
+        font-size: 11px;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: #64748b;
+        margin: 2px 6px 7px
+      }
+
+      .legend button {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: 100%;
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        padding: 8px;
+        cursor: pointer;
+        text-align: left
+      }
+
+      .sw {
+        width: 28px;
+        height: 7px;
+        border-radius: 8px
+      }
+
+      .status,
+      .tip {
+        position: absolute;
+        z-index: 3;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 11px;
+        padding: 10px 13px;
+        box-shadow: 0 12px 36px #0f17242e
+      }
+
+      .status {
+        top: 14px;
+        left: 50%;
+        transform: translateX(-50%)
+      }
+
+      .tip {
+        pointer-events: none;
+        max-width: 290px
+      }
+
+      .status[hidden],
+      .tip[hidden] {
+        display: none
+      }
+    </style>
+  </head>
+
+  <body>
+    <main class="app">
+      <header class="bar">
+        <div class="brand"><b>Rail</b>Map</div><input id="search" placeholder="Buscar estación…"><button id="minus">−</button><button id="plus">+</button><button class="primary" id="fit">Centrar</button>
+      </header>
+      <section class="stage" id="stage"><svg id="map">
+          <g id="view"></g>
+        </svg>
+        <div class="status" id="status">Cargando mapa…</div>
+        <aside class="legend" id="legend">
+          <h2>Líneas</h2>
+        </aside>
+        <div class="tip" id="tip" hidden></div>
+      </section>
+    </main>
+    <script>
+      (() => {
+        'use strict';
+        const NS = 'http://www.w3.org/2000/svg',
+          $ = q => document.querySelector(q),
+          svg = $('#map'),
+          view = $('#view'),
+          stage = $('#stage'),
+          legend = $('#legend'),
+          status = $('#status'),
+          tip = $('#tip');
+        let stations = new Map,
+          lines = [],
+          groups = new Map,
+          cam = {
+            x: 0,
+            y: 0,
+            s: 1
+          },
+          bounds, drag;
+        const V = {
+          add: (a, b) => ({
+            x: a.x + b.x,
+            y: a.y + b.y
+          }),
+          sub: (a, b) => ({
+            x: a.x - b.x,
+            y: a.y - b.y
+          }),
+          mul: (a, k) => ({
+            x: a.x * k,
+            y: a.y * k
+          }),
+          len: a => Math.hypot(a.x, a.y),
+          unit: a => {
+            let d = Math.hypot(a.x, a.y) || 1;
+            return {
+              x: a.x / d,
+              y: a.y / d
+            }
+          },
+          normal: a => ({
+            x: -a.y,
+            y: a.x
+          })
+        };
+        const el = (n, a = {}, t = '') => {
+            let e = document.createElementNS(NS, n);
+            Object.entries(a).forEach(([k, v]) => e.setAttribute(k, v));
+            if (t) e.textContent = t;
+            return e
+          },
+          esc = s => String(s).replace(/[&<>"']/g, c => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+          } [c])),
+          key = (a, b) => [a, b].sort().join('|');
+        async function getXml(f) {
+          let r = await fetch(f, {
+            cache: 'no-store'
+          });
+          if (!r.ok) throw Error(`${f}: HTTP ${r.status}`);
+          let x = new DOMParser().parseFromString(await r.text(), 'application/xml');
+          if (x.querySelector('parsererror')) throw Error(`${f}: XML no válido`);
+          return x
+        }
+
+        function parseStations(x) {
+          return new Map([...x.querySelectorAll('station')].map(n => [n.getAttribute('id'), {
+            id: n.getAttribute('id'),
+            name: n.getAttribute('name') || n.getAttribute('id'),
+            x: +n.getAttribute('x'),
+            y: +n.getAttribute('y'),
+            label: n.getAttribute('label') || 'auto'
+          }]))
+        }
+
+        function parseLines(x) {
+          return [...x.querySelectorAll('line')].map((n, i) => ({
+            id: n.getAttribute('id') || `L${i}`,
+            name: n.getAttribute('name') || n.getAttribute('id') || `Línea ${i+1}`,
+            color: n.getAttribute('color') || '#64748b',
+            width: +n.getAttribute('width') || 10,
+            gap: +n.getAttribute('gap') || 8,
+            radius: +n.getAttribute('radius') || 16,
+            lead: +n.getAttribute('lead') || 32,
+            stops: [...n.querySelectorAll('stop')].map(s => {
+              let serve = (s.getAttribute('serve') || 'both').toLowerCase();
+              if ((s.getAttribute('calls') || '').toLowerCase() === 'false') serve = 'none';
+              return {
+                station: s.getAttribute('station'),
+                serve
+              }
+            })
+          })).filter(l => l.stops.length > 1)
+        }
+
+        function prepare() {
+          groups.clear();
+          for (const l of lines)
+            for (let i = 0; i < l.stops.length - 1; i++) {
+              let k = key(l.stops[i].station, l.stops[i + 1].station);
+              if (!groups.has(k)) groups.set(k, []);
+              groups.get(k).push(l.id)
+            }
+          for (const a of groups.values()) a.sort()
+        }
+
+        function lineIndexOnEdge(line, aId, bId) {
+          const ids = groups.get(key(aId, bId)) || [line.id];
+          const maxWidth = Math.max(...ids.map(id => lines.find(l => l.id === id).width));
+          const pitch = maxWidth + Math.max(line.gap, 8);
+          return {
+            ids,
+            pitch,
+            index: ids.indexOf(line.id)
+          };
+        }
+
+        function directedLane(line, aId, bId) {
+          const A = stations.get(aId),
+            B = stations.get(bId);
+          const u = V.unit(V.sub(B, A));
+          const n = V.normal(u);
+          const info = lineIndexOnEdge(line, aId, bId);
+          const d = (info.index - (info.ids.length - 1) / 2) * info.pitch;
+          return {
+            u,
+            n,
+            d,
+            off: V.mul(n, d)
+          };
+        }
+
+        function intersection(p, u, q, v) {
+          const cross = u.x * v.y - u.y * v.x;
+          if (Math.abs(cross) < 0.0001) return null;
+          const qp = V.sub(q, p);
+          const t = (qp.x * v.y - qp.y * v.x) / cross;
+          return V.add(p, V.mul(u, t));
+        }
+
+        function routePoints(line) {
+          return line.stops.map((_, i) => nodePoint(line, i));
+        }
+        
+        /*
+ * Sustituye en index.html las funciones nodePoint() y expandedRoutePoints()
+ * por este bloque. Mantiene separados los nodos que llegan desde corredores
+ * distintos, sin obligarlos a compartir la alineacion del corredor principal.
+ */
+
+function corridorSignature(vector) {
+  let angle = Math.atan2(vector.y, vector.x);
+  if (angle < 0) angle += Math.PI * 2;
+
+  // Un corredor no tiene sentido: 0 grados y 180 grados son el mismo eje.
+  angle %= Math.PI;
+
+  // Agrupacion estable en ejes esquematicos de 15 grados.
+  return Math.round(angle / (Math.PI / 12));
+}
+
+function stationApproaches(line, index) {
+  const stationId = line.stops[index].station;
+  const station = stations.get(stationId);
+  const result = [];
+
+  if (index > 0) {
+    const previousId = line.stops[index - 1].station;
+    const previous = stations.get(previousId);
+    const vector = V.unit(V.sub(previous, station)); // desde la estacion hacia el corredor
+    const edgeGroup = groups.get(key(previousId, stationId)) || [line.id];
+
+    result.push({
+      side: 'incoming',
+      vector,
+      signature: corridorSignature(vector),
+      count: edgeGroup.length,
+      edgeGroup,
+      adjacentId: previousId
+    });
+  }
+
+  if (index < line.stops.length - 1) {
+    const nextId = line.stops[index + 1].station;
+    const next = stations.get(nextId);
+    const vector = V.unit(V.sub(next, station));
+    const edgeGroup = groups.get(key(stationId, nextId)) || [line.id];
+
+    result.push({
+      side: 'outgoing',
+      vector,
+      signature: corridorSignature(vector),
+      count: edgeGroup.length,
+      edgeGroup,
+      adjacentId: nextId
+    });
+  }
+
+  return result;
+}
+
+function dominantApproach(line, index) {
+  const approaches = stationApproaches(line, index);
+  if (approaches.length === 1) return approaches[0];
+
+  /*
+   * Se conserva el corredor compartido por mas lineas.
+   * En empate se conserva el corredor de llegada, que visualmente produce
+   * una continuacion natural antes de la curva.
+   */
+  return approaches.reduce((best, current) => {
+    if (!best) return current;
+    if (current.count > best.count) return current;
+    if (current.count === best.count && current.side === 'incoming') return current;
+    return best;
+  }, null);
+}
+
+function corridorPeersAtStation(line, index, approach) {
+  const stationId = line.stops[index].station;
+
+  return lines
+    .filter(candidate => {
+      const candidateIndex = candidate.stops.findIndex(stop => stop.station === stationId);
+      if (candidateIndex < 0) return false;
+      const candidateApproach = dominantApproach(candidate, candidateIndex);
+      return candidateApproach && candidateApproach.signature === approach.signature;
+    })
+    .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+function nodePoint(line, index) {
+  const station = stations.get(line.stops[index].station);
+  const approach = dominantApproach(line, index);
+  if (!approach) return { x: station.x, y: station.y };
+
+  const peers = corridorPeersAtStation(line, index, approach);
+  const peerIndex = Math.max(0, peers.findIndex(peer => peer.id === line.id));
+  const maxWidth = Math.max(10, ...peers.map(peer => peer.width));
+  const pitch = maxWidth + 12;
+  const across = (peerIndex - (peers.length - 1) / 2) * pitch;
+  const perpendicular = V.normal(approach.vector);
+
+  /*
+   * Si en la estacion convergen varios corredores, cada corredor recibe
+   * su propia zona de acceso alrededor de la estacion. De este modo una
+   * linea que llega desde el norte conserva una entrada norte-sur y no se
+   * superpone con los nodos de un corredor diagonal u horizontal.
+   */
+  const signatures = new Set();
+  for (const candidate of lines) {
+    const candidateIndex = candidate.stops.findIndex(stop => stop.station === station.id);
+    if (candidateIndex < 0) continue;
+    const candidateApproach = dominantApproach(candidate, candidateIndex);
+    if (candidateApproach) signatures.add(candidateApproach.signature);
+  }
+
+  const radialDistance = signatures.size > 1 ? 15 : 0;
+  const radial = V.mul(approach.vector, radialDistance);
+  const lateral = V.mul(perpendicular, across);
+
+  return V.add(station, V.add(radial, lateral));
+}
+
+function expandedRoutePoints(line) {
+  const nodes = routePoints(line);
+  if (nodes.length < 3) return nodes;
+
+  const out = [nodes[0]];
+
+  for (let index = 1; index < nodes.length - 1; index++) {
+    const previous = nodes[index - 1];
+    const station = nodes[index];
+    const next = nodes[index + 1];
+    const incoming = V.unit(V.sub(station, previous));
+    const outgoing = V.unit(V.sub(next, station));
+    const availableIncoming = V.len(V.sub(station, previous));
+    const availableOutgoing = V.len(V.sub(next, station));
+    const straight = Math.min(
+      line.lead,
+      availableIncoming * 0.22,
+      availableOutgoing * 0.22
+    );
+
+    const approach = dominantApproach(line, index);
+    out.push(station);
+
+    if (!approach) continue;
+
+    /*
+     * El tramo recto posterior a la estacion sigue el eje del corredor
+     * dominante, no el vector artificial entre nodos de corredores distintos.
+     */
+    let continuation;
+    if (approach.side === 'incoming') {
+      continuation = V.mul(approach.vector, -straight);
+    } else {
+      continuation = V.mul(approach.vector, straight);
+    }
+
+    const bendStart = V.add(station, continuation);
+    if (V.len(V.sub(bendStart, station)) > 0.5) out.push(bendStart);
+
+    const dot = incoming.x * outgoing.x + incoming.y * outgoing.y;
+    if (dot > -0.85) {
+      const bendEnd = V.add(
+        bendStart,
+        V.mul(outgoing, Math.min(straight * 0.55, 18))
+      );
+      if (V.len(V.sub(bendEnd, bendStart)) > 0.5) out.push(bendEnd);
     }
   }
+
   out.push(nodes.at(-1));
   return out;
 }
-function roundedPolyline(points,radius){
-  const pts=points.filter((p,i,a)=>!i||V.len(V.sub(p,a[i-1]))>0.5);
-  if(pts.length<2)return '';
-  let d=`M${pts[0].x} ${pts[0].y}`;
-  for(let i=1;i<pts.length-1;i++){
-    const a=pts[i-1],b=pts[i],c=pts[i+1];
-    const ab=V.len(V.sub(a,b)),bc=V.len(V.sub(c,b));
-    if(ab<1||bc<1){d+=` L${b.x} ${b.y}`;continue;}
-    const u1=V.unit(V.sub(a,b)),u2=V.unit(V.sub(c,b));
-    const cross=Math.abs(u1.x*u2.y-u1.y*u2.x);
-    if(cross<0.02){d+=` L${b.x} ${b.y}`;continue;}
-    const r=Math.min(radius,ab*0.35,bc*0.35);
-    const p1=V.add(b,V.mul(u1,r)),p2=V.add(b,V.mul(u2,r));
-    d+=` L${p1.x} ${p1.y} Q${b.x} ${b.y} ${p2.x} ${p2.y}`;
-  }
-  const last=pts.at(-1);
-  return d+` L${last.x} ${last.y}`;
-}
-function linePath(line){
-  /* El nodo de estación nunca es un vértice de giro. Primero se prolonga
-     el tramo entrante y sólo después se redondea el cambio de dirección. */
-  return roundedPolyline(expandedRoutePoints(line),line.radius);
-}
-function tangent(line,i){
-  const points=routePoints(line),p=points[i];
-  if(i>0)return V.unit(V.sub(p,points[i-1]));
-  return V.unit(V.sub(points[1],p));
-}
-function arrow(g,p,v,color,side){let u=V.mul(v,side),n=V.normal(u),tip=V.add(p,V.mul(u,14)),back=V.add(p,V.mul(u,-10)),a=V.add(back,V.mul(n,9)),b=V.add(back,V.mul(n,-9));g.append(el('polygon',{points:`${tip.x},${tip.y} ${a.x},${a.y} ${p.x},${p.y} ${b.x},${b.y}`,fill:color,'class':'oneway'}))}
-function stopGlyph(g,line,i){let st=line.stops[i];if(st.serve==='none')return;let p=nodePoint(line,i),v=tangent(line,i);if(st.serve==='forward')arrow(g,p,v,line.color,1);if(st.serve==='reverse')arrow(g,p,v,line.color,-1);g.append(el('circle',{cx:p.x,cy:p.y,r:8.5,stroke:line.color,'class':'stop'}))}
-function render(){view.replaceChildren();prepare();let paths=el('g'),marks=el('g'),labels=el('g');view.append(paths,marks,labels);for(const l of lines){let g=el('g',{'class':'route','data-id':l.id}),d=linePath(l);g.append(el('path',{d,'stroke-width':l.width+5,'class':'routeHalo'}),el('path',{d,stroke:l.color,'stroke-width':l.width,'class':'routeLine'}));paths.append(g);let mg=el('g',{'class':'route','data-id':l.id});l.stops.forEach((_,i)=>stopGlyph(mg,l,i));marks.append(mg)}for(const s of stations.values()){let g=el('g',{'class':'station','data-name':s.name.toLowerCase()}),side=s.label==='auto'?'top':s.label,pos={top:[s.x,s.y-32,'middle'],bottom:[s.x,s.y+43,'middle'],left:[s.x-32,s.y+5,'end'],right:[s.x+32,s.y+5,'start']}[side];g.append(el('text',{x:pos[0],y:pos[1],'text-anchor':pos[2],'class':'stationLabel'},s.name));let h=el('circle',{cx:s.x,cy:s.y,r:30,'class':'hit'});h.onpointermove=e=>showTip(e,s);h.onpointerleave=()=>tip.hidden=true;g.append(h);labels.append(g)}makeLegend()}
-function showTip(e,s){let u=lines.flatMap(l=>l.stops.filter(x=>x.station===s.id).map(x=>({...x,line:l}))),n=t=>u.filter(x=>x.serve===t).map(x=>x.line.name);tip.innerHTML=`<b>${esc(s.name)}</b>${n('both').length?`<br><small>Paran: ${esc(n('both').join(', '))}</small>`:''}${n('forward').length?`<br><small>Solo ida: ${esc(n('forward').join(', '))}</small>`:''}${n('reverse').length?`<br><small>Solo vuelta: ${esc(n('reverse').join(', '))}</small>`:''}${n('none').length?`<br><small>Pasan sin parar: ${esc(n('none').join(', '))}</small>`:''}`;let r=stage.getBoundingClientRect();tip.style.left=Math.min(e.clientX-r.left+12,r.width-300)+'px';tip.style.top=Math.min(e.clientY-r.top+12,r.height-130)+'px';tip.hidden=false}
-function makeLegend(){legend.querySelectorAll('button').forEach(x=>x.remove());for(const l of lines){let b=document.createElement('button');b.innerHTML=`<i class="sw" style="background:${esc(l.color)}"></i>${esc(l.name)}`;b.onclick=()=>{let rs=[...document.querySelectorAll('.route')],clear=rs.some(x=>x.classList.contains('dim'))&&!rs.find(x=>x.dataset.id===l.id).classList.contains('dim');rs.forEach(x=>x.classList.toggle('dim',clear?false:x.dataset.id!==l.id))};legend.append(b)}}
-function calcBounds(){let a=[...stations.values()],xs=a.map(x=>x.x),ys=a.map(x=>x.y);bounds={x1:Math.min(...xs)-160,x2:Math.max(...xs)+160,y1:Math.min(...ys)-120,y2:Math.max(...ys)+120}}function tx(){view.setAttribute('transform',`translate(${cam.x} ${cam.y}) scale(${cam.s})`)}function fit(){let w=stage.clientWidth,h=stage.clientHeight,bw=bounds.x2-bounds.x1,bh=bounds.y2-bounds.y1;cam.s=Math.min((w-45)/bw,(h-45)/bh);cam.x=(w-bw*cam.s)/2-bounds.x1*cam.s;cam.y=(h-bh*cam.s)/2-bounds.y1*cam.s;tx()}function zoom(k,x=stage.clientWidth/2,y=stage.clientHeight/2){let ns=Math.max(.2,Math.min(5,cam.s*k)),wx=(x-cam.x)/cam.s,wy=(y-cam.y)/cam.s;cam.x=x-wx*ns;cam.y=y-wy*ns;cam.s=ns;tx()}
-svg.addEventListener('wheel',e=>{e.preventDefault();let r=svg.getBoundingClientRect();zoom(e.deltaY<0?1.12:.89,e.clientX-r.left,e.clientY-r.top)},{passive:false});svg.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY,cx:cam.x,cy:cam.y};svg.setPointerCapture(e.pointerId);svg.classList.add('dragging')};svg.onpointermove=e=>{if(drag){cam.x=drag.cx+e.clientX-drag.x;cam.y=drag.cy+e.clientY-drag.y;tx()}};svg.onpointerup=()=>{drag=null;svg.classList.remove('dragging')};$('#plus').onclick=()=>zoom(1.25);$('#minus').onclick=()=>zoom(.8);$('#fit').onclick=fit;$('#search').oninput=e=>{let q=e.target.value.trim().toLowerCase();document.querySelectorAll('.station').forEach(x=>x.classList.toggle('match',q&&x.dataset.name.includes(q)))};window.onresize=fit;
-(async()=>{try{let[a,b]=await Promise.all([getXml('stations.xml'),getXml('lines.xml')]);stations=parseStations(a);lines=parseLines(b);let bad=lines.flatMap(l=>l.stops).filter(x=>!stations.has(x.station));if(bad.length)throw Error('Hay estaciones no definidas');calcBounds();render();requestAnimationFrame(fit);status.hidden=true}catch(e){status.innerHTML=`<b>No se pudo cargar</b><br>${esc(e.message)}`;console.error(e)}})()})();
-</script></body></html>
+
+
+        function roundedPolyline(points, radius) {
+          const pts = points.filter((p, i, a) => !i || V.len(V.sub(p, a[i - 1])) > 0.5);
+          if (pts.length < 2) return '';
+          let d = `M${pts[0].x} ${pts[0].y}`;
+          for (let i = 1; i < pts.length - 1; i++) {
+            const a = pts[i - 1],
+              b = pts[i],
+              c = pts[i + 1];
+            const ab = V.len(V.sub(a, b)),
+              bc = V.len(V.sub(c, b));
+            if (ab < 1 || bc < 1) {
+              d += ` L${b.x} ${b.y}`;
+              continue;
+            }
+            const u1 = V.unit(V.sub(a, b)),
+              u2 = V.unit(V.sub(c, b));
+            const cross = Math.abs(u1.x * u2.y - u1.y * u2.x);
+            if (cross < 0.02) {
+              d += ` L${b.x} ${b.y}`;
+              continue;
+            }
+            const r = Math.min(radius, ab * 0.35, bc * 0.35);
+            const p1 = V.add(b, V.mul(u1, r)),
+              p2 = V.add(b, V.mul(u2, r));
+            d += ` L${p1.x} ${p1.y} Q${b.x} ${b.y} ${p2.x} ${p2.y}`;
+          }
+          const last = pts.at(-1);
+          return d + ` L${last.x} ${last.y}`;
+        }
+
+        function linePath(line) {
+          /* El nodo de estación nunca es un vértice de giro. Primero se prolonga
+             el tramo entrante y sólo después se redondea el cambio de dirección. */
+          return roundedPolyline(expandedRoutePoints(line), line.radius);
+        }
+
+        function tangent(line, i) {
+          const points = routePoints(line),
+            p = points[i];
+          if (i > 0) return V.unit(V.sub(p, points[i - 1]));
+          return V.unit(V.sub(points[1], p));
+        }
+
+        function arrow(g, p, v, color, side) {
+          let u = V.mul(v, side),
+            n = V.normal(u),
+            tip = V.add(p, V.mul(u, 14)),
+            back = V.add(p, V.mul(u, -10)),
+            a = V.add(back, V.mul(n, 9)),
+            b = V.add(back, V.mul(n, -9));
+          g.append(el('polygon', {
+            points: `${tip.x},${tip.y} ${a.x},${a.y} ${p.x},${p.y} ${b.x},${b.y}`,
+            fill: color,
+            'class': 'oneway'
+          }))
+        }
+
+        function stopGlyph(g, line, i) {
+          let st = line.stops[i];
+          if (st.serve === 'none') return;
+          let p = nodePoint(line, i),
+            v = tangent(line, i);
+          if (st.serve === 'forward') arrow(g, p, v, line.color, 1);
+          if (st.serve === 'reverse') arrow(g, p, v, line.color, -1);
+          g.append(el('circle', {
+            cx: p.x,
+            cy: p.y,
+            r: 8.5,
+            stroke: line.color,
+            'class': 'stop'
+          }))
+        }
+
+        function render() {
+          view.replaceChildren();
+          prepare();
+          let paths = el('g'),
+            marks = el('g'),
+            labels = el('g');
+          view.append(paths, marks, labels);
+          for (const l of lines) {
+            let g = el('g', {
+                'class': 'route',
+                'data-id': l.id
+              }),
+              d = linePath(l);
+            g.append(el('path', {
+              d,
+              'stroke-width': l.width + 5,
+              'class': 'routeHalo'
+            }), el('path', {
+              d,
+              stroke: l.color,
+              'stroke-width': l.width,
+              'class': 'routeLine'
+            }));
+            paths.append(g);
+            let mg = el('g', {
+              'class': 'route',
+              'data-id': l.id
+            });
+            l.stops.forEach((_, i) => stopGlyph(mg, l, i));
+            marks.append(mg)
+          }
+          for (const s of stations.values()) {
+            let g = el('g', {
+                'class': 'station',
+                'data-name': s.name.toLowerCase()
+              }),
+              side = s.label === 'auto' ? 'top' : s.label,
+              pos = {
+                top: [s.x, s.y - 32, 'middle'],
+                bottom: [s.x, s.y + 43, 'middle'],
+                left: [s.x - 32, s.y + 5, 'end'],
+                right: [s.x + 32, s.y + 5, 'start']
+              } [side];
+            g.append(el('text', {
+              x: pos[0],
+              y: pos[1],
+              'text-anchor': pos[2],
+              'class': 'stationLabel'
+            }, s.name));
+            let h = el('circle', {
+              cx: s.x,
+              cy: s.y,
+              r: 30,
+              'class': 'hit'
+            });
+            h.onpointermove = e => showTip(e, s);
+            h.onpointerleave = () => tip.hidden = true;
+            g.append(h);
+            labels.append(g)
+          }
+          makeLegend()
+        }
+
+        function showTip(e, s) {
+          let u = lines.flatMap(l => l.stops.filter(x => x.station === s.id).map(x => ({
+              ...x,
+              line: l
+            }))),
+            n = t => u.filter(x => x.serve === t).map(x => x.line.name);
+          tip.innerHTML = `<b>${esc(s.name)}</b>${n('both').length?`<br><small>Paran: ${esc(n('both').join(', '))}</small>`:''}${n('forward').length?`<br><small>Solo ida: ${esc(n('forward').join(', '))}</small>`:''}${n('reverse').length?`<br><small>Solo vuelta: ${esc(n('reverse').join(', '))}</small>`:''}${n('none').length?`<br><small>Pasan sin parar: ${esc(n('none').join(', '))}</small>`:''}`;
+          let r = stage.getBoundingClientRect();
+          tip.style.left = Math.min(e.clientX - r.left + 12, r.width - 300) + 'px';
+          tip.style.top = Math.min(e.clientY - r.top + 12, r.height - 130) + 'px';
+          tip.hidden = false
+        }
+
+        function makeLegend() {
+          legend.querySelectorAll('button').forEach(x => x.remove());
+          for (const l of lines) {
+            let b = document.createElement('button');
+            b.innerHTML = `<i class="sw" style="background:${esc(l.color)}"></i>${esc(l.name)}`;
+            b.onclick = () => {
+              let rs = [...document.querySelectorAll('.route')],
+                clear = rs.some(x => x.classList.contains('dim')) && !rs.find(x => x.dataset.id === l.id).classList.contains('dim');
+              rs.forEach(x => x.classList.toggle('dim', clear ? false : x.dataset.id !== l.id))
+            };
+            legend.append(b)
+          }
+        }
+
+        function calcBounds() {
+          let a = [...stations.values()],
+            xs = a.map(x => x.x),
+            ys = a.map(x => x.y);
+          bounds = {
+            x1: Math.min(...xs) - 160,
+            x2: Math.max(...xs) + 160,
+            y1: Math.min(...ys) - 120,
+            y2: Math.max(...ys) + 120
+          }
+        }
+
+        function tx() {
+          view.setAttribute('transform', `translate(${cam.x} ${cam.y}) scale(${cam.s})`)
+        }
+
+        function fit() {
+          let w = stage.clientWidth,
+            h = stage.clientHeight,
+            bw = bounds.x2 - bounds.x1,
+            bh = bounds.y2 - bounds.y1;
+          cam.s = Math.min((w - 45) / bw, (h - 45) / bh);
+          cam.x = (w - bw * cam.s) / 2 - bounds.x1 * cam.s;
+          cam.y = (h - bh * cam.s) / 2 - bounds.y1 * cam.s;
+          tx()
+        }
+
+        function zoom(k, x = stage.clientWidth / 2, y = stage.clientHeight / 2) {
+          let ns = Math.max(.2, Math.min(5, cam.s * k)),
+            wx = (x - cam.x) / cam.s,
+            wy = (y - cam.y) / cam.s;
+          cam.x = x - wx * ns;
+          cam.y = y - wy * ns;
+          cam.s = ns;
+          tx()
+        }
+        svg.addEventListener('wheel', e => {
+          e.preventDefault();
+          let r = svg.getBoundingClientRect();
+          zoom(e.deltaY < 0 ? 1.12 : .89, e.clientX - r.left, e.clientY - r.top)
+        }, {
+          passive: false
+        });
+        svg.onpointerdown = e => {
+          drag = {
+            x: e.clientX,
+            y: e.clientY,
+            cx: cam.x,
+            cy: cam.y
+          };
+          svg.setPointerCapture(e.pointerId);
+          svg.classList.add('dragging')
+        };
+        svg.onpointermove = e => {
+          if (drag) {
+            cam.x = drag.cx + e.clientX - drag.x;
+            cam.y = drag.cy + e.clientY - drag.y;
+            tx()
+          }
+        };
+        svg.onpointerup = () => {
+          drag = null;
+          svg.classList.remove('dragging')
+        };
+        $('#plus').onclick = () => zoom(1.25);
+        $('#minus').onclick = () => zoom(.8);
+        $('#fit').onclick = fit;
+        $('#search').oninput = e => {
+          let q = e.target.value.trim().toLowerCase();
+          document.querySelectorAll('.station').forEach(x => x.classList.toggle('match', q && x.dataset.name.includes(q)))
+        };
+        window.onresize = fit;
+        (async () => {
+          try {
+            let [a, b] = await Promise.all([getXml('stations.xml'), getXml('lines.xml')]);
+            stations = parseStations(a);
+            lines = parseLines(b);
+            let bad = lines.flatMap(l => l.stops).filter(x => !stations.has(x.station));
+            if (bad.length) throw Error('Hay estaciones no definidas');
+            calcBounds();
+            render();
+            requestAnimationFrame(fit);
+            status.hidden = true
+          } catch (e) {
+            status.innerHTML = `<b>No se pudo cargar</b><br>${esc(e.message)}`;
+            console.error(e)
+          }
+        })()
+      })();
+    </script>
+  </body>
+
+</html>
