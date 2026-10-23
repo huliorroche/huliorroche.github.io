@@ -1,6 +1,1 @@
-<?xml version="1.0" encoding="UTF-8"?><lines>
-<!-- lead = tramo recto mínimo antes de cambiar de dirección; radius = redondeo -->
-<line id="L4" name="Línea 4" color="#183272" width="12" radius="18" lead="42"><stop station="norte"/><stop station="metro"/><stop station="kafka"/><stop station="justicia"/><stop station="fycma"/><stop station="sur"/></line>
-<line id="L11" name="Línea 11" color="#b63a38" width="12" radius="18" lead="42"><stop station="metro"/><stop station="kafka"/><stop station="justicia"/><stop station="corazones"/><stop station="este"/></line>
-<line id="L25" name="Línea 25" color="#63be89" width="12" radius="18" lead="42"><stop station="metro"/><stop station="kafka" serve="none"/><stop station="justicia"/><stop station="corazones" serve="forward"/><stop station="este"/></line>
-</lines>
+<?xml version="1.0" encoding="UTF-8"?><lines><line id="L4" name="Línea 4" color="#183272" width="12" gap="8" radius="18" lead="46"><stop station="norte"/><stop station="metro"/><stop station="kafka"/><stop station="justicia"/><stop station="fycma"/><stop station="sur"/></line><line id="L11" name="Línea 11" color="#b63a38" width="12" gap="8" radius="18" lead="46"><stop station="metro"/><stop station="kafka"/><stop station="justicia"/><stop station="corazones"/><stop station="este"/></line><line id="L25" name="Línea 25" color="#63be89" width="12" gap="8" radius="18" lead="46"><stop station="metro"/><stop station="kafka" serve="none"/><stop station="justicia"/><stop station="corazones" serve="forward"/><stop station="este"/></line></lines>
