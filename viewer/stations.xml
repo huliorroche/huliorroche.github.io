@@ -28,7 +28,7 @@
   <station id="chilches-estacion"
           name="Chilches Estación"
           x="4300"
-          y="720"
+          y="700"
           label="bottom"/>
 
   <station id="chilches-costa"
