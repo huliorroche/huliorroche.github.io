@@ -197,9 +197,8 @@
     x="7600"
     y="700"
     label="bottom"/>
-</stations>
 
-<!-- Línea 21 -->
+    <!-- Línea 21 -->
 
 <!-- Tramo horizontal -->
 <station id="163"
@@ -401,3 +400,4 @@
          x="-1800"
          y="-2550"
          label="bottom"/>
+</stations>
