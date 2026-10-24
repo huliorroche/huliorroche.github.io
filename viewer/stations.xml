@@ -7,7 +7,7 @@
   <station id="1417" name="Parque San Antonio" x="1300" y="700" label="bottom"/>
   <station id="1418" name="Baños del Carmen" x="1450" y="700" label="bottom"/>
   <station id="1419" name="Las Acacias" x="1600" y="700" label="bottom"/>
-  <station id="2108" name="El Palo" x="1750" y="700" label="bottom"/>
+  <station id="2108CONSORCIO" name="El Palo" x="1750" y="700" label="bottom"/>
   <station id="1115" name="El Candado" x="1900" y="700" label="bottom"/>
   <station id="1113" name="Gasolinera El Candado" x="2050" y="700" label="bottom"/>
   <station id="2134" name="La Araña" x="2200" y="700" label="bottom"/>

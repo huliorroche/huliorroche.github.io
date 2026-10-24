@@ -38,7 +38,7 @@
       <stop station="1417" serve="none"/>
       <stop station="1418" serve="none"/>
       <stop station="1419" serve="none"/>
-      <stop station="2108"/>
+      <stop station="2108CONSORCIO"/>
       <stop station="1115" serve="none"/>
       <stop station="1113" serve="none"/>
       <stop station="2134"/>
@@ -92,7 +92,7 @@
     <stop station="1417" serve="none"/>
     <stop station="1418" serve="none"/>
     <stop station="1419" serve="none"/>
-    <stop station="2108"/>
+    <stop station="2108CONSORCIO"/>
     <stop station="1115" serve="none"/>
     <stop station="1113" serve="none"/>
     <stop station="2134" serve="none"/>
@@ -149,7 +149,7 @@
     <stop station="1417" serve="none"/>
     <stop station="1418" serve="none"/>
     <stop station="1419" serve="none"/>
-    <stop station="2108"/>
+    <stop station="2108CONSORCIO"/>
     <stop station="1115" serve="none"/>
     <stop station="1113" serve="none"/>
     <stop station="2134" serve="none"/>
@@ -205,7 +205,7 @@
       <stop station="1417"/>
       <stop station="1418"/>
       <stop station="1419"/>
-      <stop station="2108"/>
+      <stop station="2108CONSORCIO"/>
       <stop station="1115"/>
       <stop station="1113"/>
       <stop station="2134"/>
