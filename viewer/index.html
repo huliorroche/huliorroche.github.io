@@ -448,7 +448,7 @@ function parseLines(x) {
             function lineIndexOnEdge(line, aId, bId) {
                 const ids = groups.get(key(aId, bId)) || [line.id];
                 const maxWidth = Math.max(...ids.map(id => lines.find(l => l.id === id).width));
-                const pitch = maxWidth + Math.max(line.gap, 14);
+                const pitch = maxWidth + Math.max(line.gap, 8);
                 return {
                     ids,
                     pitch,

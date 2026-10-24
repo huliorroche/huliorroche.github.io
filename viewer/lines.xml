@@ -225,4 +225,49 @@
 
 
   </line>
+
+  <line
+    id="L21"
+    name="Línea 21"
+    color="#e30613"
+    width="11"
+    gap="9"
+    radius="14"
+    lead="36">
+
+    <stop station="163"/>
+    <stop station="2168"/>
+    <stop station="2118"/>
+    <stop station="621"/>
+    <stop station="602"/>
+    <stop station="821"/>
+    <stop station="802"/>
+    <stop station="803"/>
+    <stop station="804"/>
+    <stop station="805"/>
+    <stop station="806"/>
+    <stop station="807"/>
+    <stop station="808"/>
+    <stop station="809"/>
+    <stop station="810"/>
+    <stop station="811"/>
+    <stop station="2116"/>
+    <stop station="2102"/>
+    <stop station="2103"/>
+    <stop station="2104"/>
+    <stop station="2117"/>
+    <stop station="2105"/>
+    <stop station="2106"/>
+    <stop station="2107"/>
+    <stop station="2108"/>
+    <stop station="2109"/>
+    <stop station="2110"/>
+    <stop station="2111"/>
+    <stop station="2112"/>
+    <stop station="2113"/>
+    <stop station="2114"/>
+    <stop station="2115"/>
+    <stop station="2151"/>
+
+</line>
 </lines>

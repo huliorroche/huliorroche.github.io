@@ -198,3 +198,206 @@
     y="700"
     label="bottom"/>
 </stations>
+
+<!-- Línea 21 -->
+
+<!-- Tramo horizontal -->
+<station id="163"
+         name="Parque - Ayuntamiento"
+         x="1300"
+         y="550"
+         label="bottom"/>
+
+<station id="2168"
+         name="Alameda Principal - Norte"
+         x="1150"
+         y="550"
+         label="bottom"/>
+
+<station id="2118"
+         name="Hilera - Armengual de la Mota"
+         x="1000"
+         y="550"
+         label="bottom"/>
+
+<!-- Tramo vertical hacia arriba -->
+<station id="621"
+         name="Armengual de la Mota"
+         x="1000"
+         y="400"
+         label="right"/>
+
+<station id="602"
+         name="Mármoles"
+         x="1000"
+         y="250"
+         label="right"/>
+
+<!-- Tramo diagonal hacia el noroeste -->
+<station id="821"
+         name="Martínez Maldonado - Pelayo"
+         x="900"
+         y="150"
+         label="bottom"/>
+
+<station id="802"
+         name="Martínez Maldonado - Eugenio Gross"
+         x="800"
+         y="50"
+         label="bottom"/>
+
+<station id="803"
+         name="Martínez Maldonado - Las Chapas"
+         x="700"
+         y="-50"
+         label="bottom"/>
+
+<station id="804"
+         name="Arroyo del Cuarto"
+         x="600"
+         y="-150"
+         label="bottom"/>
+
+<station id="805"
+         name="Carlos Haya - Parque del Norte"
+         x="500"
+         y="-250"
+         label="bottom"/>
+
+<station id="806"
+         name="Carlos Haya - Remedios"
+         x="400"
+         y="-350"
+         label="bottom"/>
+
+<station id="807"
+         name="Hospital Regional"
+         x="300"
+         y="-450"
+         label="bottom"/>
+
+<station id="808"
+         name="Carlos Haya - Parque Florida"
+         x="200"
+         y="-550"
+         label="bottom"/>
+
+<station id="809"
+         name="Carlos Haya - Ortega Prados"
+         x="100"
+         y="-650"
+         label="bottom"/>
+
+<station id="810"
+         name="Carlos Haya - Alfonso X"
+         x="0"
+         y="-750"
+         label="bottom"/>
+
+<station id="811"
+         name="Carlos Haya - Teatinos"
+         x="-100"
+         y="-850"
+         label="bottom"/>
+
+<station id="2116"
+         name="Lope de Vega - Hacienda Cabello"
+         x="-200"
+         y="-950"
+         label="bottom"/>
+
+<station id="2102"
+         name="Universidad Laboral"
+         x="-300"
+         y="-1050"
+         label="bottom"/>
+
+<station id="2103"
+         name="Lope de Vega - El Atabal"
+         x="-400"
+         y="-1150"
+         label="bottom"/>
+
+<station id="2104"
+         name="Lope de Vega - Los Ramos"
+         x="-500"
+         y="-1250"
+         label="bottom"/>
+
+<station id="2117"
+         name="Lope de Vega - Rosa García"
+         x="-600"
+         y="-1350"
+         label="bottom"/>
+
+<station id="2105"
+         name="Lope de Rueda - El Tomillar"
+         x="-700"
+         y="-1450"
+         label="bottom"/>
+
+<station id="2106"
+         name="Lope de Rueda - Lara Castañeda"
+         x="-800"
+         y="-1550"
+         label="bottom"/>
+
+<station id="2107"
+         name="Lope de Rueda - Tomillares"
+         x="-900"
+         y="-1650"
+         label="bottom"/>
+
+<station id="2108"
+         name="Lope de Rueda - Correos"
+         x="-1000"
+         y="-1750"
+         label="bottom"/>
+
+<station id="2109"
+         name="Lope de Rueda - Los Morales"
+         x="-1100"
+         y="-1850"
+         label="bottom"/>
+
+<station id="2110"
+         name="Lope de Rueda - Sta. Isabel"
+         x="-1200"
+         y="-1950"
+         label="bottom"/>
+
+<station id="2111"
+         name="Lope de Rueda - Las Morillas"
+         x="-1300"
+         y="-2050"
+         label="bottom"/>
+
+<station id="2112"
+         name="Puerto de la Torre - Salinas"
+         x="-1400"
+         y="-2150"
+         label="bottom"/>
+
+<station id="2113"
+         name="Puerto Sol"
+         x="-1500"
+         y="-2250"
+         label="bottom"/>
+
+<station id="2114"
+         name="San Cayetano"
+         x="-1600"
+         y="-2350"
+         label="bottom"/>
+
+<station id="2115"
+         name="El Cortijuelo"
+         x="-1700"
+         y="-2450"
+         label="bottom"/>
+
+<station id="2151"
+         name="Junta de los Caminos"
+         x="-1800"
+         y="-2550"
+         label="bottom"/>
