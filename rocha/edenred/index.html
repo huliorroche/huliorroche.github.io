@@ -40,308 +40,358 @@
     <script type="module" src="../access_token.js"></script>
 
     <style>
-        .balance-card {
-            padding: 2rem;
-            text-align: center;
-        }
+    .balance-card {
+        padding: 2rem;
+        text-align: center;
+    }
 
+    .balance-card .amount {
+        margin-top: 1rem;
+        color: #198754;
+        font-size: 3rem;
+        font-weight: 600;
+    }
+
+    .table-card {
+        margin-top: 2rem;
+    }
+
+    .loading-area {
+        padding: 3rem;
+        text-align: center;
+    }
+
+    .edenred-actions {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+    }
+
+    .edenred-status {
+        margin-top: 1rem;
+        color: #7f8691;
+        font-size: 0.9rem;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .status-idle {
+        background: #f3f4f6;
+        color: #4b5563;
+    }
+
+    .status-loading {
+        background: #fff3cd;
+        color: #664d03;
+    }
+
+    .status-success {
+        background: #d1e7dd;
+        color: #0f5132;
+    }
+
+    .status-error {
+        background: #f8d7da;
+        color: #842029;
+    }
+
+    .card-number {
+        font-family: monospace;
+        white-space: nowrap;
+    }
+
+    .balance-value {
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .empty-state {
+        padding: 2rem;
+        color: #7f8691;
+        text-align: center;
+    }
+
+    /*
+     * Modal OTP deliberadamente bloqueante.
+     * No tiene botón de cerrar y hacer clic fuera
+     * tampoco permite cerrarlo.
+     */
+    .otp-modal {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 1rem;
+
+        background:
+            rgba(0, 0, 0, 0.55);
+
+        backdrop-filter:
+            blur(4px);
+    }
+
+    .otp-modal[hidden] {
+        display: none;
+    }
+
+    .otp-modal-content {
+        width: 100%;
+        max-width: 420px;
+
+        padding: 2rem;
+
+        border-radius: 18px;
+
+        background:
+            #ffffff;
+
+        box-shadow:
+            0 24px 70px
+            rgba(0, 0, 0, 0.25);
+    }
+
+    .otp-modal-content h3 {
+        margin-bottom: 1rem;
+    }
+
+    .otp-description {
+        margin-bottom: 1.5rem;
+        color: #6c757d;
+    }
+
+    .otp-input {
+        width: 100%;
+        padding: 0.9rem 1rem;
+
+        border:
+            1px solid #ced4da;
+
+        border-radius:
+            0.5rem;
+
+        font-family:
+            monospace;
+
+        font-size:
+            1.5rem;
+
+        font-weight:
+            600;
+
+        letter-spacing:
+            0.4rem;
+
+        text-align:
+            center;
+    }
+
+    .otp-input:focus {
+        outline: none;
+
+        border-color:
+            #212529;
+
+        box-shadow:
+            0 0 0 0.2rem
+            rgba(33, 37, 41, 0.15);
+    }
+
+    .otp-error {
+        margin-top:
+            0.75rem;
+
+        color:
+            #842029;
+
+        font-size:
+            0.9rem;
+    }
+
+    @media (max-width: 767px) {
         .balance-card .amount {
-            margin-top: 1rem;
-            color: #198754;
-            font-size: 3rem;
-            font-weight: 600;
-        }
-
-        .table-card {
-            margin-top: 2rem;
-        }
-
-        .loading-area {
-            padding: 3rem;
-            text-align: center;
-        }
-
-        .edenred-actions {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
-        }
-
-        .edenred-status {
-            margin-top: 1rem;
-            color: #7f8691;
-            font-size: 0.9rem;
-        }
-
-        .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.4rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            font-weight: 600;
-        }
-
-        .status-idle {
-            background: #f3f4f6;
-            color: #4b5563;
-        }
-
-        .status-loading {
-            background: #fff3cd;
-            color: #664d03;
-        }
-
-        .status-success {
-            background: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .status-error {
-            background: #f8d7da;
-            color: #842029;
-        }
-
-        .card-number {
-            font-family: monospace;
-            white-space: nowrap;
-        }
-
-        .balance-value {
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .empty-state {
-            padding: 2rem;
-            color: #7f8691;
-            text-align: center;
-        }
-
-        /*
-         * Modal OTP deliberadamente bloqueante.
-         * No tiene botón de cerrar y hacer clic fuera
-         * tampoco permite cerrarlo.
-         */
-        .otp-modal {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            padding: 1rem;
-
-            background:
-                rgba(0, 0, 0, 0.55);
-
-            backdrop-filter:
-                blur(4px);
-        }
-
-        .otp-modal[hidden] {
-            display: none;
-        }
-
-        .otp-modal-content {
-            width: 100%;
-            max-width: 420px;
-
-            padding: 2rem;
-
-            border-radius: 18px;
-
-            background:
-                #ffffff;
-
-            box-shadow:
-                0 24px 70px
-                rgba(0, 0, 0, 0.25);
-        }
-
-        .otp-modal-content h3 {
-            margin-bottom: 1rem;
-        }
-
-        .otp-description {
-            margin-bottom: 1.5rem;
-            color: #6c757d;
-        }
-
-        .otp-input {
-            width: 100%;
-            padding: 0.9rem 1rem;
-
-            border:
-                1px solid #ced4da;
-
-            border-radius:
-                0.5rem;
-
-            font-family:
-                monospace;
-
             font-size:
-                1.5rem;
-
-            font-weight:
-                600;
-
-            letter-spacing:
-                0.4rem;
-
-            text-align:
-                center;
+                2.3rem;
         }
-
-        .otp-input:focus {
-            outline: none;
-
-            border-color:
-                #212529;
-
-            box-shadow:
-                0 0 0 0.2rem
-                rgba(33, 37, 41, 0.15);
-        }
-
-        .otp-error {
-            margin-top:
-                0.75rem;
-
-            color:
-                #842029;
-
-            font-size:
-                0.9rem;
-        }
-
-        @media (max-width: 767px) {
-            .balance-card .amount {
-                font-size:
-                    2.3rem;
-            }
-
-            .table-responsive {
-                font-size:
-                    0.9rem;
-            }
-        }
-
-        .edenred-card-list {
-    width: 100%;
-    max-width: 760px;
-    margin: 0 auto;
-}
-
-.edenred-card-item {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-
-    padding: 1.15rem 0.5rem;
-
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.edenred-card-item:last-child {
-    border-bottom: none;
-}
-
-.edenred-card-icon-container {
-    flex: 0 0 auto;
-
-    width: 82px;
-    height: 58px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.edenred-card-icon {
-    display: block;
-
-    max-width: 82px;
-    max-height: 58px;
-
-    object-fit: contain;
-}
-
-.edenred-card-info {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.edenred-card-name {
-    margin: 0;
-
-    color: #212529;
-
-    font-size: 1.1rem;
-    font-weight: 600;
-}
-
-.edenred-card-number {
-    margin-top: 0.25rem;
-
-    color: #7f8691;
-
-    font-family: monospace;
-    font-size: 0.95rem;
-
-    white-space: nowrap;
-}
-
-.edenred-card-balance {
-    flex: 0 0 auto;
-
-    margin-left: auto;
-
-    color: #212529;
-
-    font-size: 1.25rem;
-    font-weight: 700;
-
-    white-space: nowrap;
-    text-align: right;
-}
-
-@media (max-width: 575px) {
-
-    .edenred-card-item {
-        gap: 0.85rem;
-        padding: 1rem 0;
     }
 
-    .edenred-card-icon-container {
-        width: 64px;
-        height: 48px;
+    /*
+     * Tarjetas Edenred
+     */
+    .edenred-cards {
+        width: 100%;
+        min-width: 0;
     }
 
-    .edenred-card-icon {
-        max-width: 64px;
-        max-height: 48px;
+    .edenred-card-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 32px;
+
+        width: 100%;
+        min-width: 0;
+        box-sizing: border-box;
+
+        padding: 24px 16px;
+
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .edenred-card-main {
+        display: flex;
+        align-items: center;
+
+        min-width: 0;
+        gap: 24px;
+    }
+
+    .edenred-card-image {
+        display: block;
+
+        width: 165px;
+        max-width: 35%;
+        height: auto;
+
+        flex: 0 1 auto;
+        object-fit: contain;
+    }
+
+    .edenred-card-info {
+        min-width: 0;
     }
 
     .edenred-card-name {
-        font-size: 1rem;
+        color: #202124;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.2;
     }
 
     .edenred-card-number {
-        font-size: 0.82rem;
+        margin-top: 8px;
+
+        color: #818895;
+        font-size: 1.25rem;
+        font-weight: 600;
+
+        overflow-wrap: anywhere;
     }
 
     .edenred-card-balance {
-        font-size: 1.05rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+
+        min-width: max-content;
     }
-}
-    </style>
+
+    .edenred-card-balance-label {
+        margin-bottom: 6px;
+
+        color: #818895;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .edenred-card-balance-value {
+        color: #000;
+        font-size: 1.8rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /*
+     * Tablet / móvil
+     */
+    @media (max-width: 650px) {
+        .edenred-card-row {
+            grid-template-columns: 1fr;
+            gap: 20px;
+
+            padding: 20px 0;
+        }
+
+        .edenred-card-main {
+            gap: 16px;
+        }
+
+        .edenred-card-image {
+            width: 120px;
+            max-width: 38%;
+        }
+
+        .edenred-card-name {
+            font-size: 1.15rem;
+        }
+
+        .edenred-card-number {
+            font-size: 1rem;
+        }
+
+        .edenred-card-balance {
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: baseline;
+
+            width: 100%;
+            min-width: 0;
+
+            padding-top: 16px;
+
+            border-top: 1px solid #eeeeee;
+        }
+
+        .edenred-card-balance-label {
+            margin: 0;
+        }
+
+        .edenred-card-balance-value {
+            font-size: 1.55rem;
+        }
+    }
+
+    /*
+     * Móviles especialmente estrechos
+     */
+    @media (max-width: 400px) {
+        .edenred-card-main {
+            align-items: flex-start;
+        }
+
+        .edenred-card-image {
+            width: 95px;
+            max-width: 36%;
+        }
+
+        .edenred-card-name {
+            font-size: 1.05rem;
+        }
+
+        .edenred-card-number {
+            font-size: 0.9rem;
+        }
+
+        .edenred-card-balance-value {
+            font-size: 1.4rem;
+        }
+    }
+</style>
+
 </head>
 
 <body>
@@ -489,25 +539,10 @@
             </div>
 
             <div id="tableContainer" hidden>
-
-    <div class="table-responsive">
-
-        <table class="table table-striped align-middle">
-
-            <thead>
-                <tr>
-                    <th>Tarjeta</th>
-                    <th>Número</th>
-                    <th>Saldo</th>
-                </tr>
-            </thead>
-
-            <tbody id="cardsTable"></tbody>
-
-        </table>
-
-    </div>
-
+    <div
+        id="cardsContainer"
+        class="edenred-cards"
+    ></div>
 </div>
 
             <div
@@ -617,7 +652,7 @@
     loadingMessage: document.getElementById("loadingMessage"),
     tableContainer: document.getElementById("tableContainer"),
     emptyContainer: document.getElementById("emptyContainer"),
-    cardsTable: document.getElementById("cardsTable"),
+    cardsContainer: document.getElementById("cardsContainer"),
     otpModal: document.getElementById("otpModal"),
     otpMessage: document.getElementById("otpMessage"),
     otpInput: document.getElementById("otpInput"),
@@ -902,10 +937,10 @@ function getCardIcon(card) {
     if (
         cardName.includes("movilidad")
     ) {
-        return "/images/transport_card.png";
+        return "../images/transport_card.png";
     }
 
-    return "/images/edenred_card.png";
+    return "../images/edenred_card.png";
 }
 
 function renderCards(data) {
@@ -923,8 +958,7 @@ function renderCards(data) {
             ? data.cards
             : [];
 
-    elements.cardsTable
-        .replaceChildren();
+    elements.cardsContainer.replaceChildren();
 
 
     elements.totalBalance.textContent =
@@ -948,9 +982,7 @@ function renderCards(data) {
         `Actualizado: ${formatDate(updateDate)}`;
 
 
-    if (
-        cards.length === 0
-    ) {
+    if (cards.length === 0) {
 
         elements.emptyContainer.hidden =
             false;
@@ -964,32 +996,37 @@ function renderCards(data) {
     }
 
 
-    for (
-        const card of cards
-    ) {
+    for (const card of cards) {
 
-        const item =
+        /*
+         * Fila principal
+         */
+        const row =
             document.createElement("div");
 
-        item.className =
-            "edenred-card-item";
+        row.className =
+            "edenred-card-row";
 
 
         /*
-         * Icono
+         * Parte izquierda:
+         * imagen + información
          */
-        const iconContainer =
+        const main =
             document.createElement("div");
 
-        iconContainer.className =
-            "edenred-card-icon-container";
+        main.className =
+            "edenred-card-main";
 
 
+        /*
+         * Imagen de la tarjeta
+         */
         const icon =
             document.createElement("img");
 
         icon.className =
-            "edenred-card-icon";
+            "edenred-card-image";
 
         icon.src =
             getCardIcon(card);
@@ -998,13 +1035,9 @@ function renderCards(data) {
             card.cardName ||
             "Tarjeta Edenred";
 
-        iconContainer.appendChild(
-            icon
-        );
-
 
         /*
-         * Información central
+         * Información
          */
         const info =
             document.createElement("div");
@@ -1035,13 +1068,15 @@ function renderCards(data) {
             "Número no disponible";
 
 
-        info.appendChild(
-            name
-        );
+        info.appendChild(name);
+        info.appendChild(number);
 
-        info.appendChild(
-            number
-        );
+
+        /*
+         * Montamos la parte izquierda
+         */
+        main.appendChild(icon);
+        main.appendChild(info);
 
 
         /*
@@ -1053,32 +1088,53 @@ function renderCards(data) {
         balance.className =
             "edenred-card-balance";
 
-        balance.textContent =
+
+        const balanceLabel =
+            document.createElement("span");
+
+        balanceLabel.className =
+            "edenred-card-balance-label";
+
+        balanceLabel.textContent =
+            "Saldo";
+
+
+        const balanceValue =
+            document.createElement("span");
+
+        balanceValue.className =
+            "edenred-card-balance-value";
+
+        balanceValue.textContent =
             formatCurrency(
                 card.balance
             );
 
 
+        balance.appendChild(
+            balanceLabel
+        );
+
+        balance.appendChild(
+            balanceValue
+        );
+
+
         /*
          * Composición final
          */
-        item.appendChild(
-            iconContainer
+        row.appendChild(
+            main
         );
 
-        item.appendChild(
-            info
-        );
-
-        item.appendChild(
+        row.appendChild(
             balance
         );
 
 
-        elements.cardsTable
-            .appendChild(
-                item
-            );
+        elements.cardsContainer.appendChild(
+            row
+        );
     }
 
 
@@ -1349,7 +1405,7 @@ function initializeEdenredPage() {
         "loadingMessage",
         "tableContainer",
         "emptyContainer",
-        "cardsTable",
+        "cardsContainer",
         "otpModal",
         "otpMessage",
         "otpInput",
