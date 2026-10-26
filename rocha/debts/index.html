@@ -401,42 +401,66 @@
         text-align: right;
     }
 
-    /*
-     * Acceso a Edenred
-     */
     .edenred-card-link {
-        display: grid;
+    display: grid;
 
-        grid-template-columns:
-            auto
-            minmax(0, 1fr)
-            auto;
+    grid-template-columns:
+        auto
+        1fr
+        auto;
 
-        align-items: center;
+    align-items: center;
 
-        gap: 14px;
+    column-gap: 20px;
 
-        min-width: 0;
+    min-width: 0;
 
-        padding: 18px 20px;
+    padding: 18px 20px;
 
-        color: var(--rocha-text);
-        text-decoration: none;
+    color: var(--rocha-text);
+    text-decoration: none;
 
-        background: var(--rocha-card);
+    background: var(--rocha-card);
 
-        border: 1px solid var(--rocha-border);
-        border-radius: var(--radius-medium);
+    border: 1px solid var(--rocha-border);
+    border-radius: var(--radius-medium);
 
-        box-shadow: var(--shadow);
+    box-shadow: var(--shadow);
 
-        backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
 
-        transition:
-            transform .24s ease,
-            box-shadow .24s ease,
-            border-color .24s ease;
-    }
+    transition:
+        transform .24s ease,
+        box-shadow .24s ease,
+        border-color .24s ease;
+}
+
+.edenred-card-link-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    width: 100%;
+    min-width: 0;
+
+    padding-right: 8px;
+}
+
+.edenred-card-link-arrow {
+    display: grid;
+    place-items: center;
+
+    width: 38px;
+    height: 38px;
+
+    flex-shrink: 0;
+
+    color: var(--rocha-gold-dark);
+    background: var(--rocha-gold-soft);
+
+    border: 1px solid rgba(185, 155, 104, .18);
+    border-radius: 12px;
+}
 
     .edenred-card-link:hover {
         color: var(--rocha-text);
@@ -471,14 +495,6 @@
         object-fit: contain;
     }
 
-    .edenred-card-link-text {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        min-width: 0;
-    }
-
     .edenred-card-link-title {
         color: var(--rocha-black);
 
@@ -499,20 +515,6 @@
         line-height: 1.25;
 
         white-space: nowrap;
-    }
-
-    .edenred-card-link-arrow {
-        display: grid;
-        place-items: center;
-
-        width: 38px;
-        height: 38px;
-
-        color: var(--rocha-gold-dark);
-        background: var(--rocha-gold-soft);
-
-        border: 1px solid rgba(185, 155, 104, .18);
-        border-radius: 12px;
     }
 
     .edenred-card-link-arrow svg {
