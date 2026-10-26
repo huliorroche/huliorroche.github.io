@@ -230,6 +230,115 @@
                     0.9rem;
             }
         }
+
+        .edenred-card-list {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+}
+
+.edenred-card-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+
+    padding: 1.15rem 0.5rem;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.edenred-card-item:last-child {
+    border-bottom: none;
+}
+
+.edenred-card-icon-container {
+    flex: 0 0 auto;
+
+    width: 82px;
+    height: 58px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.edenred-card-icon {
+    display: block;
+
+    max-width: 82px;
+    max-height: 58px;
+
+    object-fit: contain;
+}
+
+.edenred-card-info {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.edenred-card-name {
+    margin: 0;
+
+    color: #212529;
+
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.edenred-card-number {
+    margin-top: 0.25rem;
+
+    color: #7f8691;
+
+    font-family: monospace;
+    font-size: 0.95rem;
+
+    white-space: nowrap;
+}
+
+.edenred-card-balance {
+    flex: 0 0 auto;
+
+    margin-left: auto;
+
+    color: #212529;
+
+    font-size: 1.25rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+    text-align: right;
+}
+
+@media (max-width: 575px) {
+
+    .edenred-card-item {
+        gap: 0.85rem;
+        padding: 1rem 0;
+    }
+
+    .edenred-card-icon-container {
+        width: 64px;
+        height: 48px;
+    }
+
+    .edenred-card-icon {
+        max-width: 64px;
+        max-height: 48px;
+    }
+
+    .edenred-card-name {
+        font-size: 1rem;
+    }
+
+    .edenred-card-number {
+        font-size: 0.82rem;
+    }
+
+    .edenred-card-balance {
+        font-size: 1.05rem;
+    }
+}
     </style>
 </head>
 
@@ -377,42 +486,27 @@
 
             </div>
 
-            <div
-                id="tableContainer"
-                hidden
-            >
+            <div id="tableContainer" hidden>
 
-                <div class="table-responsive">
+    <div class="table-responsive">
 
-                    <table
-                        class="table table-striped align-middle"
-                    >
+        <table class="table table-striped align-middle">
 
-                        <thead>
-                            <tr>
-                                <th>
-                                    Tarjeta
-                                </th>
+            <thead>
+                <tr>
+                    <th>Tarjeta</th>
+                    <th>Número</th>
+                    <th>Saldo</th>
+                </tr>
+            </thead>
 
-                                <th>
-                                    Número
-                                </th>
+            <tbody id="cardsTable"></tbody>
 
-                                <th>
-                                    Saldo
-                                </th>
-                            </tr>
-                        </thead>
+        </table>
 
-                        <tbody
-                            id="cardsTable"
-                        ></tbody>
+    </div>
 
-                    </table>
-
-                </div>
-
-            </div>
+</div>
 
             <div
                 id="emptyContainer"
@@ -796,33 +890,30 @@ function formatDate(value) {
     ).format(date);
 }
 
-function appendCell(
-    row,
-    value,
-    className = ""
-) {
-    const cell =
-        document.createElement("td");
+function getCardIcon(card) {
 
-    cell.textContent =
-        value === null ||
-        value === undefined ||
-        value === ""
-            ? "-"
-            : String(value);
+    const cardName =
+        String(
+            card.cardName || ""
+        ).toLowerCase();
 
-    if (className) {
-        cell.className = className;
+    if (
+        cardName.includes("movilidad")
+    ) {
+        return "/images/transport_card.png";
     }
 
-    row.appendChild(cell);
+    return "/images/edenred_card.png";
 }
 
 function renderCards(data) {
+
     hideOtpModal();
+
     setBusy(false);
 
     hideResults();
+
     showMessage("", "");
 
     const cards =
@@ -830,26 +921,35 @@ function renderCards(data) {
             ? data.cards
             : [];
 
-    elements.cardsTable.replaceChildren();
+    elements.cardsTable
+        .replaceChildren();
+
 
     elements.totalBalance.textContent =
         formatCurrency(
             data.totalBalance
         );
 
+
     elements.cardCount.textContent =
         cards.length === 1
-            ? "1 tarjeta activa"
-            : `${cards.length} tarjetas activas`;
+            ? "1 tarjeta"
+            : `${cards.length} tarjetas`;
+
 
     const updateDate =
         data.tokenUpdatedAt ||
         new Date().toISOString();
 
+
     elements.lastUpdate.textContent =
         `Actualizado: ${formatDate(updateDate)}`;
 
-    if (cards.length === 0) {
+
+    if (
+        cards.length === 0
+    ) {
+
         elements.emptyContainer.hidden =
             false;
 
@@ -861,37 +961,128 @@ function renderCards(data) {
         return;
     }
 
-    for (const card of cards) {
-        const row =
-            document.createElement("tr");
 
-        appendCell(
-            row,
+    for (
+        const card of cards
+    ) {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "edenred-card-item";
+
+
+        /*
+         * Icono
+         */
+        const iconContainer =
+            document.createElement("div");
+
+        iconContainer.className =
+            "edenred-card-icon-container";
+
+
+        const icon =
+            document.createElement("img");
+
+        icon.className =
+            "edenred-card-icon";
+
+        icon.src =
+            getCardIcon(card);
+
+        icon.alt =
             card.cardName ||
-            "Tarjeta Edenred"
+            "Tarjeta Edenred";
+
+        iconContainer.appendChild(
+            icon
         );
 
-        appendCell(
-            row,
-            card.cardNumber || "-",
-            "card-number"
+
+        /*
+         * Información central
+         */
+        const info =
+            document.createElement("div");
+
+        info.className =
+            "edenred-card-info";
+
+
+        const name =
+            document.createElement("div");
+
+        name.className =
+            "edenred-card-name";
+
+        name.textContent =
+            card.cardName ||
+            "Tarjeta Edenred";
+
+
+        const number =
+            document.createElement("div");
+
+        number.className =
+            "edenred-card-number";
+
+        number.textContent =
+            card.cardNumber ||
+            "Número no disponible";
+
+
+        info.appendChild(
+            name
         );
 
-        appendCell(
-            row,
+        info.appendChild(
+            number
+        );
+
+
+        /*
+         * Saldo
+         */
+        const balance =
+            document.createElement("div");
+
+        balance.className =
+            "edenred-card-balance";
+
+        balance.textContent =
             formatCurrency(
                 card.balance
-            ),
-            "balance-value"
+            );
+
+
+        /*
+         * Composición final
+         */
+        item.appendChild(
+            iconContainer
         );
 
-        elements.cardsTable.appendChild(
-            row
+        item.appendChild(
+            info
         );
+
+        item.appendChild(
+            balance
+        );
+
+
+        elements.cardsTable
+            .appendChild(
+                item
+            );
     }
+
 
     elements.tableContainer.hidden =
         false;
+
 
     setStatus(
         "success",
