@@ -998,50 +998,105 @@
 
         </section>
 
-        <section class="progress-card">
+        <div class="progress-row">
 
-            <div class="progress-icon">
+    <section class="progress-card">
 
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="progress-icon">
 
-                    <path d="M4 19V9"></path>
-                    <path d="M10 19V5"></path>
-                    <path d="M16 19v-7"></path>
-                    <path d="M22 19V3"></path>
+            <svg viewBox="0 0 24 24"
+                 fill="none"
+                 stroke="currentColor"
+                 stroke-width="2">
 
-                </svg>
+                <path d="M4 19V9"></path>
+                <path d="M10 19V5"></path>
+                <path d="M16 19v-7"></path>
+                <path d="M22 19V3"></path>
 
-            </div>
+            </svg>
 
-            <div class="progress-content">
+        </div>
 
-                <div class="progress-header">
+        <div class="progress-content">
 
-                    <span>
-                        Dinero recuperado
-                    </span>
+            <div class="progress-header">
 
-                    <span id="progressDetail">
-                        0,00 € de 0,00 €
-                    </span>
+                <span>
+                    Dinero recuperado
+                </span>
 
-                </div>
-
-                <div class="progress-track" role="progressbar" aria-label="Porcentaje de dinero recuperado"
-                    aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-
-                    <div id="progressBar" class="progress-bar">
-                    </div>
-
-                </div>
+                <span id="progressDetail">
+                    0,00 € de 0,00 €
+                </span>
 
             </div>
 
-            <div id="progressPercentage" class="progress-percentage">
-                0 %
+            <div
+                class="progress-track"
+                role="progressbar"
+                aria-label="Porcentaje de dinero recuperado"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+            >
+
+                <div
+                    id="progressBar"
+                    class="progress-bar"
+                ></div>
+
             </div>
 
-        </section>
+        </div>
+
+        <div
+            id="progressPercentage"
+            class="progress-percentage"
+        >
+            0 %
+        </div>
+
+    </section>
+
+
+    <a
+        href="../edenred/"
+        class="edenred-card-link"
+        aria-label="Consultar tarjetas Edenred"
+    >
+
+        <div class="edenred-card-link-content">
+
+            <img
+                src="../images/edenred_card.png"
+                class="edenred-card-link-image"
+                alt="Tarjeta Edenred"
+            >
+
+        </div>
+
+        <span
+            class="edenred-card-link-arrow"
+            aria-hidden="true"
+        >
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M14 3h7v7"></path>
+                <path d="M10 14 21 3"></path>
+                <path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"></path>
+            </svg>
+        </span>
+
+    </a>
+
+</div>
 
         <section class="card movements-card">
 
