@@ -121,6 +121,29 @@ header {
     font-size: 1rem;
 }
 
+.header-title {
+
+    margin-bottom: 35px;
+}
+
+.header-title h1 {
+
+    /* font-family: "Cormorant Garamond", serif; */
+
+    font-size: 3rem;
+
+    color: var(--rocha-black);
+
+    margin-bottom: 10px;
+}
+
+.header-title p {
+
+    color: var(--rocha-muted);
+
+    font-size: 1rem;
+}
+
 .cards {
 
     display: grid;
