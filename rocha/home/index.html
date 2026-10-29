@@ -22,6 +22,8 @@
 
     <link href="../css.css" rel="stylesheet">
 
+    <script type="module" src="../login.js"></script>
+
     <style>
         :root {
             --rocha-primary: #7a1f36;
@@ -216,6 +218,8 @@
         }
 
         .amount-toggle {
+            position: relative;
+            z-index: 2;
             display: inline-flex;
             align-items: center;
             gap: 7px;
@@ -228,6 +232,7 @@
             font-size: 0.76rem;
             font-weight: 600;
             transition: 0.2s ease;
+            cursor: pointer;
         }
 
         .amount-toggle:hover {
@@ -464,6 +469,7 @@
             background: transparent;
             border: 0;
             border-radius: 50%;
+            cursor: pointer;
         }
 
         .product-menu:hover {
@@ -545,6 +551,10 @@
             font-size: 0.78rem;
             font-weight: 700;
             text-decoration: none;
+        }
+
+        .secondary-product-button:hover {
+            color: var(--rocha-primary-dark);
         }
 
         .secondary-product-button svg {
@@ -944,14 +954,12 @@
     </style>
 </head>
 
-<script type="module" src="../login.js"></script>
-
 <body>
 
     <header>
 
         <div class="logo">
-            <img src="../images/logo.png">
+            <img src="../images/logo.png" alt="Rocha Services">
         </div>
 
         <div class="user" id="userInfo">
@@ -1019,6 +1027,7 @@
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="1.8"
+                                aria-hidden="true"
                             >
                                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
                                 <circle cx="12" cy="12" r="2.5"></circle>
@@ -1041,6 +1050,7 @@
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="1.8"
+                                aria-hidden="true"
                             >
                                 <path d="M6 3v3M18 3v3M4 9h16"></path>
                                 <rect x="3" y="5" width="18" height="16" rx="2"></rect>
@@ -1062,7 +1072,7 @@
 
             <nav class="quick-actions" aria-label="Accesos rápidos">
 
-                ../deudas/
+                <a href="../deudas/" class="quick-action">
 
                     <span class="quick-action-icon">
                         <svg
@@ -1070,6 +1080,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.8"
+                            aria-hidden="true"
                         >
                             <rect x="3" y="5" width="18" height="14" rx="2"></rect>
                             <path d="M3 10h18M7 15h4"></path>
@@ -1080,7 +1091,7 @@
 
                 </a>
 
-                ../edenred/
+                <a href="../edenred/" class="quick-action">
 
                     <span class="quick-action-icon gold">
                         <svg
@@ -1088,6 +1099,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.8"
+                            aria-hidden="true"
                         >
                             <rect x="3" y="5" width="18" height="14" rx="2"></rect>
                             <path d="M3 9h18M7 14h3"></path>
@@ -1098,7 +1110,7 @@
 
                 </a>
 
-                ../proyectos/
+                <a href="../proyectos/" class="quick-action">
 
                     <span class="quick-action-icon">
                         <svg
@@ -1106,6 +1118,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.8"
+                            aria-hidden="true"
                         >
                             <path d="M4 4h6l2 3h8v13H4Z"></path>
                             <path d="M4 9h16"></path>
@@ -1116,7 +1129,7 @@
 
                 </a>
 
-                ../movimientos/
+                <a href="../movimientos/" class="quick-action">
 
                     <span class="quick-action-icon green">
                         <svg
@@ -1124,6 +1137,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.8"
+                            aria-hidden="true"
                         >
                             <path d="M4 19V9M10 19V5M16 19v-7M22 19V3"></path>
                         </svg>
@@ -1133,7 +1147,7 @@
 
                 </a>
 
-                ../documentos/
+                <a href="../documentos/" class="quick-action">
 
                     <span class="quick-action-icon gold">
                         <svg
@@ -1141,6 +1155,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.8"
+                            aria-hidden="true"
                         >
                             <path d="M6 2h9l4 4v16H6Z"></path>
                             <path d="M14 2v5h5M9 12h7M9 16h7"></path>
@@ -1151,7 +1166,7 @@
 
                 </a>
 
-                ../cuenta/
+                <a href="../cuenta/" class="quick-action">
 
                     <span class="quick-action-icon">
                         <svg
@@ -1159,6 +1174,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="1.8"
+                            aria-hidden="true"
                         >
                             <circle cx="12" cy="8" r="4"></circle>
                             <path d="M4 22c.5-5 3.2-7 8-7s7.5 2 8 7"></path>
@@ -1180,7 +1196,7 @@
                         <p>Información principal de tus servicios activos.</p>
                     </div>
 
-                    ../cuenta/
+                    <a href="../cuenta/" class="section-link">
                         Ver todos
 
                         <svg
@@ -1188,6 +1204,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="2"
+                            aria-hidden="true"
                         >
                             <path d="m9 18 6-6-6-6"></path>
                         </svg>
@@ -1227,6 +1244,7 @@
                                 <svg
                                     viewBox="0 0 24 24"
                                     fill="currentColor"
+                                    aria-hidden="true"
                                 >
                                     <circle cx="5" cy="12" r="1.7"></circle>
                                     <circle cx="12" cy="12" r="1.7"></circle>
@@ -1238,13 +1256,7 @@
 
                         <div class="product-balance">
 
-                            <span class="product-balance-label">
-                                Saldo pendiente total
-                            </span>
-
-                            <strong class="product-balance-value">
-                                <span class="amount-content">0,00</span>
-                                <small>EUR</small>
+               >EUR</small>
                             </strong>
 
                         </div>
@@ -1275,6 +1287,7 @@
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="2"
+                                aria-hidden="true"
                             >
                                 <path d="m9 18 6-6-6-6"></path>
                             </svg>
@@ -1303,6 +1316,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="2"
+                            aria-hidden="true"
                         >
                             <path d="m9 18 6-6-6-6"></path>
                         </svg>
@@ -1316,7 +1330,9 @@
 
                         <div class="card-title-row">
                             <h3>Movimientos recientes</h3>
-                            <span class="card-badge">Últimas novedades</span>
+                            <span class="card-badge">
+                                Últimas novedades
+                            </span>
                         </div>
 
                         <div class="activity-list">
@@ -1329,18 +1345,33 @@
                                         fill="none"
                                         stroke="currentColor"
                                         stroke-width="1.8"
+                                        aria-hidden="true"
                                     >
-                                        <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                                        <rect
+                                            x="3"
+                                            y="5"
+                                            width="18"
+                                            height="14"
+                                            rx="2"
+                                        ></rect>
+
                                         <path d="M7 9h10M7 13h6"></path>
                                     </svg>
                                 </div>
 
                                 <div class="activity-content">
-                                    <h4>Información financiera actualizada</h4>
-                                    <p>Los datos de tu cuenta se han sincronizado correctamente.</p>
+                                    <h4>
+                                        Información financiera actualizada
+                                    </h4>
+
+                                    <p>
+                                        Los datos de tu cuenta se han sincronizado correctamente.
+                                    </p>
                                 </div>
 
-                                <span class="activity-time">Hoy</span>
+                                <span class="activity-time">
+                                    Hoy
+                                </span>
 
                             </div>
 
@@ -1352,6 +1383,7 @@
                                         fill="none"
                                         stroke="currentColor"
                                         stroke-width="1.8"
+                                        aria-hidden="true"
                                     >
                                         <path d="M4 4h6l2 3h8v13H4Z"></path>
                                         <path d="M4 9h16"></path>
@@ -1359,11 +1391,18 @@
                                 </div>
 
                                 <div class="activity-content">
-                                    <h4>Proyectos disponibles</h4>
-                                    <p>Accede a la documentación y al seguimiento de tus proyectos.</p>
+                                    <h4>
+                                        Proyectos disponibles
+                                    </h4>
+
+                                    <p>
+                                        Accede a la documentación y al seguimiento de tus proyectos.
+                                    </p>
                                 </div>
 
-                                <span class="activity-time">Reciente</span>
+                                <span class="activity-time">
+                                    Reciente
+                                </span>
 
                             </div>
 
@@ -1375,17 +1414,25 @@
                                         fill="none"
                                         stroke="currentColor"
                                         stroke-width="1.8"
+                                        aria-hidden="true"
                                     >
                                         <path d="M12 3v18M5 8h10.5a3.5 3.5 0 0 1 0 7H8.5a3.5 3.5 0 0 0 0 7H19"></path>
                                     </svg>
                                 </div>
 
                                 <div class="activity-content">
-                                    <h4>Control de saldos</h4>
-                                    <p>Consulta movimientos, importes pendientes y pagos registrados.</p>
+                                    <h4>
+                                        Control de saldos
+                                    </h4>
+
+                                    <p>
+                                        Consulta movimientos, importes pendientes y pagos registrados.
+                                    </p>
                                 </div>
 
-                                <span class="activity-time">Disponible</span>
+                                <span class="activity-time">
+                                    Disponible
+                                </span>
 
                             </div>
 
@@ -1397,17 +1444,28 @@
 
                         <div class="card-title-row">
                             <h3>Análisis financiero</h3>
-                            <span class="card-badge">Resumen</span>
+
+                            <span class="card-badge">
+                                Resumen
+                            </span>
                         </div>
 
                         <div class="financial-total">
-                            <span>Importe total del mes</span>
+                            <span>
+                                Importe total del mes
+                            </span>
+
                             <strong>
-                                <span class="amount-content">0,00</span> EUR
+                                <span class="amount-content">0,00</span>
+                                EUR
                             </strong>
                         </div>
 
-                        <div class="chart" aria-label="Distribución financiera">
+                        <div
+                            class="chart"
+                            role="img"
+                            aria-label="Distribución financiera: pagos 43%, servicios 29% y otros 28%"
+                        >
 
                             <div class="chart-center">
                                 <span>Este mes</span>
@@ -1450,7 +1508,10 @@
 
                     <div>
                         <h2>¿Necesitas ayuda?</h2>
-                        <p>Accede rápidamente a tus opciones de soporte y configuración.</p>
+
+                        <p>
+                            Accede rápidamente a tus opciones de soporte y configuración.
+                        </p>
                     </div>
 
                 </div>
@@ -1465,6 +1526,7 @@
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="1.8"
+                                aria-hidden="true"
                             >
                                 <circle cx="12" cy="8" r="4"></circle>
                                 <path d="M4 22c.5-5 3.2-7 8-7s7.5 2 8 7"></path>
@@ -1472,8 +1534,13 @@
                         </span>
 
                         <span class="help-content">
-                            <strong>Configuración de tu cuenta</strong>
-                            <span>Gestiona tu perfil y tus datos personales.</span>
+                            <strong>
+                                Configuración de tu cuenta
+                            </strong>
+
+                            <span>
+                                Gestiona tu perfil y tus datos personales.
+                            </span>
                         </span>
 
                         <svg
@@ -1482,6 +1549,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="2"
+                            aria-hidden="true"
                         >
                             <path d="m9 18 6-6-6-6"></path>
                         </svg>
@@ -1496,6 +1564,7 @@
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="1.8"
+                                aria-hidden="true"
                             >
                                 <path d="M4 13a8 8 0 0 1 16 0"></path>
                                 <path d="M4 13v5h4v-6H4M20 13v5h-4v-6h4"></path>
@@ -1504,8 +1573,13 @@
                         </span>
 
                         <span class="help-content">
-                            <strong>Soporte Rocha Services</strong>
-                            <span>Contacta con el equipo de asistencia.</span>
+                            <strong>
+                                Soporte Rocha Services
+                            </strong>
+
+                            <span>
+                                Contacta con el equipo de asistencia.
+                            </span>
                         </span>
 
                         <svg
@@ -1514,6 +1588,7 @@
                             fill="none"
                             stroke="currentColor"
                             stroke-width="2"
+                            aria-hidden="true"
                         >
                             <path d="m9 18 6-6-6-6"></path>
                         </svg>
@@ -1530,56 +1605,88 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const amountToggle = document.getElementById("amountToggle");
-            const amountElements = document.querySelectorAll(".amount-content");
-            const lastAccess = document.getElementById("lastAccess");
+            const amountToggle =
+                document.getElementById("amountToggle");
+
+            const amountElements =
+                document.querySelectorAll(".amount-content");
+
+            const lastAccess =
+                document.getElementById("lastAccess");
 
             let amountsVisible = true;
+
             const originalAmounts = new Map();
 
             amountElements.forEach((element) => {
-                originalAmounts.set(element, element.textContent.trim());
+                originalAmounts.set(
+                    element,
+                    element.textContent.trim()
+                );
             });
 
             if (lastAccess) {
-                const formatter = new Intl.DateTimeFormat("es-ES", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit"
-                });
+                const formatter =
+                    new Intl.DateTimeFormat(
+                        "es-ES",
+                        {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit"
+                        }
+                    );
 
-                lastAccess.textContent = formatter.format(new Date());
+                lastAccess.textContent =
+                    formatter.format(new Date());
             }
 
             if (amountToggle) {
-                amountToggle.addEventListener("click", () => {
-                    amountsVisible = !amountsVisible;
+                amountToggle.addEventListener(
+                    "click",
+                    () => {
+                        amountsVisible =
+                            !amountsVisible;
 
-                    amountElements.forEach((element) => {
-                        if (amountsVisible) {
-                            element.textContent = originalAmounts.get(element);
-                            element.classList.remove("hidden-amount");
-                        } else {
-                            element.textContent = "••••••";
-                            element.classList.add("hidden-amount");
+                        amountElements.forEach(
+                            (element) => {
+                                if (amountsVisible) {
+                                    element.textContent =
+                                        originalAmounts.get(element);
+
+                                    element.classList.remove(
+                                        "hidden-amount"
+                                    );
+                                } else {
+                                    element.textContent =
+                                        "••••••";
+
+                                    element.classList.add(
+                                        "hidden-amount"
+                                    );
+                                }
+                            }
+                        );
+
+                        const buttonText =
+                            amountToggle.querySelector("span");
+
+                        if (buttonText) {
+                            buttonText.textContent =
+                                amountsVisible
+                                    ? "Ocultar importes"
+                                    : "Mostrar importes";
                         }
-                    });
 
-                    const buttonText = amountToggle.querySelector("span");
-
-                    buttonText.textContent = amountsVisible
-                        ? "Ocultar importes"
-                        : "Mostrar importes";
-
-                    amountToggle.setAttribute(
-                        "aria-label",
-                        amountsVisible
-                            ? "Ocultar importes"
-                            : "Mostrar importes"
-                    );
-                });
+                        amountToggle.setAttribute(
+                            "aria-label",
+                            amountsVisible
+                                ? "Ocultar importes"
+                                : "Mostrar importes"
+                        );
+                    }
+                );
             }
         });
     </script>
