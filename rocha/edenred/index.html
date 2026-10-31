@@ -564,6 +564,85 @@
             white-space: nowrap;
         }
 
+        .transaction-row-completed {
+            opacity: 1;
+        }
+
+        .transaction-row-pending {
+            opacity: 0.72;
+        }
+
+        .transaction-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+
+            margin-bottom: 0.3rem;
+            padding: 0.25rem 0.55rem;
+
+            border-radius: 999px;
+
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .transaction-status-completed {
+            color: #0f5132;
+            background: #d1e7dd;
+        }
+
+        .transaction-status-pending {
+            color: #664d03;
+            background: #fff3cd;
+        }
+
+        .transaction-row-pending .transaction-description {
+            color: #6b7280;
+        }
+
+        .transaction-row-pending .transaction-amount {
+            color: #9ca3af;
+        }
+
+        .transaction-expected-date {
+            margin-top: 0.25rem;
+
+            color: #818895;
+            font-size: 0.85rem;
+        }
+
+        .transaction-received-date {
+            margin-top: 0.2rem;
+
+            color: #198754;
+            font-size: 0.78rem;
+        }
+
+        .transaction-status-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+
+            width: 16px;
+            height: 16px;
+
+            border-radius: 50%;
+
+            font-size: 0.68rem;
+            line-height: 1;
+        }
+
+        .transaction-status-completed .transaction-status-icon {
+            color: #ffffff;
+            background: #198754;
+        }
+
+        .transaction-status-pending .transaction-status-icon {
+            color: #664d03;
+            background: #ffe69c;
+        }
+
         .transaction-empty {
             padding: 2rem 1rem;
 
@@ -833,6 +912,28 @@
 
         const MONTHLY_EXPECTED_AMOUNT =
             141.67;
+
+        const EXPECTED_DAILY_AMOUNT =
+            11;
+
+        /*
+         * Festivos comunes a toda España en 2026.
+         *
+         * No contiene festivos autonómicos, provinciales
+         * ni locales.
+         */
+        const SPAIN_NATIONAL_HOLIDAYS = {
+            2026: new Set([
+                "2026-01-01",
+                "2026-01-06",
+                "2026-04-03",
+                "2026-05-01",
+                "2026-08-15",
+                "2026-10-12",
+                "2026-12-08",
+                "2026-12-25"
+            ])
+        };
 
         let requestInProgress =
             false;
@@ -1460,6 +1561,259 @@
             );
         }
 
+        function formatLocalDateKey(date) {
+            const year =
+                date.getFullYear();
+
+            const month =
+                String(
+                    date.getMonth() + 1
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+            const day =
+                String(
+                    date.getDate()
+                ).padStart(
+                    2,
+                    "0"
+                );
+
+            return `${year}-${month}-${day}`;
+        }
+
+
+        function isNationalHoliday(date) {
+            const yearHolidays =
+                SPAIN_NATIONAL_HOLIDAYS[
+                date.getFullYear()
+                ];
+
+            if (!yearHolidays) {
+                return false;
+            }
+
+            return yearHolidays.has(
+                formatLocalDateKey(
+                    date
+                )
+            );
+        }
+
+
+        function isBusinessDay(date) {
+            const dayOfWeek =
+                date.getDay();
+
+            const isWeekend =
+                dayOfWeek === 0 ||
+                dayOfWeek === 6;
+
+            return (
+                !isWeekend &&
+                !isNationalHoliday(date)
+            );
+        }
+
+
+        function getExpectedMonthlyPayments() {
+            const now =
+                new Date();
+
+            const year =
+                now.getFullYear();
+
+            const month =
+                now.getMonth();
+
+            const lastDay =
+                new Date(
+                    year,
+                    month + 1,
+                    0
+                ).getDate();
+
+            const payments =
+                [];
+
+            let remainingAmount =
+                MONTHLY_EXPECTED_AMOUNT;
+
+            for (
+                let day = 1;
+                day <= lastDay;
+                day += 1
+            ) {
+                if (
+                    remainingAmount <= 0
+                ) {
+                    break;
+                }
+
+                const date =
+                    new Date(
+                        year,
+                        month,
+                        day,
+                        12,
+                        0,
+                        0
+                    );
+
+                if (
+                    !isBusinessDay(date)
+                ) {
+                    continue;
+                }
+
+                const expectedAmount =
+                    Math.min(
+                        EXPECTED_DAILY_AMOUNT,
+                        remainingAmount
+                    );
+
+                payments.push({
+                    date:
+                        formatLocalDateKey(
+                            date
+                        ),
+
+                    expectedAmount:
+                        Number(
+                            expectedAmount.toFixed(
+                                2
+                            )
+                        )
+                });
+
+                remainingAmount =
+                    Number(
+                        (
+                            remainingAmount -
+                            expectedAmount
+                        ).toFixed(
+                            2
+                        )
+                    );
+            }
+
+            return payments;
+        }
+
+
+        function formatExpectedPaymentDate(
+            dateValue
+        ) {
+            if (!dateValue) {
+                return "";
+            }
+
+            const parts =
+                dateValue
+                    .split("-")
+                    .map(Number);
+
+            if (
+                parts.length !== 3
+            ) {
+                return dateValue;
+            }
+
+            const date =
+                new Date(
+                    parts[0],
+                    parts[1] - 1,
+                    parts[2],
+                    12,
+                    0,
+                    0
+                );
+
+            return new Intl.DateTimeFormat(
+                "es-ES",
+                {
+                    weekday:
+                        "long",
+
+                    day:
+                        "2-digit",
+
+                    month:
+                        "long"
+                }
+            ).format(date);
+        }
+
+
+        function sortTransactionsAscending(
+            transactions
+        ) {
+            return [
+                ...transactions
+            ].sort(
+                (
+                    first,
+                    second
+                ) => {
+                    const firstDate =
+                        `${first.transactionDateWithoutHour || ""}T${first.transactionHour || "00:00:00"}`;
+
+                    const secondDate =
+                        `${second.transactionDateWithoutHour || ""}T${second.transactionHour || "00:00:00"}`;
+
+                    return firstDate.localeCompare(
+                        secondDate
+                    );
+                }
+            );
+        }
+
+
+        function matchExpectedPayments(
+            transactions
+        ) {
+            const expectedPayments =
+                getExpectedMonthlyPayments();
+
+            const receivedTransactions =
+                sortTransactionsAscending(
+                    transactions
+                );
+
+            /*
+             * Las recargas reales pueden contabilizarse cerca
+             * de medianoche o en una fecha distinta a la jornada
+             * que les corresponde.
+             *
+             * Por eso se asignan secuencialmente:
+             * primera recarga al primer pago esperado,
+             * segunda recarga al segundo, etc.
+             */
+            return expectedPayments.map(
+                (
+                    expectedPayment,
+                    index
+                ) => {
+                    const transaction =
+                        receivedTransactions[index] ||
+                        null;
+
+                    return {
+                        ...expectedPayment,
+
+                        completed:
+                            Boolean(
+                                transaction
+                            ),
+
+                        transaction
+                    };
+                }
+            );
+        }
+
 
         function renderTransactions(data) {
             const transactions =
@@ -1478,6 +1832,10 @@
             elements.transactionsContainer
                 .replaceChildren();
 
+            /*
+             * Para la barra se utiliza el importe realmente
+             * recibido, no el importe teórico esperado.
+             */
             const monthlyAmount =
                 Number.isFinite(
                     Number(
@@ -1510,29 +1868,74 @@
                 monthlyAmount
             );
 
-            if (
-                transactions.length === 0
-            ) {
-                elements.transactionsEmpty.hidden =
-                    false;
+            const paymentSchedule =
+                matchExpectedPayments(
+                    transactions
+                );
 
+            elements.transactionsEmpty.hidden =
+                paymentSchedule.length > 0;
+
+            if (
+                paymentSchedule.length === 0
+            ) {
                 return;
             }
 
-            elements.transactionsEmpty.hidden =
-                true;
-
             for (
-                const transaction of transactions
+                const payment of paymentSchedule
             ) {
                 const row =
                     document.createElement("div");
 
                 row.className =
-                    "transaction-row";
+                    payment.completed
+                        ? "transaction-row transaction-row-completed"
+                        : "transaction-row transaction-row-pending";
+
 
                 const info =
                     document.createElement("div");
+
+
+                const status =
+                    document.createElement("div");
+
+                status.className =
+                    payment.completed
+                        ? "transaction-status transaction-status-completed"
+                        : "transaction-status transaction-status-pending";
+
+
+                const statusIcon =
+                    document.createElement("span");
+
+                statusIcon.className =
+                    "transaction-status-icon";
+
+                statusIcon.textContent =
+                    payment.completed
+                        ? "✓"
+                        : "·";
+
+
+                const statusText =
+                    document.createElement("span");
+
+                statusText.textContent =
+                    payment.completed
+                        ? "Completado"
+                        : "Pendiente";
+
+
+                status.appendChild(
+                    statusIcon
+                );
+
+                status.appendChild(
+                    statusText
+                );
+
 
                 const description =
                     document.createElement("div");
@@ -1541,20 +1944,63 @@
                     "transaction-description";
 
                 description.textContent =
-                    transaction.transactionDescription ||
-                    "Recarga";
+                    payment.completed
+                        ? (
+                            payment.transaction
+                                ?.transactionDescription ||
+                            "Recarga recibida"
+                        )
+                        : "Recarga esperada";
 
-                const date =
+
+                const expectedDate =
                     document.createElement("div");
 
-                date.className =
-                    "transaction-date";
+                expectedDate.className =
+                    "transaction-expected-date";
 
-                date.textContent =
-                    formatTransactionDate(
-                        transaction.transactionDateWithoutHour,
-                        transaction.transactionHour
+                expectedDate.textContent =
+                    `Fecha prevista: ${formatExpectedPaymentDate(
+                        payment.date
+                    )}`;
+
+
+                info.appendChild(
+                    status
+                );
+
+                info.appendChild(
+                    description
+                );
+
+                info.appendChild(
+                    expectedDate
+                );
+
+
+                if (
+                    payment.completed &&
+                    payment.transaction
+                ) {
+                    const receivedDate =
+                        document.createElement("div");
+
+                    receivedDate.className =
+                        "transaction-received-date";
+
+                    receivedDate.textContent =
+                        `Recibido: ${formatTransactionDate(
+                            payment.transaction
+                                .transactionDateWithoutHour,
+                            payment.transaction
+                                .transactionHour
+                        )}`;
+
+                    info.appendChild(
+                        receivedDate
                     );
+                }
+
 
                 const amount =
                     document.createElement("div");
@@ -1562,18 +2008,27 @@
                 amount.className =
                     "transaction-amount";
 
+                /*
+                 * Para pagos completados se muestra el importe
+                 * real. Para pendientes, el importe esperado.
+                 */
+                const displayAmount =
+                    payment.completed
+                        ? Number(
+                            payment.transaction
+                                ?.transactionAmount
+                        )
+                        : payment.expectedAmount;
+
                 amount.textContent =
-                    `+${formatCurrency(
-                        transaction.transactionAmount
-                    )}`;
+                    payment.completed
+                        ? `+${formatCurrency(
+                            displayAmount
+                        )}`
+                        : formatCurrency(
+                            displayAmount
+                        );
 
-                info.appendChild(
-                    description
-                );
-
-                info.appendChild(
-                    date
-                );
 
                 row.appendChild(
                     info
@@ -1584,10 +2039,11 @@
                 );
 
                 elements.transactionsContainer
-                    .appendChild(row);
+                    .appendChild(
+                        row
+                    );
             }
         }
-
 
         async function loadCardTransactions(
             card,
