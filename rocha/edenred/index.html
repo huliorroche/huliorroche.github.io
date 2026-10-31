@@ -395,8 +395,8 @@
         .edenred-card-row-selected {
             background: #f8f9fa;
 
-            box-shadow:
-                inset 4px 0 0 #212529;
+            /* box-shadow:
+                inset 4px 0 0 #212529; */
         }
 
         .card-history-panel {
@@ -736,12 +736,12 @@
                         </span>
 
                         <span id="monthlyProgressAmount" class="monthly-progress-amount">
-                            0,00 € de 160,00 €
+                            0,00 € de 141,67 €
                         </span>
                     </div>
 
                     <div class="monthly-progress-track" role="progressbar" aria-label="Dinero ingresado durante el mes"
-                        aria-valuemin="0" aria-valuemax="160" aria-valuenow="0">
+                        aria-valuemin="0" aria-valuemax="142" aria-valuenow="0">
                         <div id="monthlyProgressValue" class="monthly-progress-value"></div>
                     </div>
 
@@ -751,7 +751,7 @@
                         </span>
 
                         <span id="monthlyProgressRemaining">
-                            Pendiente: 160,00 €
+                            Pendiente: 141,67 €
                         </span>
                     </div>
 
@@ -832,8 +832,7 @@
             "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/edenred-balance";
 
         const MONTHLY_EXPECTED_AMOUNT =
-            160;
-
+            141.67;
 
         let requestInProgress =
             false;
