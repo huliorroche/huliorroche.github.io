@@ -552,6 +552,7 @@
             display: flex;
             align-items: center;
             flex-wrap: nowrap;
+            gap: 0.5rem;
         }
 
         .transaction-date {
@@ -577,28 +578,14 @@
         }
 
         .transaction-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-
             margin-bottom: 0.1rem;
-            padding: 0.15rem 0.25rem;
+            padding: 0.25rem 0.4rem;
 
-            border-radius: 999px;
+            border-radius: 6px;
 
             font-size: 0.72rem;
             font-weight: 700;
             text-transform: uppercase;
-        }
-
-        .transaction-status-completed {
-            color: #0f5132;
-            background: #d1e7dd;
-        }
-
-        .transaction-status-pending {
-            color: #664d03;
-            background: #fff3cd;
         }
 
         .transaction-row-pending .transaction-description {
@@ -623,26 +610,12 @@
             font-size: 0.78rem;
         }
 
-        .transaction-status-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-
-            width: 16px;
-            height: 16px;
-
-            border-radius: 50%;
-
-            font-size: 0.68rem;
-            line-height: 1;
-        }
-
-        .transaction-status-completed .transaction-status-icon {
+        .transaction-status-completed {
             color: #ffffff;
             background: #198754;
         }
 
-        .transaction-status-pending .transaction-status-icon {
+        .transaction-status-pending {
             color: #664d03;
             background: #ffe69c;
         }
@@ -1910,31 +1883,10 @@
                         ? "transaction-status transaction-status-completed"
                         : "transaction-status transaction-status-pending";
 
-
-                const statusIcon =
-                    document.createElement("span");
-
-                statusIcon.className =
-                    "transaction-status-icon";
-
-                statusIcon.textContent =
-                    payment.completed
-                        ? "✓"
-                        : "·";
-
-
-                const statusText =
-                    document.createElement("span");
-
-                statusText.textContent =
+                status.textContent =
                     payment.completed
                         ? "Completado"
                         : "Pendiente";
-
-
-                status.appendChild(
-                    statusIcon
-                );
 
                 status.appendChild(
                     statusText
@@ -1947,15 +1899,7 @@
                 description.className =
                     "transaction-description";
 
-                description.textContent =
-                    payment.completed
-                        ? (
-                            payment.transaction
-                                ?.transactionDescription ||
-                            "Recarga recibida"
-                        )
-                        : "Recarga esperada";
-
+                description.textContent = "Recarga";
 
                 const expectedDate =
                     document.createElement("div");
