@@ -1403,10 +1403,12 @@
 
     <script type="module">
         import {
-            supabase,
-            session,
-            user
-        } from "../login.js";
+    session,
+    user
+} from "../login.js";
+
+const DEBTS_FUNCTION_URL =
+    "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/debts-data";
 
         const MOVEMENT_TYPES = Object.freeze({
 
@@ -2344,169 +2346,187 @@
 
         }
 
-        async function loadMovements(debt) {
+        async function invokeDebtsFunction() {
+    const accessToken =
+        session?.access_token;
 
-            showLoading();
+    if (!accessToken) {
+        throw new Error(
+            "Esta operación requiere una sesión real de Supabase."
+        );
+    }
 
-            state.debt = debt;
-            state.debtId = debt.id;
+    const response =
+        await fetch(
+            DEBTS_FUNCTION_URL,
+            {
+                method:
+                    "POST",
 
-            state.person =
-                debt.person ||
-                "Persona sin nombre";
+                headers: {
+                    "Content-Type":
+                        "application/json",
 
-            state.currency =
-                debt.currency ||
-                "EUR";
+                    "Authorization":
+                        `Bearer ${accessToken}`
+                },
 
-            state.updated =
-                getDebtUpdatedDate(debt);
+                body:
+                    JSON.stringify({
+                        action:
+                            "getDebt"
+                    })
+            }
+        );
 
-            const {
-                data,
-                error
-            } = await supabase
-                .from("debt_movements")
-                .select(
-                    "id, debt_id, type, method, quantity, concept, movement_date, notes, created_at"
-                )
-                .eq(
-                    "debt_id",
-                    debt.id
-                )
-                .order(
-                    "movement_date",
-                    {
-                        ascending: false
+    const responseText =
+        await response.text();
+
+    let result = {};
+
+    if (responseText) {
+        try {
+            result =
+                JSON.parse(
+                    responseText
+                );
+        } catch {
+            throw new Error(
+                "La Edge Function no devolvió JSON válido. " +
+                `HTTP ${response.status}.`
+            );
+        }
+    }
+
+    if (!response.ok) {
+        const error =
+            new Error(
+                result.error ||
+                result.message ||
+                `Error HTTP ${response.status}`
+            );
+
+        error.responseStatus =
+            response.status;
+
+        error.responseCode =
+            result.code;
+
+        error.responseDetails =
+            result.details;
+
+        throw error;
+    }
+
+    return result;
+}
+
+function loadMovements(
+    debt,
+    movements
+) {
+    state.debt =
+        debt;
+
+    state.debtId =
+        debt.id;
+
+    state.person =
+        debt.person ||
+        "Persona sin nombre";
+
+    state.currency =
+        debt.currency ||
+        "EUR";
+
+    state.updated =
+        getDebtUpdatedDate(
+            debt
+        );
+
+    const ids =
+        new Set();
+
+    state.movements =
+        (
+            Array.isArray(
+                movements
+            )
+                ? movements
+                : []
+        )
+            .map(
+                (
+                    movement,
+                    index
+                ) => {
+                    const normalized =
+                        normalizeMovement(
+                            movement,
+                            index
+                        );
+
+                    if (
+                        ids.has(
+                            normalized.id
+                        )
+                    ) {
+                        throw new Error(
+                            `El identificador "${normalized.id}" está repetido.`
+                        );
                     }
-                );
 
-            if (error) {
-                throw new Error(error.message);
-            }
+                    ids.add(
+                        normalized.id
+                    );
 
-            const ids = new Set();
-
-            state.movements =
-                (data || [])
-                    .map(
-                        (movement, index) => {
-
-                            const normalized =
-                                normalizeMovement(
-                                    movement,
-                                    index
-                                );
-
-                            if (ids.has(normalized.id)) {
-                                throw new Error(
-                                    `El identificador "${normalized.id}" está repetido.`
-                                );
-                            }
-
-                            ids.add(normalized.id);
-
-                            return normalized;
-
-                        }
+                    return normalized;
+                }
+            )
+            .sort(
+                (
+                    first,
+                    second
+                ) =>
+                    parseDate(
+                        second.date
+                    ) -
+                    parseDate(
+                        first.date
                     )
-                    .sort(
-                        (first, second) =>
-                            parseDate(second.date) -
-                            parseDate(first.date)
-                    );
-
-            render();
-
-        }
-
-        async function loadDebts() {
-
-            if (!state.currentUser?.id) {
-                throw new Error(
-                    "No se ha podido identificar al usuario autenticado."
-                );
-            }
-
-            console.log(
-                "UUID del usuario autenticado:",
-                state.currentUser.id
             );
 
-            console.log(
-                "Correo del usuario autenticado:",
-                state.currentUser.email
-            );
+    render();
+}
 
-            const allResult = await supabase
-                .from("debts")
-                .select(
-                    "id, user_id, person, currency, updated, created_at"
-                );
 
-            console.log(
-                "Cuentas visibles para el usuario según RLS:",
-                allResult
-            );
+async function loadDebts() {
+    if (
+        !state.currentUser?.id
+    ) {
+        throw new Error(
+            "No se ha podido identificar al usuario autenticado."
+        );
+    }
 
-            if (allResult.error) {
-                throw new Error(
-                    `Error consultando debts: ${allResult.error.message}`
-                );
-            }
+    showLoading();
 
-            const {
-                data,
-                error
-            } = await supabase
-                .from("debts")
-                .select(
-                    "id, user_id, person, currency, updated, created_at"
-                )
-                .eq(
-                    "user_id",
-                    state.currentUser.id
-                )
-                .maybeSingle();
+    const result =
+        await invokeDebtsFunction();
 
-            console.log(
-                "Resultado filtrado por user_id:",
-                {
-                    requestedUserId: state.currentUser.id,
-                    data,
-                    error
-                }
-            );
+    if (
+        !result.debt
+    ) {
+        throw new Error(
+            "La Edge Function no ha devuelto ninguna deuda."
+        );
+    }
 
-            if (error) {
-                throw new Error(
-                    `Error recuperando la cuenta: ${error.message}`
-                );
-            }
-
-            if (!data) {
-
-                const visibleRows =
-                    allResult.data || [];
-
-                if (visibleRows.length === 0) {
-                    throw new Error(
-                        `Supabase no devuelve ninguna cuenta visible. ` +
-                        `El UUID autenticado es ${state.currentUser.id}. ` +
-                        `Revisa debts.user_id y la política RLS de debts.`
-                    );
-                }
-
-                throw new Error(
-                    `Existen cuentas visibles, pero ninguna tiene ` +
-                    `user_id = ${state.currentUser.id}.`
-                );
-            }
-
-            state.debt = data;
-
-            await loadMovements(data);
-        }
+    loadMovements(
+        result.debt,
+        result.movements
+    );
+}
 
         elements.searchInput.addEventListener(
             "input",
@@ -2533,7 +2553,22 @@
 
         state.currentUser = user;
 
-        await loadDebts();
+        state.currentUser =
+    user;
+
+try {
+    await loadDebts();
+} catch (error) {
+    console.error(
+        "Error cargando las deudas:",
+        error
+    );
+
+    showError(
+        error?.message ||
+        "No se pudieron recuperar los datos de la deuda."
+    );
+}
 
     </script>
 

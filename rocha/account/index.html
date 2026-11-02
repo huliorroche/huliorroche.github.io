@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Mi cuenta | Rocha Services</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet"
+    >
+
+    <link href="../css.css" rel="stylesheet">
+
+    <script type="module" src="../login.js"></script>
+    <script type="module" src="../access_token.js"></script>
+
+    <style>
+        .account-main {
+            padding: 48px 0 72px;
+        }
+
+        .account-header {
+            margin-bottom: 32px;
+        }
+
+        .account-header h1 {
+            margin-bottom: 8px;
+            color: var(--rocha-black);
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+        }
+
+        .account-header p {
+            margin: 0;
+            color: var(--rocha-muted);
+        }
+
+        .account-card {
+            padding: 32px;
+        }
+
+        .account-card h2 {
+            margin-bottom: 8px;
+            font-size: 1.35rem;
+        }
+
+        .account-card > p {
+            color: var(--rocha-muted);
+        }
+
+        .account-avatar {
+            display: grid;
+            width: 76px;
+            height: 76px;
+            place-items: center;
+            flex: 0 0 76px;
+            overflow: hidden;
+            color: #fff;
+            background: var(--rocha-gold);
+            border-radius: 50%;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .account-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .account-summary {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 28px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--rocha-border);
+        }
+
+        .account-summary h2 {
+            margin-bottom: 4px;
+        }
+
+        .account-summary p {
+            margin: 0;
+            color: var(--rocha-muted);
+            word-break: break-word;
+        }
+
+        .form-label {
+            color: var(--rocha-text);
+            font-weight: 600;
+        }
+
+        .form-control,
+        .form-check-input {
+            border-color: var(--rocha-border);
+        }
+
+        .form-control:focus {
+            border-color: var(--rocha-gold);
+            box-shadow: 0 0 0 .25rem rgba(185, 155, 104, .2);
+        }
+
+        .form-text {
+            color: var(--rocha-muted);
+        }
+
+        .account-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-rocha {
+            color: #fff;
+            background: var(--rocha-black);
+            border-color: var(--rocha-black);
+        }
+
+        .btn-rocha:hover,
+        .btn-rocha:focus {
+            color: #fff;
+            background: #2b3342;
+            border-color: #2b3342;
+        }
+
+        .account-status {
+            min-height: 24px;
+            margin: 0;
+        }
+
+        .account-status.success {
+            color: var(--positive);
+        }
+
+        .account-status.error {
+            color: var(--negative);
+        }
+
+        .readonly-notice {
+            display: none;
+        }
+
+        @media (max-width: 576px) {
+            .account-main {
+                padding-top: 32px;
+            }
+
+            .account-card {
+                padding: 24px;
+            }
+
+            .account-summary {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a class="logo" href="../home/" aria-label="Volver al inicio">
+            <img src="../images/logo.png" alt="Rocha Services">
+        </a>
+
+        <div class="user" id="userInfo">
+            Cargando...
+        </div>
+    </header>
+
+    <main class="account-main">
+        <div class="container">
+            <div class="account-header">
+                <h1>Configuración de tu cuenta</h1>
+                <p>Gestiona tus datos personales y tus preferencias de acceso.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-12 col-lg-8">
+                    <section class="card account-card">
+                        <div class="account-summary">
+                            <div class="account-avatar" id="accountAvatar" aria-hidden="true"></div>
+                            <div>
+                                <h2 id="accountName">Tu perfil</h2>
+                                <p id="accountEmail">Cargando...</p>
+                            </div>
+                        </div>
+
+                        <div
+                            id="readonlyNotice"
+                            class="alert alert-info readonly-notice"
+                            role="status"
+                        >
+                            Has accedido mediante un enlace privado. Esta vista es de solo lectura.
+                        </div>
+
+                        <form id="accountForm" novalidate>
+                            <h2>Datos personales</h2>
+                            <p class="mb-4">Estos datos se guardan en tu cuenta de Supabase.</p>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="fullName">Nombre completo</label>
+                                    <input
+                                        id="fullName"
+                                        class="form-control"
+                                        type="text"
+                                        maxlength="120"
+                                        autocomplete="name"
+                                        required
+                                    >
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="username">Nombre de usuario</label>
+                                    <input
+                                        id="username"
+                                        class="form-control"
+                                        type="text"
+                                        maxlength="60"
+                                        autocomplete="username"
+                                    >
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label" for="email">Correo electrónico</label>
+                                    <input
+                                        id="email"
+                                        class="form-control"
+                                        type="email"
+                                        autocomplete="email"
+                                        required
+                                    >
+                                    <div class="form-text">
+                                        Supabase puede pedirte confirmar el nuevo correo electrónico.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <h2>Contraseña</h2>
+                            <p class="mb-4">Déjalo vacío si no quieres cambiarla.</p>
+
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="password">Nueva contraseña</label>
+                                    <input
+                                        id="password"
+                                        class="form-control"
+                                        type="password"
+                                        minlength="6"
+                                        autocomplete="new-password"
+                                    >
+                                </div>
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label" for="passwordConfirmation">
+                                        Repite la contraseña
+                                    </label>
+                                    <input
+                                        id="passwordConfirmation"
+                                        class="form-control"
+                                        type="password"
+                                        minlength="6"
+                                        autocomplete="new-password"
+                                    >
+                                </div>
+                            </div>
+
+                            <hr class="my-4">
+
+                            <div class="form-check form-switch mb-4">
+                                <input
+                                    id="hiddenEmail"
+                                    class="form-check-input"
+                                    type="checkbox"
+                                >
+                                <label class="form-check-label" for="hiddenEmail">
+                                    Ocultar mi correo en la aplicación
+                                </label>
+                            </div>
+
+                            <div class="account-actions">
+                                <button id="saveButton" class="btn btn-rocha" type="submit">
+                                    Guardar cambios
+                                </button>
+                                <a class="btn btn-outline-secondary" href="../home/">
+                                    Cancelar
+                                </a>
+                                <p id="accountStatus" class="account-status" role="status" aria-live="polite"></p>
+                            </div>
+                        </form>
+                    </section>
+                </div>
+
+                <div class="col-12 col-lg-4">
+                    <aside class="card account-card">
+                        <h2>Sesión</h2>
+                        <p class="mb-4">Puedes cerrar la sesión en este dispositivo cuando quieras.</p>
+                        <button id="logoutButton" class="btn btn-outline-danger w-100" type="button">
+                            Cerrar sesión
+                        </button>
+                    </aside>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { supabase, user, session } from "../login.js";
+
+        const form = document.getElementById("accountForm");
+        const saveButton = document.getElementById("saveButton");
+        const status = document.getElementById("accountStatus");
+        const readonlyNotice = document.getElementById("readonlyNotice");
+        const avatar = document.getElementById("accountAvatar");
+        const accountName = document.getElementById("accountName");
+        const accountEmail = document.getElementById("accountEmail");
+        const fullName = document.getElementById("fullName");
+        const username = document.getElementById("username");
+        const email = document.getElementById("email");
+        const password = document.getElementById("password");
+        const passwordConfirmation = document.getElementById("passwordConfirmation");
+        const hiddenEmail = document.getElementById("hiddenEmail");
+
+        const metadata = user?.user_metadata || {};
+        const name = metadata.full_name || metadata.user_name || user?.email?.split("@")[0] || "Usuario";
+        const userEmail = user?.email || "";
+
+        accountName.textContent = name;
+        accountEmail.textContent = userEmail || "Acceso mediante enlace privado";
+        fullName.value = metadata.full_name || "";
+        username.value = metadata.user_name || metadata.preferred_username || "";
+        email.value = userEmail;
+        hiddenEmail.checked = metadata.hidden_email === true;
+
+        if (metadata.avatar_url) {
+            const image = document.createElement("img");
+            image.src = metadata.avatar_url;
+            image.alt = "";
+            avatar.appendChild(image);
+        } else {
+            avatar.textContent = name.charAt(0).toUpperCase();
+        }
+
+        if (!session) {
+            readonlyNotice.style.display = "block";
+            form.querySelectorAll("input, button").forEach((element) => {
+                element.disabled = true;
+            });
+        }
+
+        function setStatus(message, type = "") {
+            status.textContent = message;
+            status.className = `account-status ${type}`;
+        }
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            setStatus("");
+
+            if (!session) {
+                setStatus("No puedes modificar la cuenta mediante un enlace privado.", "error");
+                return;
+            }
+
+            if (!form.checkValidity()) {
+                form.classList.add("was-validated");
+                setStatus("Revisa los campos marcados.", "error");
+                return;
+            }
+
+            if (password.value && password.value !== passwordConfirmation.value) {
+                setStatus("Las contraseñas no coinciden.", "error");
+                passwordConfirmation.focus();
+                return;
+            }
+
+            saveButton.disabled = true;
+            saveButton.textContent = "Guardando...";
+
+            const update = {
+                email: email.value.trim(),
+                data: {
+                    full_name: fullName.value.trim(),
+                    user_name: username.value.trim(),
+                    hidden_email: hiddenEmail.checked
+                }
+            };
+
+            if (password.value) {
+                update.password = password.value;
+            }
+
+            const { data: updatedUser, error } = await supabase.auth.updateUser(update);
+
+            saveButton.disabled = false;
+            saveButton.textContent = "Guardar cambios";
+
+            if (error) {
+                setStatus(`No se pudieron guardar los cambios: ${error.message}`, "error");
+                return;
+            }
+
+            password.value = "";
+            passwordConfirmation.value = "";
+            accountName.textContent = fullName.value.trim() || username.value.trim() || "Usuario";
+            accountEmail.textContent = updatedUser.user.email || email.value.trim();
+            setStatus("Cambios guardados correctamente.", "success");
+        });
+
+        document.getElementById("logoutButton").addEventListener("click", async () => {
+            const { error } = await supabase.auth.signOut();
+
+            if (error) {
+                setStatus(`No se pudo cerrar la sesión: ${error.message}`, "error");
+                return;
+            }
+
+            window.location.replace("../");
+        });
+    </script>
+
+</body>
+
+</html>
