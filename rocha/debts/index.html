@@ -23,16 +23,6 @@
     <script type="module" src="../access_token.js"></script>
 
 <style>
-    .page-header {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-
-        gap: 24px;
-
-        margin-bottom: 32px;
-    }
-
     .page-eyebrow {
         display: flex;
         align-items: center;
@@ -855,11 +845,6 @@
     }
 
     @media (max-width: 930px) {
-        .page-header {
-            align-items: stretch;
-            flex-direction: column;
-        }
-
         .summary-grid {
             grid-template-columns: 1fr 1fr;
         }
@@ -1064,23 +1049,19 @@
 
     <div class="container">
 
-        <div class="page-header">
+        <div class="header-title">
 
-            <div class="header-title">
+            <!-- <div class="page-eyebrow">
+                Gestión financiera
+            </div> -->
 
-                <!-- <div class="page-eyebrow">
-                    Gestión financiera
-                </div> -->
+            <h1>
+                Control de deudas
+            </h1>
 
-                <h1>
-                    Control de deudas
-                </h1>
-
-                <p class="page-subtitle">
-                    Consulta las entregas, los gastos, las devoluciones y el saldo pendiente.
-                </p>
-
-            </div>
+            <p class="page-subtitle">
+                Consulta las entregas, los gastos, las devoluciones y el saldo pendiente.
+            </p>
 
         </div>
 
