@@ -7,18 +7,14 @@
 
     <title>Home | Rocha Services</title>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
-        rel="stylesheet"
-    >
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
     <link
         href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@300;400;500;600&display=swap"
-        rel="stylesheet"
-    >
+        rel="stylesheet">
 
     <link href="../css.css" rel="stylesheet">
 
@@ -62,18 +58,14 @@
         .home-body {
             min-height: calc(100vh - 80px);
             background:
-                radial-gradient(
-                    circle at 91% 4%,
+                radial-gradient(circle at 91% 4%,
                     rgba(196, 155, 85, 0.12),
-                    transparent 22rem
-                ),
-                linear-gradient(
-                    180deg,
+                    transparent 22rem),
+                linear-gradient(180deg,
                     #ffffff 0,
                     #ffffff 265px,
                     var(--rocha-background) 265px,
-                    var(--rocha-background) 100%
-                );
+                    var(--rocha-background) 100%);
         }
 
         .home-shell {
@@ -154,11 +146,9 @@
             padding: 27px 30px;
             overflow: hidden;
             background:
-                linear-gradient(
-                    120deg,
+                linear-gradient(120deg,
                     var(--rocha-primary-dark),
-                    var(--rocha-primary)
-                );
+                    var(--rocha-primary));
             border-radius: var(--radius-large);
             box-shadow: 0 12px 30px rgba(87, 20, 38, 0.2);
             color: #ffffff;
@@ -514,11 +504,9 @@
             flex-direction: column;
             justify-content: space-between;
             background:
-                linear-gradient(
-                    145deg,
+                linear-gradient(145deg,
                     #ffffff,
-                    var(--rocha-secondary-soft)
-                );
+                    var(--rocha-secondary-soft));
         }
 
         .secondary-product-label {
@@ -698,12 +686,10 @@
             height: 165px;
             margin: 0 auto 27px;
             background:
-                conic-gradient(
-                    var(--rocha-primary) 0 43%,
+                conic-gradient(var(--rocha-primary) 0 43%,
                     var(--rocha-secondary) 43% 72%,
                     #d9c7b2 72% 91%,
-                    #ddd8d9 91% 100%
-                );
+                    #ddd8d9 91% 100%);
             border-radius: 50%;
         }
 
@@ -873,12 +859,10 @@
         @media (max-width: 720px) {
             .home-body {
                 background:
-                    linear-gradient(
-                        180deg,
+                    linear-gradient(180deg,
                         #ffffff 0,
                         #ffffff 410px,
-                        var(--rocha-background) 410px
-                    );
+                        var(--rocha-background) 410px);
             }
 
             .home-shell {
@@ -949,6 +933,48 @@
 
             .activity-time {
                 display: none;
+            }
+        }
+
+        .activity-amount {
+            font-size: 0.8rem;
+            font-weight: 700;
+            white-space: nowrap;
+            text-align: right;
+        }
+
+        .activity-amount.positive {
+            color: var(--rocha-success);
+        }
+
+        .activity-amount.negative {
+            color: var(--rocha-primary);
+        }
+
+        .activity-item-link {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .activity-item-link:hover {
+            color: inherit;
+            background: rgba(122, 31, 54, 0.025);
+        }
+
+        .activity-empty,
+        .activity-error {
+            padding: 24px 0;
+
+            color: var(--rocha-muted);
+
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .activity-amount {
+                grid-column: 2;
+                text-align: left;
             }
         }
     </style>
@@ -1027,19 +1053,9 @@
                             Resumen de tus productos y servicios
                         </span>
 
-                        <button
-                            class="amount-toggle"
-                            id="amountToggle"
-                            type="button"
-                            aria-label="Ocultar importes"
-                        >
-                            <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                aria-hidden="true"
-                            >
+                        <button class="amount-toggle" id="amountToggle" type="button" aria-label="Ocultar importes">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                aria-hidden="true">
                                 <path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"></path>
                                 <circle cx="12" cy="12" r="2.5"></circle>
                             </svg>
@@ -1056,13 +1072,8 @@
                     <div>
 
                         <div class="summary-icon">
-                            <svg
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                aria-hidden="true"
-                            >
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                                aria-hidden="true">
                                 <path d="M6 3v3M18 3v3M4 9h16"></path>
                                 <rect x="3" y="5" width="18" height="16" rx="2"></rect>
                                 <path d="m8 15 2 2 5-5"></path>
@@ -1086,13 +1097,8 @@
                 <a href="../debts/" class="quick-action">
 
                     <span class="quick-action-icon">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            aria-hidden="true"
-                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
                             <rect x="3" y="5" width="18" height="14" rx="2"></rect>
                             <path d="M3 10h18M7 15h4"></path>
                         </svg>
@@ -1105,13 +1111,8 @@
                 <a href="../edenred/" class="quick-action">
 
                     <span class="quick-action-icon gold">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            aria-hidden="true"
-                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
                             <rect x="3" y="5" width="18" height="14" rx="2"></rect>
                             <path d="M3 9h18M7 14h3"></path>
                         </svg>
@@ -1124,13 +1125,8 @@
                 <a href="../proyectos/" class="quick-action">
 
                     <span class="quick-action-icon">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            aria-hidden="true"
-                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
                             <path d="M4 4h6l2 3h8v13H4Z"></path>
                             <path d="M4 9h16"></path>
                         </svg>
@@ -1143,13 +1139,8 @@
                 <a href="../movimientos/" class="quick-action">
 
                     <span class="quick-action-icon green">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            aria-hidden="true"
-                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
                             <path d="M4 19V9M10 19V5M16 19v-7M22 19V3"></path>
                         </svg>
                     </span>
@@ -1161,13 +1152,8 @@
                 <a href="../documentos/" class="quick-action">
 
                     <span class="quick-action-icon gold">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            aria-hidden="true"
-                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
                             <path d="M6 2h9l4 4v16H6Z"></path>
                             <path d="M14 2v5h5M9 12h7M9 16h7"></path>
                         </svg>
@@ -1180,13 +1166,8 @@
                 <a href="../account/" class="quick-action">
 
                     <span class="quick-action-icon">
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="1.8"
-                            aria-hidden="true"
-                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+                            aria-hidden="true">
                             <circle cx="12" cy="8" r="4"></circle>
                             <path d="M4 22c.5-5 3.2-7 8-7s7.5 2 8 7"></path>
                         </svg>
@@ -1322,13 +1303,7 @@
                     <a href="../movimientos/" class="section-link">
                         Ver actividad
 
-                        <svg
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            aria-hidden="true"
-                        >
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                             <path d="m9 18 6-6-6-6"></path>
                         </svg>
                     </a>
@@ -1346,107 +1321,28 @@
                             </span>
                         </div>
 
-                        <div class="activity-list">
-
+                        <div id="recentMovementsList" class="activity-list" aria-live="polite">
                             <div class="activity-item">
 
                                 <div class="activity-icon">
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="1.8"
-                                        aria-hidden="true"
-                                    >
-                                        <rect
-                                            x="3"
-                                            y="5"
-                                            width="18"
-                                            height="14"
-                                            rx="2"
-                                        ></rect>
-
-                                        <path d="M7 9h10M7 13h6"></path>
-                                    </svg>
+                                    <div class="spinner-border spinner-border-sm" role="status">
+                                        <span class="visually-hidden">
+                                            Cargando movimientos...
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div class="activity-content">
                                     <h4>
-                                        Información financiera actualizada
+                                        Cargando movimientos
                                     </h4>
 
                                     <p>
-                                        Los datos de tu cuenta se han sincronizado correctamente.
+                                        Consultando tu actividad más reciente.
                                     </p>
                                 </div>
 
-                                <span class="activity-time">
-                                    Hoy
-                                </span>
-
                             </div>
-
-                            <div class="activity-item">
-
-                                <div class="activity-icon gold">
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="1.8"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="M4 4h6l2 3h8v13H4Z"></path>
-                                        <path d="M4 9h16"></path>
-                                    </svg>
-                                </div>
-
-                                <div class="activity-content">
-                                    <h4>
-                                        Proyectos disponibles
-                                    </h4>
-
-                                    <p>
-                                        Accede a la documentación y al seguimiento de tus proyectos.
-                                    </p>
-                                </div>
-
-                                <span class="activity-time">
-                                    Reciente
-                                </span>
-
-                            </div>
-
-                            <div class="activity-item">
-
-                                <div class="activity-icon green">
-                                    <svg
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        stroke-width="1.8"
-                                        aria-hidden="true"
-                                    >
-                                        <path d="M12 3v18M5 8h10.5a3.5 3.5 0 0 1 0 7H8.5a3.5 3.5 0 0 0 0 7H19"></path>
-                                    </svg>
-                                </div>
-
-                                <div class="activity-content">
-                                    <h4>
-                                        Control de saldos
-                                    </h4>
-
-                                    <p>
-                                        Consulta movimientos, importes pendientes y pagos registrados.
-                                    </p>
-                                </div>
-
-                                <span class="activity-time">
-                                    Disponible
-                                </span>
-
-                            </div>
-
                         </div>
 
                     </article>
@@ -1472,11 +1368,8 @@
                             </strong>
                         </div>
 
-                        <div
-                            class="chart"
-                            role="img"
-                            aria-label="Distribución financiera: pagos 43%, servicios 29% y otros 28%"
-                        >
+                        <div class="chart" role="img"
+                            aria-label="Distribución financiera: pagos 43%, servicios 29% y otros 28%">
 
                             <div class="chart-center">
                                 <span>Este mes</span>
@@ -1705,6 +1598,9 @@
     <script type="module">
         import { session, user } from "../login.js";
 
+        const RECENT_MOVEMENTS_FUNCTION_URL =
+            "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/recent-movements";
+
         const DEBTS_FUNCTION_URL =
             "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/debts-data";
 
@@ -1713,6 +1609,11 @@
 
         const balanceDescription =
             document.querySelector(".balance-description");
+
+        const recentMovementsList =
+            document.getElementById(
+                "recentMovementsList"
+            );
 
         function normalizeAmount(value) {
             const amount = Number(value);
@@ -1797,6 +1698,364 @@
             ).format(amount);
         }
 
+        function escapeHtml(value) {
+            return String(
+                value ?? ""
+            )
+                .replaceAll(
+                    "&",
+                    "&amp;"
+                )
+                .replaceAll(
+                    "<",
+                    "&lt;"
+                )
+                .replaceAll(
+                    ">",
+                    "&gt;"
+                )
+                .replaceAll(
+                    '"',
+                    "&quot;"
+                )
+                .replaceAll(
+                    "'",
+                    "&#039;"
+                );
+        }
+
+
+        function formatMovementAmount(
+            movement
+        ) {
+            const amount =
+                Number(
+                    movement.amount
+                );
+
+            if (
+                !Number.isFinite(
+                    amount
+                )
+            ) {
+                return "--";
+            }
+
+            return new Intl.NumberFormat(
+                "es-ES",
+                {
+                    style:
+                        "currency",
+
+                    currency:
+                        movement.currency ||
+                        "EUR",
+
+                    signDisplay:
+                        "always"
+                }
+            ).format(amount);
+        }
+
+
+        function formatMovementTime(
+            value
+        ) {
+            const date =
+                new Date(
+                    value
+                );
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return "";
+            }
+
+            const now =
+                new Date();
+
+            const sameDay =
+                date.getFullYear() ===
+                now.getFullYear() &&
+                date.getMonth() ===
+                now.getMonth() &&
+                date.getDate() ===
+                now.getDate();
+
+            if (sameDay) {
+                return new Intl.DateTimeFormat(
+                    "es-ES",
+                    {
+                        hour:
+                            "2-digit",
+
+                        minute:
+                            "2-digit"
+                    }
+                ).format(date);
+            }
+
+            return new Intl.DateTimeFormat(
+                "es-ES",
+                {
+                    day:
+                        "2-digit",
+
+                    month:
+                        "short"
+                }
+            ).format(date);
+        }
+
+
+        function getMovementIcon(
+            movement
+        ) {
+            if (
+                movement.source ===
+                "edenred"
+            ) {
+                return `
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+            >
+                <rect
+                    x="3"
+                    y="5"
+                    width="18"
+                    height="14"
+                    rx="2"
+                ></rect>
+
+                <path d="M3 9h18M7 14h3"></path>
+            </svg>
+        `;
+            }
+
+            if (
+                movement.type ===
+                "devolucion"
+            ) {
+                return `
+            <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+            >
+                <path d="M12 4v16"></path>
+                <path d="m18 14-6 6-6-6"></path>
+            </svg>
+        `;
+            }
+
+            return `
+        <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+        >
+            <path d="M12 20V4"></path>
+            <path d="m6 10 6-6 6 6"></path>
+        </svg>
+    `;
+        }
+
+
+        function getMovementIconClass(
+            movement
+        ) {
+            if (
+                movement.source ===
+                "edenred"
+            ) {
+                return "gold";
+            }
+
+            if (
+                movement.type ===
+                "devolucion"
+            ) {
+                return "green";
+            }
+
+            return "";
+        }
+
+
+        function renderRecentMovements(
+            movements
+        ) {
+            if (
+                !recentMovementsList
+            ) {
+                return;
+            }
+
+            if (
+                !Array.isArray(
+                    movements
+                ) ||
+                movements.length === 0
+            ) {
+                recentMovementsList.innerHTML = `
+            <div class="activity-empty">
+                No tienes movimientos recientes.
+            </div>
+        `;
+
+                return;
+            }
+
+            recentMovementsList.innerHTML =
+                movements
+                    .map(
+                        (movement) => {
+                            const amount =
+                                Number(
+                                    movement.amount
+                                );
+
+                            const amountClass =
+                                amount >= 0
+                                    ? "positive"
+                                    : "negative";
+
+                            return `
+                        <a
+                            href="${escapeHtml(
+                                movement.link ||
+                                "#"
+                            )}"
+                            class="activity-item activity-item-link"
+                        >
+                            <div
+                                class="activity-icon ${escapeHtml(
+                                getMovementIconClass(
+                                    movement
+                                )
+                            )}"
+                            >
+                                ${getMovementIcon(
+                                movement
+                            )}
+                            </div>
+
+                            <div class="activity-content">
+                                <h4>
+                                    ${escapeHtml(
+                                movement.title ||
+                                "Movimiento"
+                            )}
+                                </h4>
+
+                                <p>
+                                    ${escapeHtml(
+                                movement.description ||
+                                ""
+                            )}
+                                    ·
+                                    ${escapeHtml(
+                                formatMovementTime(
+                                    movement.timestamp
+                                )
+                            )}
+                                </p>
+                            </div>
+
+                            <span
+                                class="activity-amount ${amountClass}"
+                            >
+                                ${escapeHtml(
+                                formatMovementAmount(
+                                    movement
+                                )
+                            )}
+                            </span>
+                        </a>
+                    `;
+                        }
+                    )
+                    .join("");
+        }
+
+
+        async function loadRecentMovements() {
+            if (
+                !session?.access_token
+            ) {
+                throw new Error(
+                    "No se ha encontrado una sesión válida para consultar los movimientos."
+                );
+            }
+
+            const response =
+                await fetch(
+                    RECENT_MOVEMENTS_FUNCTION_URL,
+                    {
+                        method:
+                            "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${session.access_token}`
+                        },
+
+                        body:
+                            JSON.stringify({
+                                action:
+                                    "getRecentMovements",
+
+                                limit:
+                                    5
+                            })
+                    }
+                );
+
+            const responseText =
+                await response.text();
+
+            let result = {};
+
+            if (responseText) {
+                try {
+                    result =
+                        JSON.parse(
+                            responseText
+                        );
+                } catch {
+                    throw new Error(
+                        `La respuesta de movimientos no es válida. HTTP ${response.status}.`
+                    );
+                }
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error ||
+                    result.message ||
+                    `No se pudieron cargar los movimientos. HTTP ${response.status}.`
+                );
+            }
+
+            renderRecentMovements(
+                result.movements
+            );
+        }
+
         async function loadGlobalBalance() {
             const balances = await Promise.all(
                 financialProducts.map(product => product.loadBalance())
@@ -1826,14 +2085,24 @@
             }
         }
 
-        loadGlobalBalance().catch(error => {
-            console.error("Error cargando la posición global:", error);
+        loadRecentMovements().catch(
+            (error) => {
+                console.error(
+                    "Error cargando los movimientos recientes:",
+                    error
+                );
 
-            if (balanceDescription) {
-                balanceDescription.textContent =
-                    "No se pudo cargar la posición global.";
+                if (
+                    recentMovementsList
+                ) {
+                    recentMovementsList.innerHTML = `
+                <div class="activity-error">
+                    No se pudieron cargar los movimientos recientes.
+                </div>
+            `;
+                }
             }
-        });
+        );
     </script>
 
 </body>
