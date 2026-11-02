@@ -2085,6 +2085,20 @@
             }
         }
 
+        loadGlobalBalance().catch(
+            (error) => {
+                console.error(
+                    "Error cargando la posición global:",
+                    error
+                );
+
+                if (balanceDescription) {
+                    balanceDescription.textContent =
+                        "No se pudo cargar la posición global.";
+                }
+            }
+        );
+
         loadRecentMovements().catch(
             (error) => {
                 console.error(
