@@ -1702,6 +1702,140 @@
         });
     </script>
 
+    <script type="module">
+        import { session, user } from "../login.js";
+
+        const DEBTS_FUNCTION_URL =
+            "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/debts-data";
+
+        const globalAmount =
+            document.getElementById("globalAmount");
+
+        const balanceDescription =
+            document.querySelector(".balance-description");
+
+        function normalizeAmount(value) {
+            const amount = Number(value);
+
+            if (!Number.isFinite(amount)) {
+                throw new Error("Se ha recibido un importe de deuda no válido.");
+            }
+
+            return amount;
+        }
+
+        async function loadDebtBalance() {
+            if (!user?.id || !session?.access_token) {
+                throw new Error(
+                    "No se ha podido identificar la sesión para cargar las deudas."
+                );
+            }
+
+            const response = await fetch(
+                DEBTS_FUNCTION_URL,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${session.access_token}`
+                    },
+                    body: JSON.stringify({
+                        action: "getDebt"
+                    })
+                }
+            );
+
+            const responseText = await response.text();
+            let result = {};
+
+            if (responseText) {
+                try {
+                    result = JSON.parse(responseText);
+                } catch {
+                    throw new Error(
+                        `La respuesta de deudas no es válida. HTTP ${response.status}.`
+                    );
+                }
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error ||
+                    result.message ||
+                    `No se pudieron cargar las deudas. HTTP ${response.status}.`
+                );
+            }
+
+            if (!result.debt || !Array.isArray(result.movements)) {
+                throw new Error(
+                    "La respuesta de deudas no contiene los movimientos esperados."
+                );
+            }
+
+            return result.movements.reduce(
+                (total, movement) =>
+                    total + normalizeAmount(movement.quantity),
+                0
+            );
+        }
+
+        const financialProducts = [
+            {
+                id: "debts",
+                loadBalance: loadDebtBalance
+            }
+        ];
+
+        function formatGlobalAmount(amount) {
+            return new Intl.NumberFormat(
+                "es-ES",
+                {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                    signDisplay: "always"
+                }
+            ).format(amount);
+        }
+
+        async function loadGlobalBalance() {
+            const balances = await Promise.all(
+                financialProducts.map(product => product.loadBalance())
+            );
+
+            const total = balances.reduce(
+                (sum, balance) => sum + balance,
+                0
+            );
+
+            const formattedAmount = formatGlobalAmount(total);
+            const amountContent =
+                globalAmount?.querySelector(".amount-content");
+
+            if (amountContent) {
+                amountContent.textContent =
+                    formattedAmount;
+            }
+
+            if (globalAmount) {
+                globalAmount.querySelector("small").textContent = "EUR";
+            }
+
+            if (balanceDescription) {
+                balanceDescription.textContent =
+                    "Saldo neto de tus productos y servicios";
+            }
+        }
+
+        loadGlobalBalance().catch(error => {
+            console.error("Error cargando la posición global:", error);
+
+            if (balanceDescription) {
+                balanceDescription.textContent =
+                    "No se pudo cargar la posición global.";
+            }
+        });
+    </script>
+
 </body>
 
 </html>
