@@ -1112,17 +1112,58 @@
 
                 <div>
                     <h2 class="section-title">
-                        Nuevo registro
+                        1 · Elige el ejercicio
                     </h2>
 
-                    <p class="section-description">
-                        Selecciona el gimnasio, el ejercicio y la variante de máquina antes de anotar las series.
+                    <p class="section-description" id="selectedExerciseLabel">
+                        Ningún ejercicio seleccionado.
                     </p>
+                </div>
+
+                <div class="toolbar" style="flex:0 1 auto;">
+                    <div class="field">
+                        <label for="exerciseSearch">Buscar</label>
+                        <input type="search" id="exerciseSearch" placeholder="Nombre del ejercicio">
+                    </div>
+
+                    <div class="field">
+                        <label for="muscleFilter">Grupo muscular</label>
+                        <select id="muscleFilter">
+                            <option value="">Todos los grupos</option>
+                        </select>
+                    </div>
                 </div>
 
             </div>
 
-            <div class="toolbar">
+            <div class="exercise-picker" id="exercisePicker"></div>
+
+        </section>
+
+        <section class="card section-card">
+
+            <div class="section-heading">
+
+                <div>
+                    <h2 class="section-title">
+                        2 · Registra las series
+                    </h2>
+
+                    <p class="section-description" id="registerSubtitle">
+                        Indica cuándo y dónde entrenas, y anota cada serie con sus dropsets.
+                    </p>
+                </div>
+
+                <button type="button" class="btn btn-ghost" id="addSetButton">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"></path>
+                    </svg>
+                    Añadir serie
+                </button>
+
+            </div>
+
+            <div class="toolbar" style="margin-bottom:20px;">
 
                 <div class="field">
                     <label for="entryDate">Fecha y hora</label>
@@ -1141,44 +1182,6 @@
                     </select>
                 </div>
 
-                <div class="field">
-                    <label for="muscleFilter">Filtrar por grupo</label>
-                    <select id="muscleFilter">
-                        <option value="">Todos los grupos</option>
-                    </select>
-                </div>
-
-            </div>
-
-            <div class="section-heading" style="margin-top:26px;">
-                <div>
-                    <h3 class="section-title" style="font-size:.98rem;">
-                        Ejercicio
-                    </h3>
-                    <p class="section-description" id="selectedExerciseLabel">
-                        Ningún ejercicio seleccionado.
-                    </p>
-                </div>
-            </div>
-
-            <div class="exercise-picker" id="exercisePicker"></div>
-
-            <div class="section-heading" style="margin-top:26px;">
-                <div>
-                    <h3 class="section-title" style="font-size:.98rem;">
-                        Series
-                    </h3>
-                    <p class="section-description">
-                        Cada serie admite dropsets con su propio peso y repeticiones.
-                    </p>
-                </div>
-
-                <button type="button" class="btn btn-ghost" id="addSetButton">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 5v14M5 12h14"></path>
-                    </svg>
-                    Añadir serie
-                </button>
             </div>
 
             <div id="setsContainer"></div>
@@ -1205,19 +1208,14 @@
 
                 <div>
                     <h2 class="section-title">
-                        Progresión
+                        3 · Progresión
                     </h2>
-                    <p class="section-description">
+                    <p class="section-description" id="chartSubtitle">
                         Eje temporal real: la separación entre puntos es proporcional a los días transcurridos.
                     </p>
                 </div>
 
                 <div class="toolbar" style="flex:0 1 auto;">
-
-                    <div class="field">
-                        <label for="chartExercise">Ejercicio</label>
-                        <select id="chartExercise"></select>
-                    </div>
 
                     <div class="field">
                         <label for="chartMetric">Métrica</label>
@@ -1252,7 +1250,7 @@
 
                 <div>
                     <h2 class="section-title">
-                        Historial
+                        4 · Historial
                     </h2>
                     <p class="section-description" id="historyCount">
                         Cargando registros…
@@ -1261,9 +1259,10 @@
 
                 <div class="toolbar" style="flex:0 1 auto;">
                     <div class="field">
-                        <label for="historyExercise">Ejercicio</label>
-                        <select id="historyExercise">
-                            <option value="">Todos</option>
+                        <label for="historyScope">Mostrar</label>
+                        <select id="historyScope">
+                            <option value="exercise">Solo el ejercicio elegido</option>
+                            <option value="all">Todos los ejercicios</option>
                         </select>
                     </div>
 
@@ -1324,20 +1323,22 @@
             gymSelect: document.getElementById("gymSelect"),
             variantSelect: document.getElementById("variantSelect"),
             muscleFilter: document.getElementById("muscleFilter"),
+            exerciseSearch: document.getElementById("exerciseSearch"),
             exercisePicker: document.getElementById("exercisePicker"),
             selectedExerciseLabel: document.getElementById("selectedExerciseLabel"),
+            registerSubtitle: document.getElementById("registerSubtitle"),
             setsContainer: document.getElementById("setsContainer"),
             addSetButton: document.getElementById("addSetButton"),
             saveButton: document.getElementById("saveButton"),
             formFeedback: document.getElementById("formFeedback"),
-            chartExercise: document.getElementById("chartExercise"),
+            chartSubtitle: document.getElementById("chartSubtitle"),
             chartMetric: document.getElementById("chartMetric"),
             chartGym: document.getElementById("chartGym"),
             chartWrapper: document.getElementById("chartWrapper"),
             chartTooltip: document.getElementById("chartTooltip"),
             historyList: document.getElementById("historyList"),
             historyCount: document.getElementById("historyCount"),
-            historyExercise: document.getElementById("historyExercise"),
+            historyScope: document.getElementById("historyScope"),
             historyGym: document.getElementById("historyGym"),
             totalVolume: document.getElementById("totalVolume"),
             volumeDetail: document.getElementById("volumeDetail"),
@@ -1665,24 +1666,31 @@
                     .join("");
         }
 
-        function renderExerciseSelectors() {
-            const options = state.exercises
-                .map(exercise =>
-                    `<option value="${exercise.id}">${escapeHtml(exercise.name_es)}</option>`)
-                .join("");
-
-            elements.chartExercise.innerHTML =
-                options || `<option value="">Sin ejercicios</option>`;
-
-            elements.historyExercise.innerHTML =
-                `<option value="">Todos</option>${options}`;
-        }
-
         function renderExercisePicker() {
             const filter = elements.muscleFilter.value;
 
+            const search = elements.exerciseSearch.value
+                .trim()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+
+            const matches = exercise => {
+                if (!search) {
+                    return true;
+                }
+
+                const haystack = `${exercise.name_es} ${exercise.name_en || ""}`
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "");
+
+                return haystack.includes(search);
+            };
+
             const visible = state.exercises
-                .filter(exercise => !filter || exercise.muscle_group === filter);
+                .filter(exercise =>
+                    (!filter || exercise.muscle_group === filter) && matches(exercise));
 
             if (!visible.length) {
                 elements.exercisePicker.innerHTML = `
@@ -1690,7 +1698,7 @@
                         <div>
                             <h3 class="state-title">Sin ejercicios</h3>
                             <p class="state-description">
-                                Añade ejercicios al catálogo desde la base de datos.
+                                Prueba con otro grupo muscular o cambia la búsqueda.
                             </p>
                         </div>
                     </div>
@@ -1737,18 +1745,39 @@
         });
 
         elements.muscleFilter.addEventListener("change", renderExercisePicker);
+        elements.exerciseSearch.addEventListener("input", renderExercisePicker);
+
+        function selectedExercise() {
+            return state.exercises.find(
+                item => item.id === state.selectedExerciseId
+            );
+        }
 
         function selectExercise(exerciseId) {
             state.selectedExerciseId = exerciseId;
 
-            const exercise = state.exercises.find(item => item.id === exerciseId);
+            const exercise = selectedExercise();
+
+            const title = exercise
+                ? `${exercise.name_es}${exercise.name_en ? ` · ${exercise.name_en}` : ""}`
+                : "";
 
             elements.selectedExerciseLabel.textContent = exercise
-                ? `${exercise.name_es} · ${exercise.name_en || ""}`.trim()
+                ? title
                 : "Ningún ejercicio seleccionado.";
+
+            elements.registerSubtitle.textContent = exercise
+                ? `Registrando ${exercise.name_es}. Cada serie admite dropsets con su propio peso y repeticiones.`
+                : "Elige primero un ejercicio en la tarjeta anterior.";
+
+            elements.chartSubtitle.textContent = exercise
+                ? `Evolución de ${exercise.name_es} sobre un eje temporal real.`
+                : "Elige un ejercicio para ver su progresión.";
 
             renderExercisePicker();
             renderVariants();
+            renderChart();
+            renderHistory();
         }
 
         function renderVariants() {
@@ -1894,6 +1923,10 @@
         }
 
         function renderSummary() {
+            if (!elements.totalVolume) {
+                return;
+            }
+
             const totalVolume = state.entries.reduce(
                 (sum, entry) => sum + entryVolume(entry), 0);
 
@@ -1940,7 +1973,7 @@
         // -------------------------------------------------------------- chart
 
         function buildSeries() {
-            const exerciseId = elements.chartExercise.value;
+            const exerciseId = state.selectedExerciseId;
             const gymId = elements.chartGym.value;
             const metric = elements.chartMetric.value;
 
@@ -2172,13 +2205,14 @@
             });
         }
 
-        [elements.chartExercise, elements.chartMetric, elements.chartGym]
+        [elements.chartMetric, elements.chartGym]
             .forEach(element => element.addEventListener("change", renderChart));
 
         // ------------------------------------------------------------ history
 
         function renderHistory() {
-            const exerciseId = elements.historyExercise.value;
+            const onlySelected = elements.historyScope.value === "exercise";
+            const exerciseId = onlySelected ? state.selectedExerciseId : "";
             const gymId = elements.historyGym.value;
 
             const visible = state.entries
@@ -2188,8 +2222,10 @@
                 .sort((a, b) =>
                     new Date(b.performed_at) - new Date(a.performed_at));
 
+            const exercise = selectedExercise();
+
             elements.historyCount.textContent = visible.length
-                ? `${visible.length} ejercicios registrados.`
+                ? `${visible.length} registros${onlySelected && exercise ? ` de ${exercise.name_es}` : ""}.`
                 : "Sin registros con los filtros actuales.";
 
             if (!visible.length) {
@@ -2335,7 +2371,7 @@
             }
         });
 
-        [elements.historyExercise, elements.historyGym]
+        [elements.historyScope, elements.historyGym]
             .forEach(element => element.addEventListener("change", renderHistory));
 
         // --------------------------------------------------------------- load
@@ -2360,18 +2396,17 @@
 
                 renderGyms();
                 renderMuscleFilter();
-                renderExerciseSelectors();
                 renderExercisePicker();
-
-                if (state.exercises.length) {
-                    selectExercise(state.exercises[0].id);
-                }
 
                 elements.entryDate.value = toLocalInputValue(new Date());
 
                 renderSets();
 
                 await loadEntries();
+
+                if (state.exercises.length) {
+                    selectExercise(state.exercises[0].id);
+                }
             } catch (error) {
                 setFeedback(error.message, "error");
 
