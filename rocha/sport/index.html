@@ -1112,7 +1112,7 @@
 
                 <div>
                     <h2 class="section-title">
-                        1 · Elige el ejercicio
+                        Ejercicio
                     </h2>
 
                     <p class="section-description" id="selectedExerciseLabel">
@@ -1146,7 +1146,7 @@
 
                 <div>
                     <h2 class="section-title">
-                        2 · Registra las series
+                        Registro de series
                     </h2>
 
                     <p class="section-description" id="registerSubtitle">
@@ -1384,8 +1384,19 @@
         }
 
         function exerciseImage(exercise) {
-            return exercise?.name_id
-                ? `${IMAGE_BASE}${encodeURIComponent(exercise.name_id)}${IMAGE_EXTENSION}`
+            if (!exercise?.name_id) {
+                return "";
+            }
+
+            // Las barras del name_id se conservan como separadores de carpeta.
+            const path = String(exercise.name_id)
+                .split("/")
+                .filter(Boolean)
+                .map(encodeURIComponent)
+                .join("/");
+
+            return path
+                ? `${IMAGE_BASE}${path}${IMAGE_EXTENSION}`
                 : "";
         }
 
