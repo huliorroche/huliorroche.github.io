@@ -1368,6 +1368,7 @@
             variants: [],
             entries: [],
             selectedExerciseId: null,
+            ambiguousNames: new Set(),
             sets: []
         };
 
@@ -1447,8 +1448,32 @@
         }
 
         // Distingue ejercicios que comparten name_es pero usan equipamiento distinto.
+        function exerciseKey(exercise) {
+            return `${exercise?.name_es ?? ""}|${exercise?.muscle_group ?? ""}`;
+        }
+
+        function indexAmbiguousNames() {
+            const counts = new Map();
+
+            state.exercises.forEach(exercise => {
+                const key = exerciseKey(exercise);
+                counts.set(key, (counts.get(key) || 0) + 1);
+            });
+
+            state.ambiguousNames = new Set(
+                [...counts.entries()]
+                    .filter(([, count]) => count > 1)
+                    .map(([key]) => key)
+            );
+        }
+
+        function needsEquipment(exercise) {
+            return Boolean(exercise?.equipment) &&
+                state.ambiguousNames.has(exerciseKey(exercise));
+        }
+
         function equipmentChip(exercise) {
-            return exercise?.equipment
+            return needsEquipment(exercise)
                 ? `<span class="equipment-chip">${escapeHtml(exercise.equipment)}</span>`
                 : "";
         }
@@ -1458,7 +1483,7 @@
                 return "";
             }
 
-            return exercise.equipment
+            return needsEquipment(exercise)
                 ? `${exercise.name_es} (${exercise.equipment})`
                 : exercise.name_es;
         }
@@ -2518,6 +2543,8 @@
                 state.gyms = catalog.gyms || [];
                 state.exercises = catalog.exercises || [];
                 state.variants = catalog.variants || [];
+
+                indexAmbiguousNames();
 
                 renderGyms();
                 renderMuscleFilter();
