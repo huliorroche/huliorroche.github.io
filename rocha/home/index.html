@@ -841,6 +841,11 @@
             letter-spacing: 0.16em;
         }
 
+        /* Las secciones con módulo asociado arrancan ocultas hasta validar permisos. */
+        [hidden] {
+            display: none !important;
+        }
+
         @media (max-width: 980px) {
             .quick-actions {
                 grid-template-columns: repeat(3, 1fr);
@@ -1020,10 +1025,10 @@
                     <h1>
                         Hola
                     </h1>
-
+<!-- 
                     <p>
                         Consulta y gestiona toda tu información.
-                    </p>
+                    </p> -->
 
                 </div>
 
@@ -1034,7 +1039,7 @@
 
             </section>
 
-            <section class="summary-row">
+            <section class="summary-row" data-feature="debts" hidden>
 
                 <article class="balance-panel">
 
@@ -1094,7 +1099,7 @@
 
             <nav class="quick-actions" aria-label="Accesos rápidos">
 
-                <a href="../debts/" class="quick-action">
+                <a href="../debts/" class="quick-action" data-feature="debts" hidden>
 
                     <span class="quick-action-icon green">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -1107,7 +1112,7 @@
 
                 </a>
 
-                <a href="../edenred/" class="quick-action">
+                <a href="../edenred/" class="quick-action" data-feature="debts" hidden>
 
                     <span class="quick-action-icon gold">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -1121,7 +1126,7 @@
 
                 </a>
 
-                <a href="../sport/" class="quick-action">
+                <a href="../sport/" class="quick-action" data-feature="sports" hidden>
 
                     <span class="quick-action-icon green">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -1148,7 +1153,7 @@
 
                 </a> -->
 
-                <a href="../documentos/" class="quick-action">
+                <a href="../documentos/" class="quick-action" data-feature="debts" hidden>
 
                     <span class="quick-action-icon gold">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
@@ -1290,7 +1295,7 @@
 
             </section> -->
 
-            <section class="section">
+            <section class="section" id="activity" data-feature="debts" hidden>
 
                 <div class="section-heading">
 
@@ -1602,6 +1607,12 @@
 
         const DEBTS_FUNCTION_URL =
             "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/debts-data";
+
+        const USER_FEATURES_FUNCTION_URL =
+            "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/user-features";
+
+        const ACCESS_TOKEN =
+            new URLSearchParams(window.location.search).get("access");
 
         const globalAmount =
             document.getElementById("globalAmount");
@@ -2084,38 +2095,101 @@
             }
         }
 
-        loadGlobalBalance().catch(
-            (error) => {
-                console.error(
-                    "Error cargando la posición global:",
-                    error
-                );
+        async function loadFeatures() {
+            const headers = {
+                "Content-Type": "application/json"
+            };
 
-                if (balanceDescription) {
-                    balanceDescription.textContent =
-                        "No se pudo cargar la posición global.";
-                }
+            const body = {};
+
+            if (session?.access_token) {
+                headers.Authorization = `Bearer ${session.access_token}`;
+            } else if (ACCESS_TOKEN) {
+                body.accessToken = ACCESS_TOKEN;
             }
-        );
 
-        loadRecentMovements().catch(
-            (error) => {
-                console.error(
-                    "Error cargando los movimientos recientes:",
-                    error
+            const response = await fetch(
+                USER_FEATURES_FUNCTION_URL,
+                {
+                    method: "POST",
+                    headers,
+                    body: JSON.stringify(body)
+                }
+            );
+
+            const result = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                throw new Error(
+                    result.error ||
+                    `No se pudieron cargar los permisos. HTTP ${response.status}.`
+                );
+            }
+
+            return Array.isArray(result.features) ? result.features : [];
+        }
+
+        function applyFeatures(features) {
+            const allowed = new Set(features);
+
+            document
+                .querySelectorAll("[data-feature]")
+                .forEach((element) => {
+                    if (allowed.has(element.dataset.feature)) {
+                        element.removeAttribute("hidden");
+                    }
+                });
+
+            return allowed;
+        }
+
+        loadFeatures()
+            .then((features) => {
+                const allowed = applyFeatures(features);
+
+                if (!allowed.has("debts")) {
+                    return;
+                }
+
+                loadGlobalBalance().catch(
+                    (error) => {
+                        console.error(
+                            "Error cargando la posición global:",
+                            error
+                        );
+
+                        if (balanceDescription) {
+                            balanceDescription.textContent =
+                                "No se pudo cargar la posición global.";
+                        }
+                    }
                 );
 
-                if (
-                    recentMovementsList
-                ) {
-                    recentMovementsList.innerHTML = `
+                loadRecentMovements().catch(
+                    (error) => {
+                        console.error(
+                            "Error cargando los movimientos recientes:",
+                            error
+                        );
+
+                        if (
+                            recentMovementsList
+                        ) {
+                            recentMovementsList.innerHTML = `
                 <div class="activity-error">
                     No se pudieron cargar los movimientos recientes.
                 </div>
             `;
-                }
-            }
-        );
+                        }
+                    }
+                );
+            })
+            .catch((error) => {
+                console.error(
+                    "Error cargando los permisos del usuario:",
+                    error
+                );
+            });
     </script>
 
 </body>
