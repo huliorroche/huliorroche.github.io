@@ -1166,8 +1166,8 @@
             <div class="toolbar" style="margin-bottom:20px;">
 
                 <div class="field">
-                    <label for="entryDate">Fecha y hora</label>
-                    <input type="datetime-local" id="entryDate">
+                    <label for="entryDate">Fecha</label>
+                    <input type="date" id="entryDate">
                 </div>
 
                 <div class="field">
@@ -1367,9 +1367,6 @@
         const shortDateFormatter =
             new Intl.DateTimeFormat("es-ES", { day: "2-digit", month: "short" });
 
-        const timeFormatter =
-            new Intl.DateTimeFormat("es-ES", { hour: "2-digit", minute: "2-digit" });
-
         function escapeHtml(value) {
             return String(value ?? "")
                 .replace(/&/g, "&amp;")
@@ -1449,7 +1446,7 @@
 
         function toLocalInputValue(date) {
             const offset = date.getTimezoneOffset() * 60000;
-            return new Date(date.getTime() - offset).toISOString().slice(0, 16);
+            return new Date(date.getTime() - offset).toISOString().slice(0, 10);
         }
 
         // ---------------------------------------------------------------- sets
@@ -1865,8 +1862,9 @@
                 return;
             }
 
+            // Se guarda al mediodía local para que el día no se desplace al convertir a UTC.
             const performedAt = elements.entryDate.value
-                ? new Date(elements.entryDate.value).toISOString()
+                ? new Date(`${elements.entryDate.value}T12:00:00`).toISOString()
                 : new Date().toISOString();
 
             elements.saveButton.disabled = true;
@@ -2353,7 +2351,7 @@
 
                         <div class="entry-volume">
                             <strong>${formatKg(entryVolume(entry))}</strong>
-                            <span>${timeFormatter.format(new Date(entry.performed_at))}</span>
+                            <span>${entry.sets.length} ${entry.sets.length === 1 ? "serie" : "series"}</span>
                         </div>
 
                         <button type="button" class="btn-icon" data-entry="${entry.id}"
