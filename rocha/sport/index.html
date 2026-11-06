@@ -1309,6 +1309,9 @@
         const ACCESS_TOKEN =
             new URLSearchParams(window.location.search).get("access");
 
+        const IMAGE_BASE = "/assets/";
+        const IMAGE_EXTENSION = ".webp";
+
         const state = {
             gyms: [],
             exercises: [],
@@ -1378,6 +1381,12 @@
 
         function formatKg(value) {
             return `${numberFormatter.format(Number(value) || 0)} kg`;
+        }
+
+        function exerciseImage(exercise) {
+            return exercise?.name_id
+                ? `${IMAGE_BASE}${encodeURIComponent(exercise.name_id)}${IMAGE_EXTENSION}`
+                : "";
         }
 
         async function callFunction(action, payload = {}) {
@@ -1715,7 +1724,7 @@
 
                         <div class="exercise-thumb">
                             <img
-                                src="${escapeHtml(exercise.image_url || "")}"
+                                src="${escapeHtml(exerciseImage(exercise))}"
                                 alt="${escapeHtml(exercise.name_es)}"
                                 loading="lazy"
                                 onerror="this.style.display='none'">
@@ -2304,7 +2313,7 @@
                 <article class="entry">
 
                     <div class="entry-thumb">
-                        <img src="${escapeHtml(entry.exercise?.image_url || "")}"
+                        <img src="${escapeHtml(exerciseImage(entry.exercise))}"
                              alt="" loading="lazy"
                              onerror="this.style.display='none'">
                     </div>
