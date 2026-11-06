@@ -415,6 +415,11 @@
         }
 
         .exercise-name {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-wrap: wrap;
+
             margin: 0;
 
             font-size: .92rem;
@@ -422,6 +427,23 @@
             line-height: 1.25;
 
             color: var(--rocha-black);
+        }
+
+        .equipment-chip {
+            padding: 2px 8px;
+
+            color: var(--primary);
+
+            font-size: .66rem;
+            font-weight: 700;
+            letter-spacing: .04em;
+            text-transform: uppercase;
+
+            background: var(--primary-light);
+
+            border-radius: 999px;
+
+            white-space: nowrap;
         }
 
         .exercise-name-en {
@@ -782,6 +804,11 @@
         }
 
         .entry-title {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            flex-wrap: wrap;
+
             margin: 0;
 
             font-size: .96rem;
@@ -1419,6 +1446,23 @@
             return `${numberFormatter.format(Number(value) || 0)} ${unitOf(entry).label}`;
         }
 
+        // Distingue ejercicios que comparten name_es pero usan equipamiento distinto.
+        function equipmentChip(exercise) {
+            return exercise?.equipment
+                ? `<span class="equipment-chip">${escapeHtml(exercise.equipment)}</span>`
+                : "";
+        }
+
+        function exerciseTitle(exercise) {
+            if (!exercise) {
+                return "";
+            }
+
+            return exercise.equipment
+                ? `${exercise.name_es} (${exercise.equipment})`
+                : exercise.name_es;
+        }
+
         function exerciseImage(exercise) {
             if (!exercise?.name_id) {
                 return "";
@@ -1745,7 +1789,7 @@
                     return true;
                 }
 
-                const haystack = `${exercise.name_es} ${exercise.name_en || ""}`
+                const haystack = `${exercise.name_es} ${exercise.name_en || ""} ${exercise.equipment || ""}`
                     .toLowerCase()
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "");
@@ -1787,7 +1831,10 @@
                         </div>
 
                         <div class="exercise-body">
-                            <p class="exercise-name">${escapeHtml(exercise.name_es)}</p>
+                            <p class="exercise-name">
+                                ${escapeHtml(exercise.name_es)}
+                                ${equipmentChip(exercise)}
+                            </p>
                             <p class="exercise-name-en">${escapeHtml(exercise.name_en || "")}</p>
                             ${exercise.muscle_group
                         ? `<span class="exercise-muscle">${escapeHtml(exercise.muscle_group)}</span>`
@@ -1824,7 +1871,7 @@
             const exercise = selectedExercise();
 
             const title = exercise
-                ? `${exercise.name_es}${exercise.name_en ? ` · ${exercise.name_en}` : ""}`
+                ? `${exerciseTitle(exercise)}${exercise.name_en ? ` · ${exercise.name_en}` : ""}`
                 : "";
 
             elements.selectedExerciseLabel.textContent = exercise
@@ -1832,11 +1879,11 @@
                 : "Ningún ejercicio seleccionado.";
 
             elements.registerSubtitle.textContent = exercise
-                ? `Registrando ${exercise.name_es}. Cada serie admite dropsets con su propio peso y repeticiones.`
+                ? `Registrando ${exerciseTitle(exercise)}. Cada serie admite dropsets con su propio peso y repeticiones.`
                 : "Elige primero un ejercicio en la tarjeta anterior.";
 
             elements.chartSubtitle.textContent = exercise
-                ? `Evolución de ${exercise.name_es} sobre un eje temporal real.`
+                ? `Evolución de ${exerciseTitle(exercise)} sobre un eje temporal real.`
                 : "Elige un ejercicio para ver su progresión.";
 
             renderExercisePicker();
@@ -2299,7 +2346,7 @@
             const exercise = selectedExercise();
 
             elements.historyCount.textContent = visible.length
-                ? `${visible.length} registros${onlySelected && exercise ? ` de ${exercise.name_es}` : ""}.`
+                ? `${visible.length} registros${onlySelected && exercise ? ` de ${exerciseTitle(exercise)}` : ""}.`
                 : "Sin registros con los filtros actuales.";
 
             if (!visible.length) {
@@ -2386,6 +2433,7 @@
                     <div>
                         <p class="entry-title">
                             ${escapeHtml(entry.exercise?.name_es || "Ejercicio")}
+                            ${equipmentChip(entry.exercise)}
                         </p>
 
                         <p class="entry-subtitle">
