@@ -1202,7 +1202,7 @@
                     <select id="gymSelect"></select>
                 </div>
 
-                <div class="field">
+                <div class="field" id="weightUnitField">
                     <label for="weightUnit">Unidad</label>
                     <select id="weightUnit">
                         <option value="kg">Kilos (kg)</option>
@@ -1211,7 +1211,7 @@
                     </select>
                 </div>
 
-                <div class="field">
+                <div class="field" id="weightModeField">
                     <label for="weightMode">Medida</label>
                     <select id="weightMode">
                         <option value="total">Total</option>
@@ -1263,12 +1263,7 @@
 
                     <div class="field">
                         <label for="chartMetric">Métrica</label>
-                        <select id="chartMetric">
-                            <option value="maxWeight">Peso máximo (kg)</option>
-                            <option value="volume">Volumen (kg · reps)</option>
-                            <option value="estimated1rm">1RM estimado (kg)</option>
-                            <option value="totalReps">Repeticiones totales</option>
-                        </select>
+                        <select id="chartMetric"></select>
                     </div>
 
                     <div class="field">
@@ -1377,6 +1372,8 @@
             gymSelect: document.getElementById("gymSelect"),
             weightUnit: document.getElementById("weightUnit"),
             weightMode: document.getElementById("weightMode"),
+            weightUnitField: document.getElementById("weightUnitField"),
+            weightModeField: document.getElementById("weightModeField"),
             variantSelect: document.getElementById("variantSelect"),
             muscleFilter: document.getElementById("muscleFilter"),
             exerciseSearch: document.getElementById("exerciseSearch"),
@@ -1564,8 +1561,13 @@
                 uid: crypto.randomUUID(),
                 weight: "",
                 reps: "",
+                seconds: "",
                 dropsets: []
             };
+        }
+
+        function isIsometric(exercise) {
+            return (exercise?.kind || "strength") === "isometric";
         }
 
         function renderSets() {
@@ -1573,11 +1575,53 @@
                 state.sets.push(createSet());
             }
 
+            const isometric = isIsometric(selectedExercise());
+
             const unitLabel =
                 (WEIGHT_UNITS[elements.weightUnit.value] || WEIGHT_UNITS.kg).label;
 
             const modeLabel =
                 elements.weightMode.value === "per_side" ? " por lado" : "";
+
+            const effortFields = (item, prefix) => isometric
+                ? `
+                    <div class="field" style="grid-column: span 2;">
+                        <label>Tiempo (segundos)</label>
+                        <input
+                            type="number"
+                            inputmode="numeric"
+                            min="1"
+                            step="1"
+                            data-role="${prefix}seconds"
+                            value="${escapeHtml(item.seconds)}"
+                            placeholder="0">
+                    </div>
+                `
+                : `
+                    <div class="field">
+                        <label>Peso (${unitLabel}${modeLabel})</label>
+                        <input
+                            type="number"
+                            inputmode="decimal"
+                            min="0"
+                            step="0.5"
+                            data-role="${prefix}weight"
+                            value="${escapeHtml(item.weight)}"
+                            placeholder="0">
+                    </div>
+
+                    <div class="field">
+                        <label>Repeticiones</label>
+                        <input
+                            type="number"
+                            inputmode="numeric"
+                            min="1"
+                            step="1"
+                            data-role="${prefix}reps"
+                            value="${escapeHtml(item.reps)}"
+                            placeholder="0">
+                    </div>
+                `;
 
             elements.setsContainer.innerHTML = state.sets
                 .map((set, index) => `
@@ -1585,29 +1629,7 @@
 
                         <div class="set-index">${index + 1}</div>
 
-                        <div class="field">
-                            <label>Peso (${unitLabel}${modeLabel})</label>
-                            <input
-                                type="number"
-                                inputmode="decimal"
-                                min="0"
-                                step="0.5"
-                                data-role="weight"
-                                value="${escapeHtml(set.weight)}"
-                                placeholder="0">
-                        </div>
-
-                        <div class="field">
-                            <label>Repeticiones</label>
-                            <input
-                                type="number"
-                                inputmode="numeric"
-                                min="1"
-                                step="1"
-                                data-role="reps"
-                                value="${escapeHtml(set.reps)}"
-                                placeholder="0">
-                        </div>
+                        ${effortFields(set, "")}
 
                         <button type="button" class="btn-icon" data-action="remove-set" title="Eliminar serie">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1622,29 +1644,7 @@
 
                                     <div class="dropset-tag">Drop ${dropIndex + 1}</div>
 
-                                    <div class="field">
-                                        <label>Peso (${unitLabel}${modeLabel})</label>
-                                        <input
-                                            type="number"
-                                            inputmode="decimal"
-                                            min="0"
-                                            step="0.5"
-                                            data-role="drop-weight"
-                                            value="${escapeHtml(drop.weight)}"
-                                            placeholder="0">
-                                    </div>
-
-                                    <div class="field">
-                                        <label>Repeticiones</label>
-                                        <input
-                                            type="number"
-                                            inputmode="numeric"
-                                            min="1"
-                                            step="1"
-                                            data-role="drop-reps"
-                                            value="${escapeHtml(drop.reps)}"
-                                            placeholder="0">
-                                    </div>
+                                    ${effortFields(drop, "drop-")}
 
                                     <button type="button" class="btn-icon" data-action="remove-drop" title="Eliminar dropset">
                                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1706,6 +1706,10 @@
                     drop.reps = event.target.value;
                 }
 
+                if (role === "drop-seconds") {
+                    drop.seconds = event.target.value;
+                }
+
                 return;
             }
 
@@ -1715,6 +1719,10 @@
 
             if (role === "reps") {
                 set.reps = event.target.value;
+            }
+
+            if (role === "seconds") {
+                set.seconds = event.target.value;
             }
         });
 
@@ -1742,7 +1750,8 @@
                 set.dropsets.push({
                     uid: crypto.randomUUID(),
                     weight: "",
-                    reps: ""
+                    reps: "",
+                    seconds: ""
                 });
             }
 
@@ -1759,7 +1768,13 @@
 
             state.sets.push(
                 last
-                    ? { uid: crypto.randomUUID(), weight: last.weight, reps: "", dropsets: [] }
+                    ? {
+                        uid: crypto.randomUUID(),
+                        weight: last.weight,
+                        reps: "",
+                        seconds: "",
+                        dropsets: []
+                    }
                     : createSet()
             );
 
@@ -1894,6 +1909,7 @@
             state.selectedExerciseId = exerciseId;
 
             const exercise = selectedExercise();
+            const isometric = isIsometric(exercise);
 
             const title = exercise
                 ? `${exerciseTitle(exercise)}${exercise.name_en ? ` · ${exercise.name_en}` : ""}`
@@ -1904,17 +1920,48 @@
                 : "Ningún ejercicio seleccionado.";
 
             elements.registerSubtitle.textContent = exercise
-                ? `Registrando ${exerciseTitle(exercise)}. Cada serie admite dropsets con su propio peso y repeticiones.`
+                ? isometric
+                    ? `Registrando ${exerciseTitle(exercise)}. Anota el tiempo que aguantas cada serie.`
+                    : `Registrando ${exerciseTitle(exercise)}. Cada serie admite dropsets con su propio peso y repeticiones.`
                 : "Elige primero un ejercicio en la tarjeta anterior.";
 
             elements.chartSubtitle.textContent = exercise
                 ? `Evolución de ${exerciseTitle(exercise)} sobre un eje temporal real.`
                 : "Elige un ejercicio para ver su progresión.";
 
+            elements.weightUnitField.style.display = isometric ? "none" : "";
+            elements.weightModeField.style.display = isometric ? "none" : "";
+
+            renderChartMetrics();
             renderExercisePicker();
             renderVariants();
+            renderSets();
             renderChart();
             renderHistory();
+        }
+
+        function renderChartMetrics() {
+            const options = isIsometric(selectedExercise())
+                ? [
+                    ["maxHold", "Mejor tiempo (s)"],
+                    ["totalTime", "Tiempo total (s)"]
+                ]
+                : [
+                    ["maxWeight", "Peso máximo (kg)"],
+                    ["volume", "Volumen (kg · reps)"],
+                    ["estimated1rm", "1RM estimado (kg)"],
+                    ["totalReps", "Repeticiones totales"]
+                ];
+
+            const previous = elements.chartMetric.value;
+
+            elements.chartMetric.innerHTML = options
+                .map(([value, label]) => `<option value="${value}">${label}</option>`)
+                .join("");
+
+            if (options.some(([value]) => value === previous)) {
+                elements.chartMetric.value = previous;
+            }
         }
 
         function renderVariants() {
@@ -1944,9 +1991,30 @@
         // ------------------------------------------------------------- saving
 
         function collectSets() {
+            const isometric = isIsometric(selectedExercise());
+
             const parsed = [];
 
             state.sets.forEach(set => {
+                if (isometric) {
+                    const seconds = Math.round(Number(set.seconds) || 0);
+
+                    if (seconds <= 0) {
+                        return;
+                    }
+
+                    parsed.push({
+                        durationSeconds: seconds,
+                        dropsets: set.dropsets
+                            .map(drop => ({
+                                durationSeconds: Math.round(Number(drop.seconds) || 0)
+                            }))
+                            .filter(drop => drop.durationSeconds > 0)
+                    });
+
+                    return;
+                }
+
                 const weight = Number(set.weight);
                 const reps = Number(set.reps);
 
@@ -1978,7 +2046,12 @@
             const sets = collectSets();
 
             if (!sets.length) {
-                setFeedback("Añade al menos una serie con repeticiones.", "error");
+                setFeedback(
+                    isIsometric(selectedExercise())
+                        ? "Añade al menos una serie con tiempo."
+                        : "Añade al menos una serie con repeticiones.",
+                    "error"
+                );
                 return;
             }
 
@@ -2017,6 +2090,26 @@
         });
 
         // ------------------------------------------------------------ metrics
+
+        function entryTotalTime(entry) {
+            return entry.sets.reduce((total, set) => {
+                const drops = (set.dropsets || []).reduce(
+                    (sum, drop) => sum + (Number(drop.duration_seconds) || 0),
+                    0
+                );
+
+                return total + (Number(set.duration_seconds) || 0) + drops;
+            }, 0);
+        }
+
+        function entryMaxHold(entry) {
+            return entry.sets.reduce((max, set) => {
+                const drops = (set.dropsets || [])
+                    .map(drop => Number(drop.duration_seconds) || 0);
+
+                return Math.max(max, Number(set.duration_seconds) || 0, ...drops);
+            }, 0);
+        }
 
         function entryVolume(entry) {
             const factor = entryFactor(entry);
@@ -2127,8 +2220,12 @@
                 maxWeight: entryMaxWeight,
                 volume: entryVolume,
                 totalReps: entryReps,
-                estimated1rm: entryEstimated1rm
+                estimated1rm: entryEstimated1rm,
+                maxHold: entryMaxHold,
+                totalTime: entryTotalTime
             };
+
+            const accumulated = ["volume", "totalReps", "totalTime"];
 
             const compute = metrics[metric] || entryMaxWeight;
 
@@ -2155,7 +2252,7 @@
                         return;
                     }
 
-                    current.value = metric === "volume" || metric === "totalReps"
+                    current.value = accumulated.includes(metric)
                         ? current.value + value
                         : Math.max(current.value, value);
                 });
@@ -2411,6 +2508,13 @@
                     const volume = entries.reduce(
                         (sum, entry) => sum + entryVolume(entry), 0);
 
+                    const seconds = entries.reduce(
+                        (sum, entry) => sum + entryTotalTime(entry), 0);
+
+                    const summary = volume
+                        ? `${formatKg(volume)} de volumen`
+                        : `${formatSeconds(seconds)} de isométricos`;
+
                     return `
                         <div class="history-day">
 
@@ -2418,7 +2522,7 @@
                                 ${escapeHtml(
                         dateFormatter.format(new Date(`${day}T12:00:00`))
                     )}
-                                <span>· ${formatKg(volume)} de volumen</span>
+                                <span>· ${summary}</span>
                             </div>
 
                             ${entries.map(renderEntry).join("")}
@@ -2429,17 +2533,39 @@
                 .join("");
         }
 
+        function formatSeconds(value) {
+            const seconds = Math.round(Number(value) || 0);
+
+            if (seconds < 60) {
+                return `${seconds} s`;
+            }
+
+            const minutes = Math.floor(seconds / 60);
+            const rest = seconds % 60;
+
+            return rest
+                ? `${minutes} min ${rest} s`
+                : `${minutes} min`;
+        }
+
         function renderEntry(entry) {
+            const isometric = isIsometric(entry.exercise);
+
             const tags = entry.sets
                 .map((set, index) => {
                     const drops = (set.dropsets || [])
-                        .map(drop =>
-                            `<span class="tag drop">drop ${formatEntryWeight(drop.weight_kg, entry)} × ${drop.reps}</span>`)
+                        .map(drop => isometric
+                            ? `<span class="tag drop">drop ${formatSeconds(drop.duration_seconds)}</span>`
+                            : `<span class="tag drop">drop ${formatEntryWeight(drop.weight_kg, entry)} × ${drop.reps}</span>`)
                         .join("");
+
+                    const main = isometric
+                        ? formatSeconds(set.duration_seconds)
+                        : `${formatEntryWeight(set.weight_kg, entry)} × ${set.reps}`;
 
                     return `
                         <span class="tag set">
-                            S${index + 1} · ${formatEntryWeight(set.weight_kg, entry)} × ${set.reps}
+                            S${index + 1} · ${main}
                         </span>
                         ${drops}
                     `;
@@ -2472,7 +2598,7 @@
                             ${entry.variant?.label
                     ? `<span class="tag variant">${escapeHtml(entry.variant.label)}</span>`
                     : ""}
-                            ${entry.weight_mode === "per_side"
+                            ${entry.weight_mode === "per_side" && !isometric
                     ? `<span class="tag variant">por lado</span>`
                     : ""}
                             ${tags}
@@ -2482,7 +2608,9 @@
                     <div class="entry-side">
 
                         <div class="entry-volume">
-                            <strong>${formatKg(entryVolume(entry))}</strong>
+                            <strong>${isometric
+                    ? formatSeconds(entryTotalTime(entry))
+                    : formatKg(entryVolume(entry))}</strong>
                             <span>${entry.sets.length} ${entry.sets.length === 1 ? "serie" : "series"}</span>
                         </div>
 
@@ -2548,6 +2676,7 @@
 
                 renderGyms();
                 renderMuscleFilter();
+                renderChartMetrics();
                 renderExercisePicker();
 
                 elements.entryDate.value = toLocalInputValue(new Date());
