@@ -476,7 +476,7 @@
         .set-row {
             display: grid;
 
-            grid-template-columns: 44px 1fr 1fr auto;
+            grid-template-columns: 44px 1fr 1fr .8fr auto;
             align-items: end;
             gap: 12px;
 
@@ -1562,6 +1562,7 @@
                 weight: "",
                 reps: "",
                 seconds: "",
+                rir: "",
                 dropsets: []
             };
         }
@@ -1585,7 +1586,7 @@
 
             const effortFields = (item, prefix) => isometric
                 ? `
-                    <div class="field" style="grid-column: span 2;">
+                    <div class="field" style="grid-column: span 3;">
                         <label>Tiempo (segundos)</label>
                         <input
                             type="number"
@@ -1630,6 +1631,16 @@
                         <div class="set-index">${index + 1}</div>
 
                         ${effortFields(set, "")}
+
+                        <div class="field">
+                            <label>RIR</label>
+                            <input
+                                type="text"
+                                maxlength="12"
+                                data-role="rir"
+                                value="${escapeHtml(set.rir)}"
+                                placeholder="2, 0-1, fallo…">
+                        </div>
 
                         <button type="button" class="btn-icon" data-action="remove-set" title="Eliminar serie">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1724,6 +1735,10 @@
             if (role === "seconds") {
                 set.seconds = event.target.value;
             }
+
+            if (role === "rir") {
+                set.rir = event.target.value;
+            }
         });
 
         elements.setsContainer.addEventListener("click", event => {
@@ -1773,6 +1788,7 @@
                         weight: last.weight,
                         reps: "",
                         seconds: "",
+                        rir: last.rir,
                         dropsets: []
                     }
                     : createSet()
@@ -1996,6 +2012,8 @@
             const parsed = [];
 
             state.sets.forEach(set => {
+                const rir = String(set.rir || "").trim().slice(0, 12);
+
                 if (isometric) {
                     const seconds = Math.round(Number(set.seconds) || 0);
 
@@ -2005,6 +2023,7 @@
 
                     parsed.push({
                         durationSeconds: seconds,
+                        rir,
                         dropsets: set.dropsets
                             .map(drop => ({
                                 durationSeconds: Math.round(Number(drop.seconds) || 0)
@@ -2025,6 +2044,7 @@
                 parsed.push({
                     weightKg: Number.isFinite(weight) ? weight : 0,
                     reps: Math.round(reps),
+                    rir,
                     dropsets: set.dropsets
                         .map(drop => ({
                             weightKg: Number(drop.weight) || 0,
@@ -2563,9 +2583,13 @@
                         ? formatSeconds(set.duration_seconds)
                         : `${formatEntryWeight(set.weight_kg, entry)} × ${set.reps}`;
 
+                    const rir = set.rir
+                        ? ` · RIR ${escapeHtml(set.rir)}`
+                        : "";
+
                     return `
                         <span class="tag set">
-                            S${index + 1} · ${main}
+                            S${index + 1} · ${main}${rir}
                         </span>
                         ${drops}
                     `;
