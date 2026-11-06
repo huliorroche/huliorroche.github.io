@@ -1175,6 +1175,23 @@
                     <select id="gymSelect"></select>
                 </div>
 
+                <div class="field">
+                    <label for="weightUnit">Unidad</label>
+                    <select id="weightUnit">
+                        <option value="kg">Kilos (kg)</option>
+                        <option value="lb">Libras (lbs)</option>
+                        <option value="plate">Placas</option>
+                    </select>
+                </div>
+
+                <div class="field">
+                    <label for="weightMode">Medida</label>
+                    <select id="weightMode">
+                        <option value="total">Total</option>
+                        <option value="per_side">Por lado</option>
+                    </select>
+                </div>
+
                 <div class="field" style="display: none">
                     <label for="variantSelect">Variante de máquina</label>
                     <select id="variantSelect">
@@ -1312,6 +1329,12 @@
         const IMAGE_BASE = "assets/";
         const IMAGE_EXTENSION = ".webp";
 
+        const WEIGHT_UNITS = {
+            kg: { label: "kg", toKg: 1 },
+            lb: { label: "lbs", toKg: 0.45359237 },
+            plate: { label: "placas", toKg: 20 }
+        };
+
         const state = {
             gyms: [],
             exercises: [],
@@ -1324,6 +1347,8 @@
         const elements = {
             entryDate: document.getElementById("entryDate"),
             gymSelect: document.getElementById("gymSelect"),
+            weightUnit: document.getElementById("weightUnit"),
+            weightMode: document.getElementById("weightMode"),
             variantSelect: document.getElementById("variantSelect"),
             muscleFilter: document.getElementById("muscleFilter"),
             exerciseSearch: document.getElementById("exerciseSearch"),
@@ -1378,6 +1403,20 @@
 
         function formatKg(value) {
             return `${numberFormatter.format(Number(value) || 0)} kg`;
+        }
+
+        function unitOf(entry) {
+            return WEIGHT_UNITS[entry?.weight_unit] || WEIGHT_UNITS.kg;
+        }
+
+        // Factor para pasar un peso anotado a kilos equivalentes.
+        function entryFactor(entry) {
+            return unitOf(entry).toKg *
+                (entry?.weight_mode === "per_side" ? 2 : 1);
+        }
+
+        function formatEntryWeight(value, entry) {
+            return `${numberFormatter.format(Number(value) || 0)} ${unitOf(entry).label}`;
         }
 
         function exerciseImage(exercise) {
@@ -1465,6 +1504,12 @@
                 state.sets.push(createSet());
             }
 
+            const unitLabel =
+                (WEIGHT_UNITS[elements.weightUnit.value] || WEIGHT_UNITS.kg).label;
+
+            const modeLabel =
+                elements.weightMode.value === "per_side" ? " por lado" : "";
+
             elements.setsContainer.innerHTML = state.sets
                 .map((set, index) => `
                     <div class="set-row" data-set="${set.uid}">
@@ -1472,7 +1517,7 @@
                         <div class="set-index">${index + 1}</div>
 
                         <div class="field">
-                            <label>Peso (kg)</label>
+                            <label>Peso (${unitLabel}${modeLabel})</label>
                             <input
                                 type="number"
                                 inputmode="decimal"
@@ -1509,7 +1554,7 @@
                                     <div class="dropset-tag">Drop ${dropIndex + 1}</div>
 
                                     <div class="field">
-                                        <label>Peso (kg)</label>
+                                        <label>Peso (${unitLabel}${modeLabel})</label>
                                         <input
                                             type="number"
                                             inputmode="decimal"
@@ -1651,6 +1696,9 @@
 
             renderSets();
         });
+
+        [elements.weightUnit, elements.weightMode]
+            .forEach(element => element.addEventListener("change", renderSets));
 
         // ------------------------------------------------------------ catalog
 
@@ -1877,6 +1925,8 @@
                         gymId: elements.gymSelect.value || null,
                         exerciseId: state.selectedExerciseId,
                         variantId: elements.variantSelect.value || null,
+                        weightUnit: elements.weightUnit.value,
+                        weightMode: elements.weightMode.value,
                         sets
                     }
                 });
@@ -1897,12 +1947,14 @@
         // ------------------------------------------------------------ metrics
 
         function entryVolume(entry) {
+            const factor = entryFactor(entry);
+
             return entry.sets.reduce((total, set) => {
-                const base = (Number(set.weight_kg) || 0) * (Number(set.reps) || 0);
+                const base = (Number(set.weight_kg) || 0) * factor * (Number(set.reps) || 0);
 
                 const drops = (set.dropsets || []).reduce(
                     (sum, drop) =>
-                        sum + (Number(drop.weight_kg) || 0) * (Number(drop.reps) || 0),
+                        sum + (Number(drop.weight_kg) || 0) * factor * (Number(drop.reps) || 0),
                     0
                 );
 
@@ -1922,18 +1974,22 @@
         }
 
         function entryMaxWeight(entry) {
+            const factor = entryFactor(entry);
+
             return entry.sets.reduce((max, set) => {
                 const drops = (set.dropsets || [])
-                    .map(drop => Number(drop.weight_kg) || 0);
+                    .map(drop => (Number(drop.weight_kg) || 0) * factor);
 
-                return Math.max(max, Number(set.weight_kg) || 0, ...drops);
+                return Math.max(max, (Number(set.weight_kg) || 0) * factor, ...drops);
             }, 0);
         }
 
         function entryEstimated1rm(entry) {
+            const factor = entryFactor(entry);
+
             // Fórmula de Epley sobre la mejor serie principal.
             return entry.sets.reduce((max, set) => {
-                const weight = Number(set.weight_kg) || 0;
+                const weight = (Number(set.weight_kg) || 0) * factor;
                 const reps = Number(set.reps) || 0;
 
                 return Math.max(max, weight * (1 + reps / 30));
@@ -2306,12 +2362,12 @@
                 .map((set, index) => {
                     const drops = (set.dropsets || [])
                         .map(drop =>
-                            `<span class="tag drop">drop ${numberFormatter.format(drop.weight_kg)} kg × ${drop.reps}</span>`)
+                            `<span class="tag drop">drop ${formatEntryWeight(drop.weight_kg, entry)} × ${drop.reps}</span>`)
                         .join("");
 
                     return `
                         <span class="tag set">
-                            S${index + 1} · ${numberFormatter.format(set.weight_kg)} kg × ${set.reps}
+                            S${index + 1} · ${formatEntryWeight(set.weight_kg, entry)} × ${set.reps}
                         </span>
                         ${drops}
                     `;
@@ -2342,6 +2398,9 @@
                     : ""}
                             ${entry.variant?.label
                     ? `<span class="tag variant">${escapeHtml(entry.variant.label)}</span>`
+                    : ""}
+                            ${entry.weight_mode === "per_side"
+                    ? `<span class="tag variant">por lado</span>`
                     : ""}
                             ${tags}
                         </div>
