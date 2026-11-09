@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activar administrador | Rocha Apps</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css.css" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <div class="logo">
+            <img src="../images/logo.png" alt="Rocha Apps">
+        </div>
+        <div class="user" id="userInfo">Cargando...</div>
+    </header>
+
+    <main class="container py-5">
+        <section class="card content">
+            <h1>Activar acceso de administrador</h1>
+            <p id="activationStatus" role="status" aria-live="polite">
+                Comprobando la sesión...
+            </p>
+        </section>
+    </main>
+
+    <script type="module">
+        import { authState, supabase } from "../login.js";
+
+        const status = document.getElementById("activationStatus");
+        const functionUrl =
+            "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/activate-edenred-admin";
+
+        try {
+            const accessToken = authState?.session?.access_token;
+
+            if (!accessToken) {
+                throw new Error("Inicia sesión con tu cuenta de Supabase para continuar.");
+            }
+
+            const response = await fetch(functionUrl, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                },
+                body: "{}"
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.error || `Error HTTP ${response.status}.`);
+            }
+
+            const { error: refreshError } =
+                await supabase.auth.refreshSession();
+
+            if (refreshError) {
+                throw new Error(
+                    "El rol admin se activó, pero no se pudo renovar la sesión. Cierra sesión y vuelve a entrar."
+                );
+            }
+
+            status.textContent =
+                `${result.message} Si ya estaba abierta, recárgala para que el rol se actualice.`;
+        } catch (error) {
+            status.textContent =
+                error instanceof Error
+                    ? error.message
+                    : "No se pudo activar el rol admin.";
+        }
+    </script>
+</body>
+
+</html>
