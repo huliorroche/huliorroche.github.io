@@ -887,6 +887,9 @@
         const FUNCTION_URL =
             "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/edenred-balance";
 
+        const isAdmin =
+            authState?.user?.app_metadata?.role === "admin";
+
         const MONTHLY_EXPECTED_AMOUNT =
             141.67;
 
@@ -1017,6 +1020,10 @@
 
 
         function showOtpModal(email) {
+            if (!isAdmin) {
+                return;
+            }
+
             otpPending =
                 true;
 
@@ -2200,7 +2207,14 @@
                 new Date().toISOString();
 
             elements.lastUpdate.textContent =
-                `Actualizado: ${formatDate(updateDate)}`;
+                `${data.cachedBalance ? "Último saldo guardado" : "Actualizado"}: ${formatDate(updateDate)}`;
+
+            if (data.cachedBalance) {
+                showMessage(
+                    "warning",
+                    "No se pudo consultar Edenred en tiempo real. Se muestra el último saldo conocido."
+                );
+            }
 
             if (
                 cards.length === 0
@@ -2210,7 +2224,9 @@
 
                 setStatus(
                     "success",
-                    "Consulta completada"
+                    data.cachedBalance
+                        ? "Saldo en caché"
+                        : "Consulta completada"
                 );
 
                 return;
@@ -2397,7 +2413,9 @@
 
             setStatus(
                 "success",
-                data.cachedSession
+                data.cachedBalance
+                    ? "Saldo en caché"
+                    : data.cachedSession
                     ? "Sesión reutilizada"
                     : "Sesión renovada"
             );
@@ -2442,6 +2460,18 @@
 
         function processOtpRequired(data) {
             setBusy(false);
+
+            if (!isAdmin) {
+                setStatus(
+                    "error",
+                    "Saldo no disponible"
+                );
+                showMessage(
+                    "warning",
+                    "Edenred requiere una verificación que solo puede completar un administrador."
+                );
+                return;
+            }
 
             setStatus(
                 "loading",
@@ -2574,10 +2604,12 @@
                     data
                 );
 
-                showMessage(
-                    "success",
-                    "La sesión de Edenred se ha renovado correctamente."
-                );
+                if (!data.cachedBalance) {
+                    showMessage(
+                        "success",
+                        "La sesión de Edenred se ha renovado correctamente."
+                    );
+                }
 
             } catch (error) {
                 showError(
@@ -2588,7 +2620,7 @@
 
 
         async function validateOtp() {
-            if (requestInProgress) {
+            if (!isAdmin || requestInProgress) {
                 return;
             }
 
