@@ -887,6 +887,9 @@
         const FUNCTION_URL =
             "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/edenred-balance";
 
+        const LATEST_EMAIL_FUNCTION_URL =
+            "https://lpmpqeibsrzvmmvjnmgf.supabase.co/functions/v1/latest-email";
+
         const isAdmin =
             authState?.user?.app_metadata?.role === "admin";
 
@@ -924,6 +927,9 @@
 
         let otpPending =
             false;
+
+        let automaticOtpAttempts =
+            0;
 
         let selectedCardGuid =
             null;
@@ -1038,8 +1044,8 @@
 
             elements.otpMessage.textContent =
                 email
-                    ? `Se ha enviado un código de verificación a ${email}. Introduce el código para continuar.`
-                    : "Se ha enviado un código de verificación. Introduce el código para continuar.";
+                    ? `Se ha enviado un código de verificación a ${email}. Buscando el código automáticamente.`
+                    : "Se ha enviado un código de verificación. Buscando el código automáticamente.";
 
             elements.otpModal.hidden =
                 false;
@@ -1062,6 +1068,9 @@
         function hideOtpModal() {
             otpPending =
                 false;
+
+            automaticOtpAttempts =
+                0;
 
             elements.otpModal.hidden =
                 true;
@@ -1092,6 +1101,106 @@
 
             elements.otpInput.focus();
             elements.otpInput.select();
+        }
+
+        async function fetchLatestEdenredOtp() {
+            const url =
+                new URL(
+                    LATEST_EMAIL_FUNCTION_URL
+                );
+
+            url.searchParams.set(
+                "subject",
+                "Edenred"
+            );
+
+            const response =
+                await fetch(url);
+
+            const responseText =
+                await response.text();
+
+            let data;
+
+            try {
+                data =
+                    JSON.parse(
+                        responseText
+                    );
+            } catch {
+                throw new Error(
+                    "La función latest-email no devolvió JSON válido."
+                );
+            }
+
+            if (
+                !data ||
+                typeof data !== "object"
+            ) {
+                throw new Error(
+                    "La función latest-email devolvió una respuesta inesperada."
+                );
+            }
+
+            if (!response.ok) {
+                throw new Error(
+                    data.error ||
+                    `Error HTTP ${response.status} al consultar el correo.`
+                );
+            }
+
+            if (
+                data.found !== true ||
+                typeof data.body !== "string"
+            ) {
+                throw new Error(
+                    "No se encontró un correo reciente de Edenred."
+                );
+            }
+
+            const codes =
+                new Set(
+                    Array.from(
+                        data.body.matchAll(
+                            /^[ \t]*([0-9]{6})[ \t]*$/gm
+                        ),
+                        (match) => match[1]
+                    )
+                );
+
+            if (codes.size !== 1) {
+                throw new Error(
+                    "No se pudo identificar un único código de 6 dígitos en el correo."
+                );
+            }
+
+            return codes.values().next().value;
+        }
+
+        async function retrieveAndValidateOtp() {
+            setBusy(
+                true,
+                "Buscando el código OTP en el correo..."
+            );
+
+            try {
+                elements.otpInput.value =
+                    await fetchLatestEdenredOtp();
+
+                await validateOtp();
+
+            } catch (error) {
+                setBusy(false);
+
+                setStatus(
+                    "error",
+                    "Código pendiente"
+                );
+
+                showOtpError(
+                    `${error?.message || "No se pudo obtener el código OTP."} Puedes introducirlo manualmente.`
+                );
+            }
         }
 
 
@@ -2459,6 +2568,11 @@
 
 
         function processOtpRequired(data) {
+            if (!otpPending) {
+                automaticOtpAttempts =
+                    0;
+            }
+
             setBusy(false);
 
             if (!isAdmin) {
@@ -2492,6 +2606,15 @@
                     ? `Edenred requiere verificación. Se ha enviado un código a ${email}.`
                     : "Edenred requiere verificación mediante código OTP."
             );
+
+            if (automaticOtpAttempts < 2) {
+                automaticOtpAttempts++;
+                void retrieveAndValidateOtp();
+            } else {
+                showOtpError(
+                    "No se pudo validar automáticamente el código. Introdúcelo manualmente para continuar."
+                );
+            }
         }
 
 
